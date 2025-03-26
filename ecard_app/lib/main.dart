@@ -1,6 +1,7 @@
 import 'package:ecard_app/modals/user_modal.dart';
 import 'package:ecard_app/modals/user_preference.dart';
 import 'package:ecard_app/providers/auth_provider.dart';
+import 'package:ecard_app/providers/screen_index_provider.dart';
 import 'package:ecard_app/providers/user_provider.dart';
 import 'package:ecard_app/router/page_router.dart';
 import 'package:ecard_app/screens/dashboard_screen.dart';
@@ -55,6 +56,7 @@ class EcardApp extends StatelessWidget {
         ),
         ChangeNotifierProvider(create: (_) => AuthProvider()),
         ChangeNotifierProvider(create: (_) => UserProvider()),
+        ChangeNotifierProvider(create: (_) => ScreenIndexProvider()),
       ],
       child: Consumer<ThemeNotifier>(
         builder: (context, theme, _) {
@@ -78,14 +80,14 @@ class EcardApp extends StatelessWidget {
                     }
                     if (snapshot.hasData &&
                         snapshot.data!.accessToken == null) {
-                      return const LoginPage(); // User not logged in
+                      return SplashScreen(); // User not logged in
                     }
                     if (snapshot.hasData &&
                         snapshot.data!.accessToken != null) {
                       return DashboardPage(
                           user: snapshot.data!); // User logged in
                     }
-                    return const LoginPage(); // Default to login if no data or token
+                    return SplashScreen(); // Default to login if no data or token
                   default:
                     return SplashScreen();
                 }

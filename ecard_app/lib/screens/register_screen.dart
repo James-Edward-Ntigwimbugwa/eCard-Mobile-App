@@ -228,7 +228,9 @@ class _RegisterPageState extends State<RegisterPage> {
                                 height: 20,
                               ),
                               ElevatedButton(
-                                onPressed: () {},
+                                onPressed: () {
+                                  Navigator.pushNamed(context, '/dashboard');
+                                },
                                 style: ElevatedButton.styleFrom(
                                   backgroundColor: Theme.of(context)
                                       .primaryColor, // Set the background color to green

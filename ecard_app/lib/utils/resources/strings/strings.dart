@@ -1,6 +1,7 @@
 class Headlines {
   static String businessApp = 'Business App';
   static String weGotYou = 'We Got You';
+  static String myCards = "My Cards";
   static String splashMessage = "Digitize your Business with Electronic Cards";
   static String loginToAccessAccount = 'Login to access your \n Account';
   static String registerDesc =

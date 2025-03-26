@@ -25,7 +25,7 @@ class Alerts {
               ],
             ),
           ),
-          onTap: () => Navigator.pop(context),
+          // onTap: () => Navigator.pop(context),
         ),
       ),
     );

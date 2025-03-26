@@ -84,13 +84,18 @@ class _LoginPageState extends State<LoginPage> {
             );
           }
         }).catchError((error) {
-          Navigator.pop(context); // Remove loading
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text('Login error: ${error.toString()}'),
-              backgroundColor: Colors.red,
-            ),
-          );
+          Alerts.show(
+              context,
+              "Network error",
+              Image.asset(
+                Images.networkErrorImage,
+                width: 40,
+                height: 40,
+              ));
+          Future.delayed(Duration(seconds: 4), () {
+            Navigator.pop(context);
+            Navigator.pop(context);
+          });
         });
       });
     }
