@@ -1,3 +1,4 @@
+import 'package:ecard_app/providers/screen_index_provider.dart';
 import 'package:ecard_app/providers/user_provider.dart';
 import 'package:ecard_app/screens/dashboard_screen.dart';
 import 'package:ecard_app/screens/forgot_password.dart';
@@ -19,11 +20,17 @@ class PageRouter {
           return DashboardPage(user: userProvider.user);
         });
       case '/register':
-        return MaterialPageRoute(builder: (_) => RegisterPage());
+        return MaterialPageRoute(
+            builder: (context) =>
+                Provider.of<AuthScreensIndexProvider>(context).registerPage);
       case '/login':
-        return MaterialPageRoute(builder: (_) => LoginPage());
+        return MaterialPageRoute(
+            builder: (context) =>
+                Provider.of<AuthScreensIndexProvider>(context).loginPage);
       case '/forgot_password':
-        return MaterialPageRoute(builder: (_) => ForgetPasswordPage());
+        return MaterialPageRoute(
+            builder: (context) => Provider.of<AuthScreensIndexProvider>(context)
+                .forgotPasswordPage);
 
       default:
         return null;

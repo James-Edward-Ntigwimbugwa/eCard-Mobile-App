@@ -1,7 +1,9 @@
+import 'package:ecard_app/providers/screen_index_provider.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:provider/provider.dart';
 import '../components/custom_widgets.dart';
 import '../utils/resources/images/images.dart';
 import '../utils/resources/strings/strings.dart';
@@ -284,7 +286,28 @@ class _RegisterPageState extends State<RegisterPage> {
                                           color: Theme.of(context).primaryColor,
                                           size: '14.0'),
                                       onTap: () {
-                                        Navigator.pushNamed(context, '/login');
+                                        final authScreenIndexProvider = Provider
+                                            .of<AuthScreensIndexProvider>(
+                                                context,
+                                                listen: false);
+                                        final currentRoute =
+                                            ModalRoute.of(context)
+                                                ?.settings
+                                                .name;
+                                        int currentIndex =
+                                            authScreenIndexProvider
+                                                .currentScreenIndex;
+
+                                        String targetRoute = (currentIndex == 1)
+                                            ? '/login'
+                                            : '/register';
+                                        if (currentRoute != targetRoute) {
+                                          authScreenIndexProvider
+                                              .setCurrentIndex(
+                                                  currentIndex == 1 ? 0 : 1);
+                                          Navigator.pushNamed(
+                                              context, targetRoute);
+                                        }
                                       },
                                     )
                                   ],

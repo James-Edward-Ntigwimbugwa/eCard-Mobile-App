@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:circle_nav_bar/circle_nav_bar.dart';
 import 'package:ecard_app/providers/screen_index_provider.dart';
 import 'package:ecard_app/screens/subScreens/main_screen_tab.dart';
 import 'package:ecard_app/screens/subScreens/nearby_screen.dart';
@@ -6,6 +7,7 @@ import 'package:ecard_app/screens/subScreens/scanning_screen.dart';
 import 'package:ecard_app/screens/subScreens/settings_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:provider/provider.dart';
 import '../modals/user_modal.dart';
 import '../router/router_path.dart';
@@ -50,36 +52,56 @@ class _DashboardPageState extends State<DashboardPage>
     final screenIndexProvider = Provider.of<ScreenIndexProvider>(context);
     int _currentIndex = screenIndexProvider.currentScreenIndex;
     return Scaffold(
-      bottomNavigationBar: BottomNavigationBar(
-          type: BottomNavigationBarType.fixed,
-          backgroundColor: Theme.of(context).highlightColor,
-          showSelectedLabels: false,
-          selectedItemColor: Theme.of(context).primaryColor,
-          showUnselectedLabels: false,
-          elevation: 1.5,
-          currentIndex: _currentIndex,
-          onTap: (value) => screenIndexProvider.setCurrentIndex(value),
-          items: [
-            BottomNavigationBarItem(
-                icon: Icon(
-                    (_currentIndex == 0 ? Icons.home : Icons.home_outlined)),
-                label: ''),
-            BottomNavigationBarItem(
-                icon: Icon(_currentIndex == 1
-                    ? Icons.scanner
-                    : Icons.scanner_outlined),
-                label: ''),
-            BottomNavigationBarItem(
-                icon: Icon(_currentIndex == 2
-                    ? Icons.signal_wifi_4_bar_outlined
-                    : Icons.signal_wifi_4_bar),
-                label: ''),
-            BottomNavigationBarItem(
-                icon: Icon(_currentIndex == 3
-                    ? Icons.settings
-                    : Icons.settings_outlined),
-                label: '')
-          ]),
+      bottomNavigationBar: CircleNavBar(
+        color: Theme.of(context).highlightColor,
+        circleShadowColor: Theme.of(context).primaryColor,
+        padding: const EdgeInsets.symmetric(horizontal: 1.0),
+        circleColor: Theme.of(context).primaryColor,
+        height: 60,
+        elevation: 10,
+        shadowColor: Theme.of(context).primaryColor,
+        circleWidth: 50,
+        cornerRadius: BorderRadius.only(
+            topLeft: Radius.circular(10), topRight: Radius.circular(10)),
+        onTap: (value) => screenIndexProvider.setCurrentIndex(value),
+        activeIcons: [
+          Icon((FontAwesomeIcons.home),
+              color: _currentIndex == 0
+                  ? Theme.of(context).highlightColor
+                  : Theme.of(context).primaryColor),
+          Icon((FontAwesomeIcons.qrcode),
+              color: _currentIndex == 1
+                  ? Theme.of(context).highlightColor
+                  : Theme.of(context).primaryColor),
+          Icon((FontAwesomeIcons.wifi),
+              color: _currentIndex == 2
+                  ? Theme.of(context).highlightColor
+                  : Theme.of(context).primaryColor),
+          Icon((FontAwesomeIcons.gear),
+              color: _currentIndex == 3
+                  ? Theme.of(context).highlightColor
+                  : Theme.of(context).primaryColor),
+        ],
+        activeIndex: _currentIndex,
+        inactiveIcons: [
+          Icon((FontAwesomeIcons.home),
+              color: _currentIndex == 0
+                  ? Theme.of(context).highlightColor
+                  : Theme.of(context).primaryColor),
+          Icon((FontAwesomeIcons.qrcode),
+              color: _currentIndex == 1
+                  ? Theme.of(context).highlightColor
+                  : Theme.of(context).primaryColor),
+          Icon((FontAwesomeIcons.wifi),
+              color: _currentIndex == 2
+                  ? Theme.of(context).highlightColor
+                  : Theme.of(context).primaryColor),
+          Icon((FontAwesomeIcons.gear),
+              color: _currentIndex == 3
+                  ? Theme.of(context).highlightColor
+                  : Theme.of(context).primaryColor),
+        ],
+      ),
       body: screens[_currentIndex],
     );
   }

@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:ecard_app/components/custom_widgets.dart';
 import 'package:ecard_app/providers/auth_provider.dart';
+import 'package:ecard_app/providers/screen_index_provider.dart';
 import 'package:ecard_app/providers/user_provider.dart';
 import 'package:ecard_app/utils/raw/model_icons.dart';
 import 'package:ecard_app/utils/resources/images/images.dart';
@@ -359,7 +360,24 @@ class _LoginPageState extends State<LoginPage> {
                                         color: Theme.of(context).primaryColor,
                                         size: '14.0'),
                                     onTap: () {
-                                      Navigator.pushNamed(context, '/register');
+                                      final authScreenIndexProvider =
+                                          Provider.of<AuthScreensIndexProvider>(
+                                              context,
+                                              listen: false);
+                                      final currentRoute =
+                                          ModalRoute.of(context)?.settings.name;
+                                      int currentIndex = authScreenIndexProvider
+                                          .currentScreenIndex;
+
+                                      String targetRoute = (currentIndex == 0)
+                                          ? '/login'
+                                          : '/register';
+                                      if (currentRoute != targetRoute) {
+                                        authScreenIndexProvider.setCurrentIndex(
+                                            currentIndex == 0 ? 1 : 0);
+                                        Navigator.pushNamed(
+                                            context, targetRoute);
+                                      }
                                     },
                                   )
                                 ],
