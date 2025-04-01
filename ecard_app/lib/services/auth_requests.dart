@@ -20,7 +20,10 @@ class AuthRequests {
   static Future<http.Response> register(String path, Object object) async {
     var response = await http.post(
         Uri.parse("${AppUrl.baseEndpoint}/auth/$path"),
-        headers: {"Content-type": "application/json"},
+        headers: {
+          "Content-type": "application/json",
+          "Accept": "application/json"
+        },
         body: jsonEncode(object));
 
     return response;

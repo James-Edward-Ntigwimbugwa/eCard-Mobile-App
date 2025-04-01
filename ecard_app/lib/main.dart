@@ -58,6 +58,7 @@ class EcardApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => UserProvider()),
         ChangeNotifierProvider(create: (_) => ScreenIndexProvider()),
         ChangeNotifierProvider(create: (_) => AuthScreensIndexProvider()),
+        ChangeNotifierProvider(create: (_) => TabIndexProvider()),
       ],
       child: Consumer<ThemeNotifier>(
         builder: (context, theme, _) {

@@ -25,3 +25,13 @@ class AuthScreensIndexProvider with ChangeNotifier {
     notifyListeners();
   }
 }
+
+class TabIndexProvider with ChangeNotifier {
+  int screenIndex = 0;
+  int get currentScreenIndex => screenIndex;
+
+  void setCurrentIndex(int newIndex) {
+    screenIndex = newIndex;
+    notifyListeners();
+  }
+}
