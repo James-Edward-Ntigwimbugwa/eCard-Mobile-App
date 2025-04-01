@@ -12,7 +12,7 @@ class _AllCardsScreenState extends State<AllCardsScreen>
   late CardProvider provider;
 
   @override
-  void initState() async{
+  void initState(){
     super.initState();
     provider.fetchCards('45428d2a-96a6-483c-a0e8-43e8d3abfeb1');
   }
