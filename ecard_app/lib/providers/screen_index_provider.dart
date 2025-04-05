@@ -2,6 +2,7 @@ import 'package:ecard_app/screens/forgot_password.dart';
 import 'package:ecard_app/screens/login_screen.dart';
 import 'package:ecard_app/screens/register_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class ScreenIndexProvider with ChangeNotifier {
   int screenIndex = 0;
@@ -13,25 +14,34 @@ class ScreenIndexProvider with ChangeNotifier {
   }
 }
 
-class AuthScreensIndexProvider with ChangeNotifier {
-  int screenIndex = 0;
-  int get currentScreenIndex => screenIndex;
-  final loginPage = const LoginPage();
-  final registerPage = const RegisterPage();
-  final forgotPasswordPage = const ForgetPasswordPage();
-
-  void setCurrentIndex(int newIndex) {
-    screenIndex = newIndex;
-    notifyListeners();
-  }
-}
-
 class TabIndexProvider with ChangeNotifier {
-  int screenIndex = 0;
-  int get currentScreenIndex => screenIndex;
+  int _currentScreenIndex = 0;
 
-  void setCurrentIndex(int newIndex) {
-    screenIndex = newIndex;
-    notifyListeners();
+  int get currentScreenIndex => _currentScreenIndex;
+
+  void setCurrentIndex(int index) {
+    if (_currentScreenIndex != index) {
+      _currentScreenIndex = index;
+      notifyListeners();
+
+      // Consider saving to persistent storage
+      _saveTabIndex(index);
+    }
+  }
+
+  // Add persistence using shared preferences
+  Future<void> _saveTabIndex(int index) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setInt('saved_tab_index', index);
+  }
+
+  // Load saved tab index
+  Future<void> loadSavedIndex() async {
+    final prefs = await SharedPreferences.getInstance();
+    final savedIndex = prefs.getInt('saved_tab_index');
+    if (savedIndex != null) {
+      _currentScreenIndex = savedIndex;
+      notifyListeners();
+    }
   }
 }

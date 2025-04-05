@@ -1,6 +1,8 @@
 import 'package:flutter/cupertino.dart';
 
 class GroupCardsScreen extends StatefulWidget {
+  const GroupCardsScreen({super.key});
+
   @override
   _GroupCardsScreenState createState() => _GroupCardsScreenState();
 }

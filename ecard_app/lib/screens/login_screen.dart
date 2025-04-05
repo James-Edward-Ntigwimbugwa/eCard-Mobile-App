@@ -37,6 +37,7 @@ class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     AuthProvider auth = Provider.of<AuthProvider>(context);
+    final formData = auth.formData[AuthScreen.loginScreen];
 
     void handleLogin() {
       final form = formKey.currentState;
@@ -167,223 +168,212 @@ class _LoginPageState extends State<LoginPage> {
               const SizedBox(
                 height: 20,
               ),
-              Form(
-                autovalidateMode: AutovalidateMode.onUserInteraction,
-                key: formKey,
-                child: Padding(
-                  padding: EdgeInsets.symmetric(
-                    horizontal: 5.0,
-                  ),
-                  child: DecoratedBox(
-                    decoration: BoxDecoration(
-                      border: Border(
-                        top: BorderSide(color: Theme.of(context).primaryColor),
-                        bottom:
-                            BorderSide(color: Theme.of(context).primaryColor),
-                        left: BorderSide(color: Theme.of(context).primaryColor),
-                        right:
-                            BorderSide(color: Theme.of(context).primaryColor),
-                      ),
-                      borderRadius: BorderRadius.all(Radius.circular(20)),
+              Container(
+                decoration: BoxDecoration(
+                  boxShadow: [
+                    BoxShadow(
+                      color: Theme.of(context).highlightColor,
+                      offset: Offset(0.0, 0.0),
+                      blurRadius: 0.0,
+                      spreadRadius: 7.0
+                    )
+                  ]
+                ),
+                child: Form(
+                  autovalidateMode: AutovalidateMode.onUserInteraction,
+                  key: formKey,
+                  child: Padding(
+                    padding: EdgeInsets.symmetric(
+                      horizontal: 5.0,
                     ),
-                    child: SizedBox(
-                      height: MediaQuery.of(context).size.height / 2,
-                      width: double.infinity,
-                      child: Padding(
-                        padding: EdgeInsets.only(left: 10, right: 10, top: 0),
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            InputField(
-                                controller: _usernameController,
-                                hintText: "username",
-                                icon: Icon(Icons.mail)),
-                            const SizedBox(
-                              height: 20,
-                            ),
-                            TextFormField(
-                              onSaved: (value) => _password = value,
-                              autofocus: false,
-                              controller: _passwordController,
-                              validator: (value) => value!.isEmpty
-                                  ? "Please Enter password"
-                                  : null,
-                              obscureText: _obscurePassword,
-                              style: GoogleFonts.nunito(
-                                textStyle: TextStyle(
-                                    color: Theme.of(context).primaryColor),
-                                fontWeight: FontWeight.w500,
-                                backgroundColor: Colors.white,
+                    child: DecoratedBox(
+                      decoration: BoxDecoration(
+                        border: Border(
+                          top: BorderSide(color: Theme.of(context).primaryColor),
+                          bottom:
+                              BorderSide(color: Theme.of(context).primaryColor),
+                          left: BorderSide(color: Theme.of(context).primaryColor),
+                          right:
+                              BorderSide(color: Theme.of(context).primaryColor),
+                        ),
+                        borderRadius: BorderRadius.all(Radius.circular(20)),
+                      ),
+                      child: SizedBox(
+                        height: MediaQuery.of(context).size.height / 2,
+                        width: double.infinity,
+                        child: Padding(
+                          padding: EdgeInsets.only(left: 10, right: 10, top: 0),
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              InputField(
+                                  field: 'username',
+                                  // controller: _usernameController,
+                                  hintText: "username",
+                                  icon: Icon(Icons.mail)),
+                              const SizedBox(
+                                height: 20,
                               ),
-                              decoration: InputDecoration(
-                                prefixIcon: Icon(CupertinoIcons.padlock_solid),
-                                hintText: "Password",
-                                hintStyle: TextStyle(color: Colors.grey),
-                                border: OutlineInputBorder(
-                                  borderRadius:
-                                      BorderRadius.all(Radius.circular(30)),
+                              TextFormField(
+                                onSaved: (value) => _password = value,
+                                autofocus: false,
+                                onChanged: (value)=>auth.updateFormField('password', value),
+                                controller: TextEditingController(text: formData?['password']),
+                                validator: (value) => value!.isEmpty
+                                    ? "Please Enter password"
+                                    : null,
+                                obscureText: _obscurePassword,
+                                style: GoogleFonts.nunito(
+                                  textStyle: TextStyle(
+                                      color: Theme.of(context).primaryColor),
+                                  fontWeight: FontWeight.w500,
+                                  backgroundColor: Colors.white,
                                 ),
-                                suffixIcon: IconButton(
-                                  onPressed: () => setState(() =>
-                                      _obscurePassword = !_obscurePassword),
-                                  icon: Icon(_obscurePassword
-                                      ? Icons.visibility_off
-                                      : Icons.visibility),
+                                decoration: InputDecoration(
+                                  prefixIcon: Icon(CupertinoIcons.padlock_solid),
+                                  hintText: "Password",
+                                  hintStyle: TextStyle(color: Colors.grey),
+                                  border: OutlineInputBorder(
+                                    borderRadius:
+                                        BorderRadius.all(Radius.circular(30)),
+                                  ),
+                                  suffixIcon: IconButton(
+                                    onPressed: () => setState(() =>
+                                        _obscurePassword = !_obscurePassword),
+                                    icon: Icon(_obscurePassword
+                                        ? Icons.visibility_off
+                                        : Icons.visibility),
+                                  ),
                                 ),
                               ),
-                            ),
-                            const SizedBox(
-                              height: 20,
-                            ),
-                            ElevatedButton(
-                              onPressed: handleLogin,
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: Theme.of(context).primaryColor,
-                                minimumSize: Size(
-                                    MediaQuery.of(context).size.width / 4,
-                                    48.0),
-                                padding:
-                                    const EdgeInsets.symmetric(vertical: 12.0),
+                              const SizedBox(
+                                height: 20,
                               ),
-                              child: DecoratedBox(
-                                decoration: BoxDecoration(
-                                  color: Theme.of(context)
-                                      .primaryColor
-                                      .withOpacity(0.1),
-                                  shape: BoxShape.rectangle,
+                              ElevatedButton(
+                                onPressed: handleLogin,
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: Theme.of(context).primaryColor,
+                                  minimumSize: Size(
+                                      MediaQuery.of(context).size.width / 4,
+                                      48.0),
+                                  padding:
+                                      const EdgeInsets.symmetric(vertical: 12.0),
                                 ),
-                                child: SizedBox(
-                                  height: 30.0,
-                                  width: MediaQuery.of(context).size.width / 6,
-                                  child: Center(
-                                    child: HeaderBoldWidget(
-                                      text: Texts.login,
-                                      color: Theme.of(context).highlightColor,
-                                      size: '24.0',
+                                child: DecoratedBox(
+                                  decoration: BoxDecoration(
+                                    color: Theme.of(context)
+                                        .primaryColor
+                                        .withOpacity(0.1),
+                                    shape: BoxShape.rectangle,
+                                  ),
+                                  child: SizedBox(
+                                    height: 30.0,
+                                    width: MediaQuery.of(context).size.width / 6,
+                                    child: Center(
+                                      child: HeaderBoldWidget(
+                                        text: Texts.login,
+                                        color: Theme.of(context).highlightColor,
+                                        size: '24.0',
+                                      ),
                                     ),
                                   ),
                                 ),
                               ),
-                            ),
-                            Center(
-                              child: SizedBox(
-                                height: 50,
-                                child: Row(
-                                  children: [
-                                    Expanded(
-                                      child: Container(
-                                          height: 1,
-                                          color:
-                                              Theme.of(context).primaryColor),
-                                    ),
-                                    Padding(
-                                      padding: const EdgeInsets.symmetric(
-                                          horizontal: 8.0),
-                                      child: Container(
-                                        color: Colors
-                                            .white, // Match background color to "hide" the line behind the text
+                              Center(
+                                child: SizedBox(
+                                  height: 50,
+                                  child: Row(
+                                    children: [
+                                      Expanded(
+                                        child: Container(
+                                            height: 1,
+                                            color:
+                                                Theme.of(context).primaryColor),
+                                      ),
+                                      Padding(
                                         padding: const EdgeInsets.symmetric(
                                             horizontal: 8.0),
-                                        child: Text(
-                                          "OR",
-                                          style: TextStyle(
-                                            color:
-                                                Theme.of(context).primaryColor,
-                                            fontSize: 16,
-                                            fontWeight: FontWeight.bold,
+                                        child: Container(
+                                          color: Colors
+                                              .white, // Match background color to "hide" the line behind the text
+                                          padding: const EdgeInsets.symmetric(
+                                              horizontal: 8.0),
+                                          child: Text(
+                                            "OR",
+                                            style: TextStyle(
+                                              color:
+                                                  Theme.of(context).primaryColor,
+                                              fontSize: 16,
+                                              fontWeight: FontWeight.bold,
+                                            ),
                                           ),
                                         ),
                                       ),
-                                    ),
-                                    Expanded(
-                                      child: Container(
-                                        height: 1, // Thickness of the line
-                                        color: Theme.of(context)
-                                            .primaryColor, // Color of the line
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              children: [
-                                for (int i = 0;
-                                    i <
-                                        LoginWidgetClickableIcons.icons(context)
-                                            .length;
-                                    i++) ...[
-                                  Padding(
-                                    padding: EdgeInsets.only(right: 12.0),
-                                    child: Container(
-                                      decoration: BoxDecoration(
-                                        color: Theme.of(context).primaryColor,
-                                        borderRadius: BorderRadius.circular(50),
-                                      ),
-                                      child: Padding(
-                                        padding: const EdgeInsets.all(16.0),
-                                        child: Icon(
-                                          LoginWidgetClickableIcons.icons(
-                                                  context)[i]
-                                              .icon,
-                                          size: 18,
-                                          color:
-                                              Theme.of(context).highlightColor,
+                                      Expanded(
+                                        child: Container(
+                                          height: 1, // Thickness of the line
+                                          color: Theme.of(context)
+                                              .primaryColor, // Color of the line
                                         ),
                                       ),
-                                    ),
-                                  )
-                                ]
-                              ],
-                            ),
-                            const SizedBox(
-                              height: 20,
-                            ),
-                            Center(
-                              child: Row(
+                                    ],
+                                  ),
+                                ),
+                              ),
+                              Row(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 crossAxisAlignment: CrossAxisAlignment.center,
                                 children: [
-                                  NormalHeaderWidget(
-                                      text: Texts.noAccount,
-                                      color: Theme.of(context).highlightColor,
-                                      size: '14.0'),
-                                  SizedBox(
-                                    width: 3,
-                                  ),
-                                  GestureDetector(
-                                    child: HeaderBoldWidget(
-                                        text: Texts.register,
-                                        color: Theme.of(context).primaryColor,
-                                        size: '14.0'),
-                                    onTap: () {
-                                      final authScreenIndexProvider =
-                                          Provider.of<AuthScreensIndexProvider>(
-                                              context,
-                                              listen: false);
-                                      final currentRoute =
-                                          ModalRoute.of(context)?.settings.name;
-                                      int currentIndex = authScreenIndexProvider
-                                          .currentScreenIndex;
-
-                                      String targetRoute = (currentIndex == 0)
-                                          ? '/login'
-                                          : '/register';
-                                      if (currentRoute != targetRoute) {
-                                        authScreenIndexProvider.setCurrentIndex(
-                                            currentIndex == 0 ? 1 : 0);
-                                        Navigator.pushNamed(
-                                            context, targetRoute);
-                                      }
-                                    },
-                                  )
+                                  for (int i = 0;
+                                      i <
+                                          LoginWidgetClickableIcons.icons(context)
+                                              .length;
+                                      i++) ...[
+                                    Padding(
+                                      padding: EdgeInsets.only(right: 12.0),
+                                      child: Container(
+                                        decoration: BoxDecoration(
+                                          color: Theme.of(context).primaryColor,
+                                          borderRadius: BorderRadius.circular(50),
+                                        ),
+                                        child: Padding(
+                                          padding: const EdgeInsets.all(16.0),
+                                          child: Icon(
+                                            LoginWidgetClickableIcons.icons(
+                                                    context)[i]
+                                                .icon,
+                                            size: 18,
+                                            color:
+                                                Theme.of(context).highlightColor,
+                                          ),
+                                        ),
+                                      ),
+                                    )
+                                  ]
                                 ],
                               ),
-                            ),
-                          ],
+                              const SizedBox(
+                                height: 20,
+                              ),
+                              Center(
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  children: [
+                                    NormalHeaderWidget(
+                                        text: Texts.noAccount,
+                                        color: Theme.of(context).primaryColor,
+                                        size: '18.0'),
+                                    SizedBox(
+                                      width: 3,
+                                    ),
+                                    TextButton(onPressed: ()=>auth.navigateToRegisterScreen(), child: Text(Texts.register)),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
                       ),
                     ),
@@ -401,15 +391,9 @@ class _LoginPageState extends State<LoginPage> {
                     SizedBox(
                       width: 3,
                     ),
-                    GestureDetector(
-                      child: HeaderBoldWidget(
-                          text: Texts.forgotPassword,
-                          color: Theme.of(context).primaryColor,
-                          size: '14.0'),
-                      onTap: () {
-                        Navigator.pushNamed(context, '/forgot_password');
-                      },
-                    )
+                    NormalHeaderWidget(text: Texts.forgotPassword, color: Theme.of(context).primaryColor, size: '18.0'),
+                    const SizedBox(width: 20,),
+                    TextButton(onPressed: ()=>auth.navigateToForgotPasswordScreen(), child: Text(Texts.resetPassword)),
                   ],
                 ),
               ),

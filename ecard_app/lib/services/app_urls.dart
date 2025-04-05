@@ -1,11 +1,11 @@
 class AppUrl {
   static const String liveUrl = "https://alltanzaniaecard.onrender.com";
-  static const String localhost = "http://localhost:8080";
+  static const String localhost = "192.168.1.163:8080";
 
-  static const String baseEndpoint = liveUrl;
-  static const String loginUrl = "$baseEndpoint/auth";
-  static String getAllCardsById =
-      "$baseEndpoint/api/v1/cards/card-by-uuid?uuid={}";
+  static const String baseEndpoint = localhost;
+  static const String loginUrl = "$baseEndpoint/auth/login";
+  static String getAllCardsById = "/api/v1/cards/user-cards";
   static const String registerUrl = "$baseEndpoint/auth/register";
   static const String forgotPassword = "$baseEndpoint/auth/forgotPassword";
+
 }

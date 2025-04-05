@@ -3,22 +3,26 @@ import 'package:flutter/cupertino.dart';
 import 'package:provider/provider.dart';
 
 class AllCardsScreen extends StatefulWidget {
+  const AllCardsScreen({super.key});
+
   @override
   _AllCardsScreenState createState() => _AllCardsScreenState();
 }
 
 class _AllCardsScreenState extends State<AllCardsScreen>
     with AutomaticKeepAliveClientMixin {
-  late CardProvider provider;
 
   @override
-  void initState(){
+  void initState() {
     super.initState();
-    provider.fetchCards('45428d2a-96a6-483c-a0e8-43e8d3abfeb1');
+    WidgetsBinding.instance.addPostFrameCallback((_){
+      final provider = Provider.of<CardProvider>(context, listen: false);
+      provider.fetchCards('e5936449-aa00-4065-abe6-f864c782abc8');
+    });
   }
+
   @override
   Widget build(BuildContext context) {
-    provider = Provider.of<CardProvider>(context);
     super.build(context);
     return SafeArea(
         child: Center(

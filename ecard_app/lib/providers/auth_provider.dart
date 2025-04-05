@@ -17,12 +17,65 @@ enum Status {
   LoggedOut
 }
 
+enum AuthScreen {
+  forgotPassword , loginScreen , registerScreen
+}
+
 class AuthProvider with ChangeNotifier {
+  AuthScreen _currentAuthScreen = AuthScreen.loginScreen;
+  AuthScreen get currentScreen => _currentAuthScreen;
+
   Status _loggedInStatus = Status.NotLoggedIn;
   Status _registeredStatus = Status.NotRegistered;
 
   Status get loggedInStatus => _loggedInStatus;
   Status get registeredStatus => _registeredStatus;
+
+  final Map<AuthScreen , Map<String, String>> formData = {
+    AuthScreen.loginScreen: {'userName': '','password' : ''},
+    AuthScreen.registerScreen : {
+      "firstName" : "" ,
+      "middleName" : "",
+      "lastName" : "" ,
+      "username" : "",
+      "email" : "",
+      "password" : "",
+      "phoneNumber" : "",
+      "biography" : "",
+      "companyTitle" : " ",
+      "jobTitle" : ""
+    },
+    AuthScreen.forgotPassword : {'email': ''}
+  };
+
+  void navigateToLoginScreen() {
+    _currentAuthScreen = AuthScreen.loginScreen;
+    notifyListeners();
+  }
+
+  void navigateToRegisterScreen() {
+    _currentAuthScreen = AuthScreen.registerScreen;
+    notifyListeners();
+  }
+  void navigateToForgotPasswordScreen() {
+    _currentAuthScreen = AuthScreen.forgotPassword;
+    notifyListeners();
+  }
+
+  void updateFormField(String field, String value) {
+    if(formData[_currentAuthScreen]?.containsKey(field)??false){
+      formData[_currentAuthScreen]![field] = value;
+      notifyListeners();
+    }
+  }
+  void clearCurrentForm(){
+    Map<String, String> emptyForm = {};
+    formData[_currentAuthScreen]?.forEach((key, _){
+      emptyForm[key] = '';
+    });
+    formData[_currentAuthScreen] = emptyForm;
+    notifyListeners();
+  }
 
   Future<Map<String, dynamic>> login(String username, String password) async {
     print("statement 2 reached=======>");
@@ -125,4 +178,5 @@ class AuthProvider with ChangeNotifier {
     print("the error is $error.detail");
     return {"status": false, "message": "Unsuccessful request", "data": error};
   }
+
 }

@@ -24,4 +24,6 @@ class Texts {
   static String haveAccount = "Already have an Account ? ";
   static String forgetBanner =
       "We'll send details to your email. Always keep your account secure and don't forget to update it.";
+
+  static String resetPassword = 'reset password';
 }

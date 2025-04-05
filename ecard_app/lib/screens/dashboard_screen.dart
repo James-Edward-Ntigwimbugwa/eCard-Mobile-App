@@ -50,7 +50,7 @@ class _DashboardPageState extends State<DashboardPage>
     ));
 
     final screenIndexProvider = Provider.of<ScreenIndexProvider>(context);
-    int _currentIndex = screenIndexProvider.currentScreenIndex;
+    int currentIndex = screenIndexProvider.currentScreenIndex;
     return Scaffold(
       bottomNavigationBar: CircleNavBar(
         color: Theme.of(context).highlightColor,
@@ -66,43 +66,43 @@ class _DashboardPageState extends State<DashboardPage>
         onTap: (value) => screenIndexProvider.setCurrentIndex(value),
         activeIcons: [
           Icon((FontAwesomeIcons.home),
-              color: _currentIndex == 0
+              color: currentIndex == 0
                   ? Theme.of(context).highlightColor
                   : Theme.of(context).primaryColor),
           Icon((FontAwesomeIcons.qrcode),
-              color: _currentIndex == 1
+              color: currentIndex == 1
                   ? Theme.of(context).highlightColor
                   : Theme.of(context).primaryColor),
           Icon((FontAwesomeIcons.wifi),
-              color: _currentIndex == 2
+              color: currentIndex == 2
                   ? Theme.of(context).highlightColor
                   : Theme.of(context).primaryColor),
           Icon((FontAwesomeIcons.gear),
-              color: _currentIndex == 3
+              color: currentIndex == 3
                   ? Theme.of(context).highlightColor
                   : Theme.of(context).primaryColor),
         ],
-        activeIndex: _currentIndex,
+        activeIndex: currentIndex,
         inactiveIcons: [
           Icon((FontAwesomeIcons.home),
-              color: _currentIndex == 0
+              color: currentIndex == 0
                   ? Theme.of(context).highlightColor
                   : Theme.of(context).primaryColor),
           Icon((FontAwesomeIcons.qrcode),
-              color: _currentIndex == 1
+              color: currentIndex == 1
                   ? Theme.of(context).highlightColor
                   : Theme.of(context).primaryColor),
           Icon((FontAwesomeIcons.wifi),
-              color: _currentIndex == 2
+              color: currentIndex == 2
                   ? Theme.of(context).highlightColor
                   : Theme.of(context).primaryColor),
           Icon((FontAwesomeIcons.gear),
-              color: _currentIndex == 3
+              color: currentIndex == 3
                   ? Theme.of(context).highlightColor
                   : Theme.of(context).primaryColor),
         ],
       ),
-      body: screens[_currentIndex],
+      body: screens[currentIndex],
     );
   }
 }

@@ -3,6 +3,7 @@ import 'package:ecard_app/components/custom_widgets.dart';
 import 'package:ecard_app/utils/resources/images/images.dart';
 import 'package:ecard_app/utils/resources/strings/strings.dart';
 import 'package:flutter/material.dart';
+import 'auth_navigator.dart';
 import 'login_screen.dart';
 
 // ignore: must_be_immutable
@@ -66,6 +67,6 @@ class _SplashScreenState extends State<SplashScreen> {
         duration: 3000,
         splashIconSize: 500,
         backgroundColor: Theme.of(context).primaryColor,
-        nextScreen: const LoginPage());
+        nextScreen: const AuthNavigator());
   }
 }

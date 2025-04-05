@@ -1,5 +1,7 @@
+import 'package:ecard_app/providers/auth_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:provider/provider.dart';
 
 //ignore_for_file: must_be_immutable
 class HeaderBoldWidget extends StatelessWidget {
@@ -66,15 +68,13 @@ class HeaderCenterWidget extends StatelessWidget {
 }
 
 class InputField extends StatelessWidget {
-  TextEditingController controller;
   String hintText;
   Icon? icon;
-  String? _field;
+  String? field;
   InputField(
       {super.key,
-      required this.controller,
       this.hintText = "Optional field",
-      required this.icon});
+      required this.icon,  required String field});
 
   String? validateInputField(String? text) {
     if (text == null || text == "" || text.isEmpty) {
@@ -85,11 +85,14 @@ class InputField extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final AuthProvider authProvider = Provider.of<AuthProvider>(context);
+    final formData = authProvider.formData[AuthScreen.loginScreen];
     return TextFormField(
       autofocus: false,
-      onSaved: (value) => _field = value,
+      onSaved: (value) => field = value,
+      onChanged: (value)=>authProvider.updateFormField(field!, value),
       validator: validateInputField,
-      controller: controller,
+      controller: TextEditingController(text: formData?[field]),
       cursorColor: Theme.of(context).primaryColor,
       style: GoogleFonts.nunito(
         textStyle: TextStyle(color: Theme.of(context).primaryColor),

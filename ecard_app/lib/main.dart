@@ -1,11 +1,11 @@
 import 'package:ecard_app/modals/user_modal.dart';
 import 'package:ecard_app/modals/user_preference.dart';
 import 'package:ecard_app/providers/auth_provider.dart';
+import 'package:ecard_app/providers/card_provider.dart';
 import 'package:ecard_app/providers/screen_index_provider.dart';
 import 'package:ecard_app/providers/user_provider.dart';
 import 'package:ecard_app/router/page_router.dart';
 import 'package:ecard_app/screens/dashboard_screen.dart';
-import 'package:ecard_app/screens/login_screen.dart';
 import 'package:ecard_app/screens/splash_screen.dart';
 import 'package:ecard_app/utils/theme/theme.dart';
 import 'package:flutter/material.dart';
@@ -57,8 +57,8 @@ class EcardApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => AuthProvider()),
         ChangeNotifierProvider(create: (_) => UserProvider()),
         ChangeNotifierProvider(create: (_) => ScreenIndexProvider()),
-        ChangeNotifierProvider(create: (_) => AuthScreensIndexProvider()),
         ChangeNotifierProvider(create: (_) => TabIndexProvider()),
+        ChangeNotifierProvider(create: (_) => CardProvider())
       ],
       child: Consumer<ThemeNotifier>(
         builder: (context, theme, _) {

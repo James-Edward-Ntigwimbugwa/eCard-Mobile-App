@@ -7,10 +7,12 @@ import 'package:flutter/material.dart';
 
 class CardProvider with ChangeNotifier {
   Future<Map<String, dynamic>> fetchCards(String uuid) async {
+    developer.log("method reached ===============>");
     Map<String, dynamic> result;
     final response = await CardRequests.fetchUserCards(uuid);
 
     if (response.statusCode == 200) {
+      developer.log("response code was 200=======>");
       final Map<String, dynamic> responseData = jsonDecode(response.body);
       developer.log("response body : $responseData");
 
