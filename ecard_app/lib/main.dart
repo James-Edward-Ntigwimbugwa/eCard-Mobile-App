@@ -1,5 +1,5 @@
 import 'package:ecard_app/modals/user_modal.dart';
-import 'package:ecard_app/modals/user_preference.dart';
+import 'package:ecard_app/preferences/user_preference.dart';
 import 'package:ecard_app/providers/auth_provider.dart';
 import 'package:ecard_app/providers/card_provider.dart';
 import 'package:ecard_app/providers/screen_index_provider.dart';

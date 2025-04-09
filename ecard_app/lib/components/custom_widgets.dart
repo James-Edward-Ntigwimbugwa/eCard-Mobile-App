@@ -74,7 +74,8 @@ class InputField extends StatelessWidget {
   InputField(
       {super.key,
       this.hintText = "Optional field",
-      required this.icon,  required String field});
+      required this.icon,
+      required String field});
 
   String? validateInputField(String? text) {
     if (text == null || text == "" || text.isEmpty) {
@@ -90,7 +91,7 @@ class InputField extends StatelessWidget {
     return TextFormField(
       autofocus: false,
       onSaved: (value) => field = value,
-      onChanged: (value)=>authProvider.updateFormField(field!, value),
+      onChanged: (value) => authProvider.updateFormField(field!, value),
       validator: validateInputField,
       controller: TextEditingController(text: formData?[field]),
       cursorColor: Theme.of(context).primaryColor,

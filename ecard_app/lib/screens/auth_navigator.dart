@@ -5,15 +5,14 @@ import 'package:ecard_app/screens/register_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-class AuthNavigator extends StatefulWidget{
-  const AuthNavigator({Key? key}) : super(key: key);
+class AuthNavigator extends StatefulWidget {
+  const AuthNavigator({super.key});
 
   @override
   State<StatefulWidget> createState() => _AuthNavigatorState();
-  
 }
 
-class _AuthNavigatorState extends State<AuthNavigator>{
+class _AuthNavigatorState extends State<AuthNavigator> {
   final LoginPage _loginScreen = const LoginPage();
   final RegisterPage _registerPage = const RegisterPage();
   final ForgetPasswordPage _forgetPasswordPage = const ForgetPasswordPage();
@@ -22,7 +21,7 @@ class _AuthNavigatorState extends State<AuthNavigator>{
   Widget build(BuildContext context) {
     final authProvider = Provider.of<AuthProvider>(context);
     Widget currentScreen;
-    switch(authProvider.currentScreen){
+    switch (authProvider.currentScreen) {
       case AuthScreen.loginScreen:
         currentScreen = _loginScreen;
         break;
@@ -33,9 +32,8 @@ class _AuthNavigatorState extends State<AuthNavigator>{
         currentScreen = _forgetPasswordPage;
         break;
       default:
-          currentScreen = _loginScreen;
-      }
+        currentScreen = _loginScreen;
+    }
     return currentScreen;
   }
-  
 }

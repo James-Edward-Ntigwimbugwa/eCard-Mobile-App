@@ -68,9 +68,9 @@ flutter:
     - assets/images/splash-card-image-front.jpg
     - assets/images/splash-card-image-back.jpg
 
-  fonts:
-    - family: Roboto
-      fonts:
-        - asset: fonts/Roboto-Regular.ttf
+#  fonts:
+#    - family: Roboto
+#      fonts:
+#        - asset: fonts/Roboto-Regular.ttf
 
 

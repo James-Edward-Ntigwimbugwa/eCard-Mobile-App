@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'package:ecard_app/components/custom_widgets.dart';
 import 'package:ecard_app/providers/auth_provider.dart';
-import 'package:ecard_app/providers/screen_index_provider.dart';
 import 'package:ecard_app/providers/user_provider.dart';
 import 'package:ecard_app/utils/raw/model_icons.dart';
 import 'package:ecard_app/utils/resources/images/images.dart';
@@ -168,212 +167,205 @@ class _LoginPageState extends State<LoginPage> {
               const SizedBox(
                 height: 20,
               ),
-              Container(
-                decoration: BoxDecoration(
-                  boxShadow: [
-                    BoxShadow(
-                      color: Theme.of(context).highlightColor,
-                      offset: Offset(0.0, 0.0),
-                      blurRadius: 0.0,
-                      spreadRadius: 7.0
-                    )
-                  ]
-                ),
-                child: Form(
-                  autovalidateMode: AutovalidateMode.onUserInteraction,
-                  key: formKey,
-                  child: Padding(
-                    padding: EdgeInsets.symmetric(
-                      horizontal: 5.0,
-                    ),
-                    child: DecoratedBox(
-                      decoration: BoxDecoration(
-                        border: Border(
-                          top: BorderSide(color: Theme.of(context).primaryColor),
-                          bottom:
-                              BorderSide(color: Theme.of(context).primaryColor),
-                          left: BorderSide(color: Theme.of(context).primaryColor),
-                          right:
-                              BorderSide(color: Theme.of(context).primaryColor),
-                        ),
-                        borderRadius: BorderRadius.all(Radius.circular(20)),
+              Form(
+                autovalidateMode: AutovalidateMode.onUserInteraction,
+                key: formKey,
+                child: Padding(
+                  padding: EdgeInsets.symmetric(
+                    horizontal: 5.0,
+                  ),
+                  child: DecoratedBox(
+                    decoration: BoxDecoration(
+                      border: Border(
+                        top: BorderSide(color: Theme.of(context).primaryColor),
+                        bottom:
+                            BorderSide(color: Theme.of(context).primaryColor),
+                        left: BorderSide(color: Theme.of(context).primaryColor),
+                        right:
+                            BorderSide(color: Theme.of(context).primaryColor),
                       ),
-                      child: SizedBox(
-                        height: MediaQuery.of(context).size.height / 2,
-                        width: double.infinity,
-                        child: Padding(
-                          padding: EdgeInsets.only(left: 10, right: 10, top: 0),
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: [
-                              InputField(
-                                  field: 'username',
-                                  // controller: _usernameController,
-                                  hintText: "username",
-                                  icon: Icon(Icons.mail)),
-                              const SizedBox(
-                                height: 20,
+                      borderRadius: BorderRadius.all(Radius.circular(20)),
+                    ),
+                    child: SizedBox(
+                      height: MediaQuery.of(context).size.height / 2,
+                      width: double.infinity,
+                      child: Padding(
+                        padding: EdgeInsets.only(left: 10, right: 10, top: 0),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            InputField(
+                                field: 'username',
+                                // controller: _usernameController,
+                                hintText: "username",
+                                icon: Icon(Icons.mail)),
+                            const SizedBox(
+                              height: 20,
+                            ),
+                            TextFormField(
+                              onSaved: (value) => _password = value,
+                              autofocus: false,
+                              onChanged: (value) =>
+                                  auth.updateFormField('password', value),
+                              controller: TextEditingController(
+                                  text: formData?['password']),
+                              validator: (value) => value!.isEmpty
+                                  ? "Please Enter password"
+                                  : null,
+                              obscureText: _obscurePassword,
+                              style: GoogleFonts.nunito(
+                                textStyle: TextStyle(
+                                    color: Theme.of(context).primaryColor),
+                                fontWeight: FontWeight.w500,
+                                backgroundColor: Colors.white,
                               ),
-                              TextFormField(
-                                onSaved: (value) => _password = value,
-                                autofocus: false,
-                                onChanged: (value)=>auth.updateFormField('password', value),
-                                controller: TextEditingController(text: formData?['password']),
-                                validator: (value) => value!.isEmpty
-                                    ? "Please Enter password"
-                                    : null,
-                                obscureText: _obscurePassword,
-                                style: GoogleFonts.nunito(
-                                  textStyle: TextStyle(
-                                      color: Theme.of(context).primaryColor),
-                                  fontWeight: FontWeight.w500,
-                                  backgroundColor: Colors.white,
+                              decoration: InputDecoration(
+                                prefixIcon: Icon(CupertinoIcons.padlock_solid),
+                                hintText: "Password",
+                                hintStyle: TextStyle(color: Colors.grey),
+                                border: OutlineInputBorder(
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(30)),
                                 ),
-                                decoration: InputDecoration(
-                                  prefixIcon: Icon(CupertinoIcons.padlock_solid),
-                                  hintText: "Password",
-                                  hintStyle: TextStyle(color: Colors.grey),
-                                  border: OutlineInputBorder(
-                                    borderRadius:
-                                        BorderRadius.all(Radius.circular(30)),
-                                  ),
-                                  suffixIcon: IconButton(
-                                    onPressed: () => setState(() =>
-                                        _obscurePassword = !_obscurePassword),
-                                    icon: Icon(_obscurePassword
-                                        ? Icons.visibility_off
-                                        : Icons.visibility),
-                                  ),
+                                suffixIcon: IconButton(
+                                  onPressed: () => setState(() =>
+                                      _obscurePassword = !_obscurePassword),
+                                  icon: Icon(_obscurePassword
+                                      ? Icons.visibility_off
+                                      : Icons.visibility),
                                 ),
                               ),
-                              const SizedBox(
-                                height: 20,
+                            ),
+                            const SizedBox(
+                              height: 20,
+                            ),
+                            ElevatedButton(
+                              onPressed: handleLogin,
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: Theme.of(context).primaryColor,
+                                minimumSize: Size(
+                                    MediaQuery.of(context).size.width / 4,
+                                    48.0),
+                                padding:
+                                    const EdgeInsets.symmetric(vertical: 12.0),
                               ),
-                              ElevatedButton(
-                                onPressed: handleLogin,
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor: Theme.of(context).primaryColor,
-                                  minimumSize: Size(
-                                      MediaQuery.of(context).size.width / 4,
-                                      48.0),
-                                  padding:
-                                      const EdgeInsets.symmetric(vertical: 12.0),
+                              child: DecoratedBox(
+                                decoration: BoxDecoration(
+                                  color: Theme.of(context)
+                                      .primaryColor
+                                      .withOpacity(0.1),
+                                  shape: BoxShape.rectangle,
                                 ),
-                                child: DecoratedBox(
-                                  decoration: BoxDecoration(
-                                    color: Theme.of(context)
-                                        .primaryColor
-                                        .withOpacity(0.1),
-                                    shape: BoxShape.rectangle,
-                                  ),
-                                  child: SizedBox(
-                                    height: 30.0,
-                                    width: MediaQuery.of(context).size.width / 6,
-                                    child: Center(
-                                      child: HeaderBoldWidget(
-                                        text: Texts.login,
-                                        color: Theme.of(context).highlightColor,
-                                        size: '24.0',
-                                      ),
+                                child: SizedBox(
+                                  height: 30.0,
+                                  width: MediaQuery.of(context).size.width / 6,
+                                  child: Center(
+                                    child: HeaderBoldWidget(
+                                      text: Texts.login,
+                                      color: Theme.of(context).highlightColor,
+                                      size: '24.0',
                                     ),
                                   ),
                                 ),
                               ),
-                              Center(
-                                child: SizedBox(
-                                  height: 50,
-                                  child: Row(
-                                    children: [
-                                      Expanded(
-                                        child: Container(
-                                            height: 1,
-                                            color:
-                                                Theme.of(context).primaryColor),
-                                      ),
-                                      Padding(
+                            ),
+                            Center(
+                              child: SizedBox(
+                                height: 50,
+                                child: Row(
+                                  children: [
+                                    Expanded(
+                                      child: Container(
+                                          height: 1,
+                                          color:
+                                              Theme.of(context).primaryColor),
+                                    ),
+                                    Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 8.0),
+                                      child: Container(
+                                        color: Colors
+                                            .white, // Match background color to "hide" the line behind the text
                                         padding: const EdgeInsets.symmetric(
                                             horizontal: 8.0),
-                                        child: Container(
-                                          color: Colors
-                                              .white, // Match background color to "hide" the line behind the text
-                                          padding: const EdgeInsets.symmetric(
-                                              horizontal: 8.0),
-                                          child: Text(
-                                            "OR",
-                                            style: TextStyle(
-                                              color:
-                                                  Theme.of(context).primaryColor,
-                                              fontSize: 16,
-                                              fontWeight: FontWeight.bold,
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                      Expanded(
-                                        child: Container(
-                                          height: 1, // Thickness of the line
-                                          color: Theme.of(context)
-                                              .primaryColor, // Color of the line
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                children: [
-                                  for (int i = 0;
-                                      i <
-                                          LoginWidgetClickableIcons.icons(context)
-                                              .length;
-                                      i++) ...[
-                                    Padding(
-                                      padding: EdgeInsets.only(right: 12.0),
-                                      child: Container(
-                                        decoration: BoxDecoration(
-                                          color: Theme.of(context).primaryColor,
-                                          borderRadius: BorderRadius.circular(50),
-                                        ),
-                                        child: Padding(
-                                          padding: const EdgeInsets.all(16.0),
-                                          child: Icon(
-                                            LoginWidgetClickableIcons.icons(
-                                                    context)[i]
-                                                .icon,
-                                            size: 18,
+                                        child: Text(
+                                          "OR",
+                                          style: TextStyle(
                                             color:
-                                                Theme.of(context).highlightColor,
+                                                Theme.of(context).primaryColor,
+                                            fontSize: 16,
+                                            fontWeight: FontWeight.bold,
                                           ),
                                         ),
                                       ),
-                                    )
-                                  ]
-                                ],
-                              ),
-                              const SizedBox(
-                                height: 20,
-                              ),
-                              Center(
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  crossAxisAlignment: CrossAxisAlignment.center,
-                                  children: [
-                                    NormalHeaderWidget(
-                                        text: Texts.noAccount,
-                                        color: Theme.of(context).primaryColor,
-                                        size: '18.0'),
-                                    SizedBox(
-                                      width: 3,
                                     ),
-                                    TextButton(onPressed: ()=>auth.navigateToRegisterScreen(), child: Text(Texts.register)),
+                                    Expanded(
+                                      child: Container(
+                                        height: 1, // Thickness of the line
+                                        color: Theme.of(context)
+                                            .primaryColor, // Color of the line
+                                      ),
+                                    ),
                                   ],
                                 ),
                               ),
-                            ],
-                          ),
+                            ),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                for (int i = 0;
+                                    i <
+                                        LoginWidgetClickableIcons.icons(context)
+                                            .length;
+                                    i++) ...[
+                                  Padding(
+                                    padding: EdgeInsets.only(right: 12.0),
+                                    child: Container(
+                                      decoration: BoxDecoration(
+                                        color: Theme.of(context).primaryColor,
+                                        borderRadius: BorderRadius.circular(50),
+                                      ),
+                                      child: Padding(
+                                        padding: const EdgeInsets.all(16.0),
+                                        child: Icon(
+                                          LoginWidgetClickableIcons.icons(
+                                                  context)[i]
+                                              .icon,
+                                          size: 18,
+                                          color:
+                                              Theme.of(context).highlightColor,
+                                        ),
+                                      ),
+                                    ),
+                                  )
+                                ]
+                              ],
+                            ),
+                            const SizedBox(
+                              height: 20,
+                            ),
+                            Center(
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: [
+                                  NormalHeaderWidget(
+                                      text: Texts.noAccount,
+                                      color: Theme.of(context).primaryColor,
+                                      size: '18.0'),
+                                  SizedBox(
+                                    width: 3,
+                                  ),
+                                  TextButton(
+                                      onPressed: () =>
+                                          auth.navigateToRegisterScreen(),
+                                      child: Text(Texts.register)),
+                                ],
+                              ),
+                            ),
+                          ],
                         ),
                       ),
                     ),
@@ -391,9 +383,16 @@ class _LoginPageState extends State<LoginPage> {
                     SizedBox(
                       width: 3,
                     ),
-                    NormalHeaderWidget(text: Texts.forgotPassword, color: Theme.of(context).primaryColor, size: '18.0'),
-                    const SizedBox(width: 20,),
-                    TextButton(onPressed: ()=>auth.navigateToForgotPasswordScreen(), child: Text(Texts.resetPassword)),
+                    NormalHeaderWidget(
+                        text: Texts.forgotPassword,
+                        color: Theme.of(context).primaryColor,
+                        size: '18.0'),
+                    const SizedBox(
+                      width: 20,
+                    ),
+                    TextButton(
+                        onPressed: () => auth.navigateToForgotPasswordScreen(),
+                        child: Text(Texts.resetPassword)),
                   ],
                 ),
               ),

@@ -5,7 +5,7 @@ import 'package:ecard_app/modals/user_modal.dart';
 import 'package:ecard_app/services/auth_requests.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:http/http.dart';
-import '../modals/user_preference.dart';
+import '../preferences/user_preference.dart';
 
 enum Status {
   NotLoggedIn,
@@ -17,9 +17,7 @@ enum Status {
   LoggedOut
 }
 
-enum AuthScreen {
-  forgotPassword , loginScreen , registerScreen
-}
+enum AuthScreen { forgotPassword, loginScreen, registerScreen }
 
 class AuthProvider with ChangeNotifier {
   AuthScreen _currentAuthScreen = AuthScreen.loginScreen;
@@ -31,21 +29,21 @@ class AuthProvider with ChangeNotifier {
   Status get loggedInStatus => _loggedInStatus;
   Status get registeredStatus => _registeredStatus;
 
-  final Map<AuthScreen , Map<String, String>> formData = {
-    AuthScreen.loginScreen: {'userName': '','password' : ''},
-    AuthScreen.registerScreen : {
-      "firstName" : "" ,
-      "middleName" : "",
-      "lastName" : "" ,
-      "username" : "",
-      "email" : "",
-      "password" : "",
-      "phoneNumber" : "",
-      "biography" : "",
-      "companyTitle" : " ",
-      "jobTitle" : ""
+  final Map<AuthScreen, Map<String, String>> formData = {
+    AuthScreen.loginScreen: {'userName': '', 'password': ''},
+    AuthScreen.registerScreen: {
+      "firstName": "",
+      "middleName": "",
+      "lastName": "",
+      "username": "",
+      "email": "",
+      "password": "",
+      "phoneNumber": "",
+      "biography": "",
+      "companyTitle": " ",
+      "jobTitle": ""
     },
-    AuthScreen.forgotPassword : {'email': ''}
+    AuthScreen.forgotPassword: {'email': ''}
   };
 
   void navigateToLoginScreen() {
@@ -57,20 +55,22 @@ class AuthProvider with ChangeNotifier {
     _currentAuthScreen = AuthScreen.registerScreen;
     notifyListeners();
   }
+
   void navigateToForgotPasswordScreen() {
     _currentAuthScreen = AuthScreen.forgotPassword;
     notifyListeners();
   }
 
   void updateFormField(String field, String value) {
-    if(formData[_currentAuthScreen]?.containsKey(field)??false){
+    if (formData[_currentAuthScreen]?.containsKey(field) ?? false) {
       formData[_currentAuthScreen]![field] = value;
       notifyListeners();
     }
   }
-  void clearCurrentForm(){
+
+  void clearCurrentForm() {
     Map<String, String> emptyForm = {};
-    formData[_currentAuthScreen]?.forEach((key, _){
+    formData[_currentAuthScreen]?.forEach((key, _) {
       emptyForm[key] = '';
     });
     formData[_currentAuthScreen] = emptyForm;
@@ -178,5 +178,4 @@ class AuthProvider with ChangeNotifier {
     print("the error is $error.detail");
     return {"status": false, "message": "Unsuccessful request", "data": error};
   }
-
 }

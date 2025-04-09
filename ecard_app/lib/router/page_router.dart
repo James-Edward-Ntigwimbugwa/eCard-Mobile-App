@@ -1,4 +1,3 @@
-import 'package:ecard_app/providers/screen_index_provider.dart';
 import 'package:ecard_app/providers/user_provider.dart';
 import 'package:ecard_app/screens/dashboard_screen.dart';
 import 'package:ecard_app/screens/splash_screen.dart';

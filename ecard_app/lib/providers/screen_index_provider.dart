@@ -1,6 +1,3 @@
-import 'package:ecard_app/screens/forgot_password.dart';
-import 'package:ecard_app/screens/login_screen.dart';
-import 'package:ecard_app/screens/register_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 

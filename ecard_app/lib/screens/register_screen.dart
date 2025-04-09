@@ -1,5 +1,4 @@
 import 'package:ecard_app/providers/auth_provider.dart';
-import 'package:ecard_app/providers/screen_index_provider.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -246,8 +245,14 @@ class _RegisterPageState extends State<RegisterPage> {
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   crossAxisAlignment: CrossAxisAlignment.center,
                                   children: [
-                                    NormalHeaderWidget(text: Texts.haveAccount, color: Theme.of(context).primaryColor, size: '18.0'),
-                                    TextButton(onPressed: ()=>authProvider.navigateToLoginScreen(), child: Text(Texts.login))
+                                    NormalHeaderWidget(
+                                        text: Texts.haveAccount,
+                                        color: Theme.of(context).primaryColor,
+                                        size: '18.0'),
+                                    TextButton(
+                                        onPressed: () => authProvider
+                                            .navigateToLoginScreen(),
+                                        child: Text(Texts.login))
                                   ],
                                 ),
                               ),
@@ -270,18 +275,14 @@ class _RegisterPageState extends State<RegisterPage> {
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Theme.of(context)
                       .primaryColor, // Set the background color to green
-                  minimumSize: Size(
-                      MediaQuery.of(context).size.width / 4,
+                  minimumSize: Size(MediaQuery.of(context).size.width / 4,
                       48.0), // Set width to half of the screen width and height to 48.0
                   padding: EdgeInsets.symmetric(
-                      vertical:
-                      12.0), // Adjust padding for better appearance
+                      vertical: 12.0), // Adjust padding for better appearance
                 ),
                 child: DecoratedBox(
                   decoration: BoxDecoration(
-                    color: Theme.of(context)
-                        .primaryColor
-                        .withOpacity(0.1),
+                    color: Theme.of(context).primaryColor.withOpacity(0.1),
                     shape: BoxShape.rectangle,
                   ),
                   child: SizedBox(

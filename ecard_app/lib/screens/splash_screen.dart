@@ -4,7 +4,6 @@ import 'package:ecard_app/utils/resources/images/images.dart';
 import 'package:ecard_app/utils/resources/strings/strings.dart';
 import 'package:flutter/material.dart';
 import 'auth_navigator.dart';
-import 'login_screen.dart';
 
 // ignore: must_be_immutable
 class SplashScreen extends StatefulWidget {

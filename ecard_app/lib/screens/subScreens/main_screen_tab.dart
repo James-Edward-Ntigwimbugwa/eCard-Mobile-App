@@ -2,7 +2,6 @@ import 'package:ecard_app/components/custom_widgets.dart';
 import 'package:ecard_app/providers/screen_index_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 import '../../utils/resources/images/images.dart';
 import 'all_cards_screen.dart';
@@ -44,7 +43,8 @@ class _MainScreenTabState extends State<MainScreenTab>
 
     // Fix: Retrieve saved tab index
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      final screenIndexProvider = Provider.of<TabIndexProvider>(context, listen: false);
+      final screenIndexProvider =
+          Provider.of<TabIndexProvider>(context, listen: false);
       if (screenIndexProvider.currentScreenIndex != _tabController.index) {
         _tabController.animateTo(screenIndexProvider.currentScreenIndex);
       }
@@ -53,8 +53,10 @@ class _MainScreenTabState extends State<MainScreenTab>
 
   void _handleTabChange() {
     // Only update provider when tab actually changes
-    if (_tabController.indexIsChanging || _tabController.index != _tabController.previousIndex) {
-      final screenIndexProvider = Provider.of<TabIndexProvider>(context, listen: false);
+    if (_tabController.indexIsChanging ||
+        _tabController.index != _tabController.previousIndex) {
+      final screenIndexProvider =
+          Provider.of<TabIndexProvider>(context, listen: false);
       screenIndexProvider.setCurrentIndex(_tabController.index);
     }
   }
@@ -132,10 +134,11 @@ class _MainScreenTabState extends State<MainScreenTab>
                 )),
             // Remove DefaultTabController as we're using our own TabController
             body: TabBarView(
-              controller: _tabController, // Important: use the same controller
-              children: _tabs,
+              controller: _tabController,
               // Add physics for better swipe behavior
-              physics: const ClampingScrollPhysics(),
+              physics:
+                  const ClampingScrollPhysics(), // Important: use the same controller
+              children: _tabs,
             )));
   }
 
