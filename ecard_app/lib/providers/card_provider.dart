@@ -19,7 +19,6 @@ class CardProvider with ChangeNotifier {
     });
 
     try {
-      developer.log("Fetching cards for UUID: $uuid");
       final response = await CardRequests.fetchUserCards(uuid);
 
       if (response.statusCode == 200) {

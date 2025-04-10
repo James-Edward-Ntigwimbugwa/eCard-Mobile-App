@@ -67,45 +67,85 @@ class HeaderCenterWidget extends StatelessWidget {
   }
 }
 
-class InputField extends StatelessWidget {
-  String hintText;
-  Icon? icon;
-  String? field;
-  InputField(
-      {super.key,
-      this.hintText = "Optional field",
-      required this.icon,
-      required String field});
+class InputField extends StatefulWidget {
+  final String field;
+  final String hintText;
+  final Icon icon;
+  final TextEditingController? controller;
+  final bool obscureText;
+  final FormFieldValidator<String>? validator;
 
-  String? validateInputField(String? text) {
-    if (text == null || text == "" || text.isEmpty) {
-      return "";
+  const InputField({
+    super.key,
+    required this.field,
+    required this.hintText,
+    required this.icon,
+    this.controller,
+    this.obscureText = false,
+    this.validator,
+  });
+
+  @override
+  State<InputField> createState() => _InputFieldState();
+}
+
+class _InputFieldState extends State<InputField> {
+  late TextEditingController _controller;
+
+  @override
+  void initState() {
+    super.initState();
+    final authProvider = Provider.of<AuthProvider>(context, listen: false);
+    final formData = authProvider.formData[authProvider.currentScreen];
+
+    // If a controller was provided, use it
+    if (widget.controller != null) {
+      _controller = widget.controller!;
+    } else {
+      // Otherwise create a new controller initialized with form data
+      _controller = TextEditingController(text: formData?[widget.field] ?? '');
     }
-    return null;
+  }
+
+  @override
+  void dispose() {
+    // Only dispose if we created the controller
+    if (widget.controller == null) {
+      _controller.dispose();
+    }
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    final AuthProvider authProvider = Provider.of<AuthProvider>(context);
-    final formData = authProvider.formData[AuthScreen.loginScreen];
+    final authProvider = Provider.of<AuthProvider>(context);
+
     return TextFormField(
-      autofocus: false,
-      onSaved: (value) => field = value,
-      onChanged: (value) => authProvider.updateFormField(field!, value),
-      validator: validateInputField,
-      controller: TextEditingController(text: formData?[field]),
-      cursorColor: Theme.of(context).primaryColor,
+      controller: _controller,
+      obscureText: widget.obscureText,
+      onChanged: (value) {
+        // Update form data when text changes
+        authProvider.updateFormField(widget.field, value);
+      },
+      validator: widget.validator ?? (value) {
+        if (value == null || value.isEmpty) {
+          return 'Please enter ${widget.hintText}';
+        }
+        return null;
+      },
       style: GoogleFonts.nunito(
         textStyle: TextStyle(color: Theme.of(context).primaryColor),
         fontWeight: FontWeight.w500,
         backgroundColor: Colors.white,
       ),
       decoration: InputDecoration(
-          hintText: hintText,
-          hintStyle: TextStyle(color: Colors.grey),
-          border: OutlineInputBorder(
-              borderRadius: BorderRadius.all(Radius.circular(30))),
-          prefixIcon: icon),
+        prefixIcon: widget.icon,
+        hintText: widget.hintText,
+        hintStyle: TextStyle(color: Colors.grey),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.all(Radius.circular(30)),
+        ),
+      ),
     );
   }
 }

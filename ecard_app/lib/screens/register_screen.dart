@@ -7,6 +7,8 @@ import 'package:provider/provider.dart';
 import '../components/custom_widgets.dart';
 import '../utils/resources/images/images.dart';
 import '../utils/resources/strings/strings.dart';
+import '../components/alert_reminder.dart';
+
 
 class RegisterPage extends StatefulWidget {
   const RegisterPage({super.key});
@@ -15,22 +17,96 @@ class RegisterPage extends StatefulWidget {
 }
 
 class _RegisterPageState extends State<RegisterPage> {
-  // final TextEditingController _firstNameController = TextEditingController();
-  // final TextEditingController _middleNameController = TextEditingController();
-  // final TextEditingController _lastNameController = TextEditingController();
-  // final TextEditingController _emailController = TextEditingController();
-  // final TextEditingController _phoneNumberController = TextEditingController();
-  // final TextEditingController _bioController = TextEditingController();
-  // final TextEditingController _companyTitleController = TextEditingController();
-  // final TextEditingController _jobTitleController = TextEditingController();
-  // final TextEditingController _usernameController = TextEditingController();
+  final TextEditingController _firstNameController = TextEditingController();
+  final TextEditingController _middleNameController = TextEditingController();
+  final TextEditingController _lastNameController = TextEditingController();
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _phoneNumberController = TextEditingController();
+  final TextEditingController _bioController = TextEditingController();
+  final TextEditingController _companyTitleController = TextEditingController();
+  final TextEditingController _jobTitleController = TextEditingController();
+  final TextEditingController _usernameController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
+  final _formKey = GlobalKey<FormState>();
+
   bool obscure = true;
   String? _password;
+  bool _formIsSubmitted = false;
+
+  void _handleRegister() {
+    setState(() {
+      _formIsSubmitted = true;
+    });
+
+    final form = _formKey.currentState;
+    if (_firstNameController.text.isEmpty ||
+        _middleNameController.text.isEmpty ||
+        _lastNameController.text.isEmpty ||
+        _emailController.text.isEmpty ||
+        _phoneNumberController.text.isEmpty){
+      Alerts.show(
+          context,
+          "Fill in all required fields",
+          Image.asset(
+            Images.errorImage,
+            height: 30,
+            width: 30,
+          ));
+      Future.delayed(Duration(seconds: 2), ()
+      {
+        Navigator.of(context).pop();
+      });
+      return;
+    }
+    if (form == null || !form.validate()) {
+      print("Invalid form...==>");
+      return;
+    }
+
+    form.save();
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    Future.microtask((){
+      final auth = Provider.of<AuthProvider>(context, listen: false);
+      final formData = auth.formData[AuthScreen.registerScreen];
+      if(formData != null){
+        _firstNameController.text = formData['firstName'] ?? '';
+        _middleNameController.text = formData['secondName'] ?? '';
+        _lastNameController.text = formData['lastName'] ?? '';
+        _emailController.text = formData['email'] ?? '';
+        _phoneNumberController.text = formData['phoneNumber'] ?? '';
+        _bioController.text = formData['bio'] ?? '';
+        _companyTitleController.text = formData['companyTitle'] ?? '';
+        _jobTitleController.text = formData['jobTitle'] ?? '';
+        _usernameController.text = formData['username'] ?? '';
+        _passwordController.text = formData['password'] ?? '';
+      }
+    });
+  }
+
+  @override
+  void dispose(){
+    _firstNameController.dispose();
+    _middleNameController.dispose();
+    _lastNameController.dispose();
+    _emailController.dispose();
+    _phoneNumberController.dispose();
+    _bioController.dispose();
+    _companyTitleController.dispose();
+    _jobTitleController.dispose();
+    _usernameController.dispose();
+    _passwordController.dispose();
+    super.dispose();
+  }
+
 
   @override
   Widget build(BuildContext context) {
     final authProvider = Provider.of<AuthProvider>(context);
+    final formKey = GlobalKey<FormState>();
     return Scaffold(
       body: SingleChildScrollView(
         child: SizedBox(
@@ -99,7 +175,8 @@ class _RegisterPageState extends State<RegisterPage> {
                 height: 20,
               ),
               Form(
-                autovalidateMode: AutovalidateMode.onUserInteraction,
+                key: _formKey,
+                autovalidateMode: _formIsSubmitted ? AutovalidateMode.always: AutovalidateMode.disabled,
                 child: Padding(
                   padding: EdgeInsets.symmetric(horizontal: 5.0),
                   child: SizedBox(
@@ -121,7 +198,7 @@ class _RegisterPageState extends State<RegisterPage> {
                                 height: 20,
                               ),
                               InputField(
-                                // controller: _firstNameController,
+                                controller: _firstNameController,
                                 icon: Icon(Icons.person),
                                 hintText: "First Name",
                                 field: 'firstName',
@@ -130,7 +207,7 @@ class _RegisterPageState extends State<RegisterPage> {
                                 height: 20,
                               ),
                               InputField(
-                                // controller: _middleNameController,
+                                controller: _middleNameController,
                                 icon: Icon(Icons.person),
                                 hintText: "Second Name",
                                 field: 'secondName',
@@ -139,7 +216,7 @@ class _RegisterPageState extends State<RegisterPage> {
                                 height: 20,
                               ),
                               InputField(
-                                // controller: _lastNameController,
+                                controller: _lastNameController,
                                 icon: Icon(Icons.person),
                                 hintText: "Last Name",
                                 field: 'lastName',
@@ -148,7 +225,7 @@ class _RegisterPageState extends State<RegisterPage> {
                                 height: 20,
                               ),
                               InputField(
-                                // controller: _emailController,
+                                controller: _emailController,
                                 icon: Icon(Icons.email),
                                 hintText: "Email",
                                 field: 'email',
@@ -157,7 +234,7 @@ class _RegisterPageState extends State<RegisterPage> {
                                 height: 20,
                               ),
                               InputField(
-                                // controller: _phoneNumberController,
+                                controller: _phoneNumberController,
                                 icon: Icon(Icons.phone),
                                 hintText: "Phone number",
                                 field: 'phoneNumber',
@@ -166,7 +243,7 @@ class _RegisterPageState extends State<RegisterPage> {
                                 height: 20,
                               ),
                               InputField(
-                                // controller: _bioController,
+                                controller: _bioController,
                                 icon: Icon(FontAwesomeIcons.borderNone),
                                 hintText: "Your bio (Optional)",
                                 field: 'bio',
@@ -175,7 +252,7 @@ class _RegisterPageState extends State<RegisterPage> {
                                 height: 20,
                               ),
                               InputField(
-                                // controller: _companyTitleController,
+                                controller: _companyTitleController,
                                 icon: Icon(CupertinoIcons.house_alt_fill),
                                 hintText: "Company Title",
                                 field: 'companyTitle',
@@ -184,7 +261,7 @@ class _RegisterPageState extends State<RegisterPage> {
                                 height: 20,
                               ),
                               InputField(
-                                // controller: _jobTitleController,
+                                controller: _jobTitleController,
                                 icon: Icon(FontAwesomeIcons.mailchimp),
                                 hintText: "job Title",
                                 field: 'jobTitle',
@@ -193,7 +270,7 @@ class _RegisterPageState extends State<RegisterPage> {
                                 height: 20,
                               ),
                               InputField(
-                                // controller: _usernameController,
+                                controller: _usernameController,
                                 icon: Icon(Icons.contact_mail),
                                 hintText: "username",
                                 field: 'username',

@@ -42,8 +42,6 @@ class EcardApp extends StatelessWidget {
 
   // Introduce a delay to simulate loading time
   Future<User> getUserData() async {
-    await Future.delayed(
-        const Duration(seconds: 2)); // Adjust the delay as needed
     return UserPreferences().getUser();
   }
 

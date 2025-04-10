@@ -11,6 +11,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:provider/provider.dart';
 import '../components/alert_reminder.dart';
+import 'dart:developer' as developer;
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -23,8 +24,29 @@ class _LoginPageState extends State<LoginPage> {
   final TextEditingController _passwordController = TextEditingController();
   String? _password;
   bool _obscurePassword = true;
+  bool _formIsSubmitted = false;
 
   final formKey = GlobalKey<FormState>();
+  @override
+  void initState(){
+    super.initState();
+    Future.microtask((){
+      final auth = Provider.of<AuthProvider>(context, listen: false);
+      final formData = auth.formData[AuthScreen.loginScreen];
+      if(formData != null){
+        _usernameController.text = formData['username'] ?? '';
+        _passwordController.text = formData['password'] ?? '';
+      }
+    });
+  }
+
+  @override
+  void dispose(){
+    _usernameController.dispose();
+    _passwordController.dispose();
+    super.dispose();
+  }
+
   void showLoader() {
     Alerts.show(
         context,
@@ -33,73 +55,78 @@ class _LoginPageState extends State<LoginPage> {
             color: Theme.of(context).primaryColor, size: 24.0));
   }
 
+  void handleLogin() {
+    setState(() {
+      _formIsSubmitted = true;
+    });
+
+    final form = formKey.currentState;
+    if (_usernameController.text.isEmpty ||
+        _passwordController.text.isEmpty) {
+      Alerts.show(
+          context,
+          "Fill in all fields",
+          Image.asset(
+            Images.errorImage,
+            height: 30,
+            width: 30,
+          ));
+      Future.delayed(Duration(seconds: 2), () {
+        Navigator.of(context).pop();
+      });
+      return;
+    }
+
+    if (form == null || !form.validate()) {
+      print("Invalid form...==>");
+      return;
+    }
+
+    form.save();
+    showLoader();
+    Timer(Duration(seconds: 1), () {
+      final auth = Provider.of<AuthProvider>(context, listen: false);
+      auth.updateFormField('username', _usernameController.text.trim());
+      auth.updateFormField('password', _passwordController.text.trim());
+      auth.login(
+        _usernameController.text.trim(),
+        _passwordController.text.trim(),
+      ).then((response) {
+        Navigator.pop(context);
+        if (response['status'] == true) {
+          var user = Provider.of<UserProvider>(context, listen: false)
+              .setUser(response['user']);
+          Navigator.pushReplacementNamed(context, '/dashboard');
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(response['message'] ?? 'Invalid credentials'),
+              backgroundColor: Colors.red,
+              duration: const Duration(seconds: 3),
+            ),
+          );
+        }
+      }).catchError((error) {
+        developer.log("Error $error");
+        Alerts.show(
+            context,
+            "Network error",
+            Image.asset(
+              Images.networkErrorImage,
+              width: 40,
+              height: 40,
+            ));
+        Future.delayed(Duration(seconds: 4), () {
+          Navigator.pop(context);
+          Navigator.pop(context);
+        });
+      });
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     AuthProvider auth = Provider.of<AuthProvider>(context);
-    final formData = auth.formData[AuthScreen.loginScreen];
-
-    void handleLogin() {
-      final form = formKey.currentState;
-
-      if (_usernameController.text.isEmpty ||
-          _passwordController.text.isEmpty) {
-        Alerts.show(
-            context,
-            "Fill in all fields",
-            Image.asset(
-              Images.errorImage,
-              height: 30,
-              width: 30,
-            ));
-        Future.delayed(Duration(seconds: 2), () {
-          Navigator.of(context).pop();
-        });
-      }
-
-      if (form == null || !form.validate()) {
-        print("Invalid form...==>");
-        return;
-      }
-
-      form.save();
-      showLoader();
-      Timer(Duration(seconds: 2), () {
-        auth
-            .login(
-          _usernameController.text.trim(),
-          _passwordController.text.trim(),
-        )
-            .then((response) {
-          Navigator.pop(context);
-          if (response['status'] == true) {
-            var user = Provider.of<UserProvider>(context, listen: false)
-                .setUser(response['user']);
-            Navigator.pushReplacementNamed(context, '/dashboard');
-          } else {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text(response['message'] ?? 'Invalid credentials'),
-                backgroundColor: Colors.red,
-                duration: const Duration(seconds: 3),
-              ),
-            );
-          }
-        }).catchError((error) {
-          Alerts.show(
-              context,
-              "Network error",
-              Image.asset(
-                Images.networkErrorImage,
-                width: 40,
-                height: 40,
-              ));
-          Future.delayed(Duration(seconds: 4), () {
-            Navigator.pop(context);
-            Navigator.pop(context);
-          });
-        });
-      });
-    }
 
     return Scaffold(
       body: SingleChildScrollView(
@@ -168,7 +195,7 @@ class _LoginPageState extends State<LoginPage> {
                 height: 20,
               ),
               Form(
-                autovalidateMode: AutovalidateMode.onUserInteraction,
+                autovalidateMode: _formIsSubmitted ? AutovalidateMode.always : AutovalidateMode.disabled,
                 key: formKey,
                 child: Padding(
                   padding: EdgeInsets.symmetric(
@@ -197,7 +224,7 @@ class _LoginPageState extends State<LoginPage> {
                           children: [
                             InputField(
                                 field: 'username',
-                                // controller: _usernameController,
+                                controller: _usernameController,
                                 hintText: "username",
                                 icon: Icon(Icons.mail)),
                             const SizedBox(
@@ -208,8 +235,7 @@ class _LoginPageState extends State<LoginPage> {
                               autofocus: false,
                               onChanged: (value) =>
                                   auth.updateFormField('password', value),
-                              controller: TextEditingController(
-                                  text: formData?['password']),
+                              controller: _passwordController,
                               validator: (value) => value!.isEmpty
                                   ? "Please Enter password"
                                   : null,

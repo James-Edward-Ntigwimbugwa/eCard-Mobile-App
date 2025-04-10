@@ -78,7 +78,6 @@ class AuthProvider with ChangeNotifier {
   }
 
   Future<Map<String, dynamic>> login(String username, String password) async {
-    print("statement 2 reached=======>");
     Map<String, dynamic> result;
     final Map<String, dynamic> logInData = {
       'username': username,
@@ -98,7 +97,7 @@ class AuthProvider with ChangeNotifier {
       var userData = responseData['data'];
       User authenticatedUser = User.fromJson(userData);
       UserPreferences.saveUser(authenticatedUser);
-      developer.log("Authenticated user${authenticatedUser.toString()}");
+      developer.log("\n\nAuthenticated user${authenticatedUser.toString()}\n\n");
 
       _loggedInStatus = Status.LoggedIn;
       notifyListeners();
@@ -159,6 +158,7 @@ class AuthProvider with ChangeNotifier {
       var userData = responseData['data'];
       User authUser = User.fromJson(userData);
       UserPreferences.saveUser(authUser);
+      // developer.log("saved user : ${authUser.toString()}")
       result = {
         "status": true,
         "message": "registered Successfully",

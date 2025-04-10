@@ -1,14 +1,14 @@
-import 'package:ecard_app/components/custom_widgets.dart';
 import 'package:ecard_app/providers/card_provider.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../../components/card_display_widget.dart';
 import '../../modals/card_modal.dart';
 
 class AllCardsScreen extends StatefulWidget {
-  const AllCardsScreen({Key? key}) : super(key: key);
+  const AllCardsScreen({super.key});
   @override
   State<StatefulWidget> createState() => _AllCardsScreenState();
 }
@@ -16,7 +16,6 @@ class AllCardsScreen extends StatefulWidget {
 class _AllCardsScreenState extends State<AllCardsScreen>
     with AutomaticKeepAliveClientMixin {
   late Future<Map<String, dynamic>> _cardsFuture;
-  final String _userUuid = 'e5936449-aa00-4065-abe6-f864c782abc8';
   bool _isInitialized = false;
   bool _isEmpty = false;
   bool _showBanner = false;
@@ -29,10 +28,13 @@ class _AllCardsScreenState extends State<AllCardsScreen>
     });
   }
 
-  void _initializeData() {
+  void _initializeData() async{
     final provider = Provider.of<CardProvider>(context, listen: false);
+    final prefs = await SharedPreferences.getInstance();
+    // final String _userUuid = 'e5936449-aa00-4065-abe6-f864c782abc8';
+    final String userUuid = prefs.getString("userUuid").toString();
     setState(() {
-      _cardsFuture = provider.fetchCards(_userUuid).then((data) {
+      _cardsFuture = provider.fetchCards(userUuid).then((data) {
         if (data['status'] == true) {
           List<CustomCard> cards = data['cards'];
           if (mounted) {

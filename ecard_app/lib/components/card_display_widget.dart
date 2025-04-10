@@ -4,7 +4,7 @@ import 'package:ecard_app/modals/card_modal.dart';
 class CardDisplayWidget extends StatelessWidget {
   final CustomCard card;
 
-  const CardDisplayWidget({Key? key, required this.card}) : super(key: key);
+  const CardDisplayWidget({super.key, required this.card});
 
   @override
   Widget build(BuildContext context) {

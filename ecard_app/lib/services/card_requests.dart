@@ -1,21 +1,40 @@
+import 'package:ecard_app/preferences/user_preference.dart';
 import 'package:ecard_app/services/app_urls.dart';
 import 'package:http/http.dart';
 import 'dart:developer' as developer;
 
-class CardRequests {
-  static String bearerToken =
-      "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJKYW1lc0Vkd2FyZDIwMDEiLCJyb2xlcyI6W10sImlhdCI6MTc0NDE5NDk5MCwiZXhwIjoxNzQ0MjQzMjAwfQ.sNyqW-wKoO3k14bw_iw9SsrKg-og8gV2qBcbi33F76A";
+import 'package:shared_preferences/shared_preferences.dart';
 
+class CardRequests {
   static Future<Response> fetchUserCards(String uuid) async {
-    developer.log("method 2 reached==========>");
-    final url =
-        Uri.https(AppUrl.baseEndpoint, AppUrl.getAllCardsById, {'uuid': uuid});
-    developer.log("=========>Full endpoint ===>$url");
-    final response = await get(url, headers: {
-      "Authorization": "Bearer $bearerToken",
-      "Content-type": "application/json",
-      "Accept": "application/json",
-    });
-    return response;
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      developer.log("Stored UUID: ${prefs.getString("userUuid")}");
+      developer.log("Stored Token: ${prefs.getString("accessToken")}");
+      final bearerToken = prefs.getString("accessToken");
+      if (bearerToken == null || bearerToken.isEmpty) {
+        developer.log("No valid token found, redirecting to login");
+        throw Exception("Authentication required");
+      }
+
+      final url = Uri.parse("${AppUrl.getAllCardsById}?uuid=$uuid");
+
+      developer.log("Valid token found: ${bearerToken.substring(
+          0, 5)}..."); // Log first 5 chars for security
+
+      final response = await get(
+        url,
+        headers: {
+          "Authorization": "Bearer $bearerToken",
+          "Content-type": "application/json",
+          "Accept": "application/json",
+        },
+      );
+
+      return response;
+    } catch (e) {
+      developer.log("API call failed: $e");
+      rethrow;
+    }
   }
 }

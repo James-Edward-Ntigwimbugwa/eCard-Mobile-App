@@ -61,6 +61,7 @@
         <entry key="camera_avfoundation">
           <value>
             <list>
+              <option value="$USER_HOME$/.pub-cache/hosted/pub.dev/camera_avfoundation-0.9.18+13/lib" />
               <option value="$USER_HOME$/.pub-cache/hosted/pub.dev/camera_avfoundation-0.9.18+9/lib" />
             </list>
           </value>
@@ -68,6 +69,7 @@
         <entry key="camera_platform_interface">
           <value>
             <list>
+              <option value="$USER_HOME$/.pub-cache/hosted/pub.dev/camera_platform_interface-2.10.0/lib" />
               <option value="$USER_HOME$/.pub-cache/hosted/pub.dev/camera_platform_interface-2.9.0/lib" />
             </list>
           </value>
@@ -810,6 +812,7 @@
         <entry key="provider">
           <value>
             <list>
+              <option value="$USER_HOME$/.pub-cache/hosted/pub.dev/provider-6.1.4/lib" />
               <option value="$USER_HOME$/.pub-cache/hosted/pub.dev/provider-6.1.2/lib" />
             </list>
           </value>
@@ -859,6 +862,7 @@
         <entry key="shared_preferences">
           <value>
             <list>
+              <option value="$USER_HOME$/.pub-cache/hosted/pub.dev/shared_preferences-2.5.3/lib" />
               <option value="$USER_HOME$/.pub-cache/hosted/pub.dev/shared_preferences-2.5.2/lib" />
             </list>
           </value>
@@ -1224,7 +1228,9 @@
       <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/bottom_sheet_scaffold-0.1.9/lib" />
       <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/camera-0.11.1/lib" />
       <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/camera_android_camerax-0.6.14+1/lib" />
+      <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/camera_avfoundation-0.9.18+13/lib" />
       <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/camera_avfoundation-0.9.18+9/lib" />
+      <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/camera_platform_interface-2.10.0/lib" />
       <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/camera_platform_interface-2.9.0/lib" />
       <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/camera_web-0.3.5/lib" />
       <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/characters-1.4.0/lib" />
@@ -1329,6 +1335,7 @@
       <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/plugin_platform_interface-2.1.8/lib" />
       <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/posix-6.0.1/lib" />
       <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/provider-6.1.2/lib" />
+      <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/provider-6.1.4/lib" />
       <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/qr-3.0.2/lib" />
       <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/qr_code_scanner_plus-2.0.10+1/lib" />
       <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/qr_flutter-4.1.0/lib" />
@@ -1336,6 +1343,7 @@
       <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/share_plus-10.1.4/lib" />
       <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/share_plus_platform_interface-5.0.2/lib" />
       <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/shared_preferences-2.5.2/lib" />
+      <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/shared_preferences-2.5.3/lib" />
       <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/shared_preferences_android-2.4.8/lib" />
       <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/shared_preferences_foundation-2.5.4/lib" />
       <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dev/shared_preferences_linux-2.4.1/lib" />

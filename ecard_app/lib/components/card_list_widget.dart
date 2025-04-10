@@ -7,10 +7,10 @@ class CardListWidget extends StatelessWidget {
   final Function(CustomCard) onCardTap;
 
   const CardListWidget({
-    Key? key,
+    super.key,
     required this.cards,
     required this.onCardTap,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
