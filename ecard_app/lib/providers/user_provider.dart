@@ -10,4 +10,10 @@ class UserProvider with ChangeNotifier {
     _user = user;
     notifyListeners();
   }
+
+  void clearSession(){
+    _user = User();
+    notifyListeners();
+  }
+
 }

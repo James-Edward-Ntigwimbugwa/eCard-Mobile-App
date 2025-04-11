@@ -4,8 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import '../../components/card_display_widget.dart';
-import '../../modals/card_modal.dart';
+import '../components/card_display_widget.dart';
+import '../modals/card_modal.dart';
 
 class AllCardsScreen extends StatefulWidget {
   const AllCardsScreen({super.key});

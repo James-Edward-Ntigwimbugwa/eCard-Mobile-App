@@ -47,8 +47,8 @@ class CustomCard {
 
   factory CustomCard.fromJson(Map<String, dynamic> json) {
     return CustomCard(
-      id: json['id'],
-      uuid: json['uuid'],
+      id: json['id'].toString(),
+      uuid: json['uuid'] ?? '',
       createdAt:
           json['createdAt'] != null ? DateTime.parse(json['createdAt']) : null,
       updatedAt:
@@ -56,18 +56,18 @@ class CustomCard {
       createdBy: json['createdBy'],
       deleted: json['deleted'] ?? false,
       active: json['active'] ?? true,
-      company: json['company'],
+      company: json['company'] ?? '',
       organization: json['organization'],
       publishCard: json['publishCard'] ?? false,
-      cardLogo: json['cardLogo'],
-      profilePhoto: json['profilePhoto'],
-      address: json['address'],
-      cardDescription: json['cardDescription'],
-      phoneNumber: json['phoneNumber'],
-      department: json['department'],
-      email: json['email'],
-      linkedIn: json['linkedIn'],
-      websiteUrl: json['websiteUrl'],
+      cardLogo: json['cardLogo'] ?? '',
+      profilePhoto: json['profilePhoto'] ?? '',
+      address: json['address'] ?? '',
+      cardDescription: json['cardDescription'] ?? '',
+      phoneNumber: json['phoneNumber'] ?? '',
+      department: json['department'] ?? '',
+      email: json['email'] ?? '',
+      linkedIn: json['linkedIn'] ?? '',
+      websiteUrl: json['websiteUrl'] ?? '',
       // Fixed typo in the field name (was 'backgroundUrl')
       backgroundColor: json['backgroundColor'] ?? json['backgroundUrl'],
       fontColor: json['fontColor'],

@@ -1,10 +1,10 @@
 import 'dart:io';
 import 'package:circle_nav_bar/circle_nav_bar.dart';
 import 'package:ecard_app/providers/screen_index_provider.dart';
-import 'package:ecard_app/screens/subScreens/main_screen_tab.dart';
-import 'package:ecard_app/screens/subScreens/nearby_screen.dart';
-import 'package:ecard_app/screens/subScreens/scanning_screen.dart';
-import 'package:ecard_app/screens/subScreens/settings_screen.dart';
+import 'package:ecard_app/screens/tabs/main_screen_tab.dart';
+import 'package:ecard_app/screens/tabs/nearby_screen.dart';
+import 'package:ecard_app/screens/tabs/scanning_screen.dart';
+import 'package:ecard_app/screens/tabs/settings_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';

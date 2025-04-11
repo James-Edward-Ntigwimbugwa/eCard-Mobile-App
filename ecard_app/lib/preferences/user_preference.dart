@@ -47,7 +47,7 @@ class UserPreferences {static Future<bool> saveUser(User user) async {
 
   void removeUser() async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
-
+    prefs.remove("userId");
     prefs.remove("username");
     prefs.remove('userUuid');
     prefs.remove("phone");

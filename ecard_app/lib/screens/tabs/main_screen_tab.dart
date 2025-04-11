@@ -4,8 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 import '../../utils/resources/images/images.dart';
-import 'all_cards_screen.dart';
-import 'group_cards_screen.dart';
+import '../all_cards_screen.dart';
+import '../group_cards_screen.dart';
 
 class MainScreenTab extends StatefulWidget {
   const MainScreenTab({super.key});
