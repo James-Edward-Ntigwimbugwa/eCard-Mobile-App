@@ -1,0 +1,2 @@
+D:/Projects/eCard App/ecard_app/android/app/.cxx/Debug/5n4k6x3f/x86/CMakeFiles/edit_cache.dir
+D:/Projects/eCard App/ecard_app/android/app/.cxx/Debug/5n4k6x3f/x86/CMakeFiles/rebuild_cache.dir

@@ -1,0 +1,1 @@
+/home/immah/Public/Projects/eCard-Mobile-App/ecard_app/build/app/intermediates/cxx/Debug/2y70u4r5/obj/x86_64
