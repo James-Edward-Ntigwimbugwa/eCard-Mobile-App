@@ -5,6 +5,8 @@ import 'package:ecard_app/screens/auth_navigator.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../screens/change_password.dart';
+
 class PageRouter {
   static Route<dynamic>? switchRoute(RouteSettings settings) {
     switch (settings.name) {
@@ -18,6 +20,8 @@ class PageRouter {
         });
       case '/auth':
         return MaterialPageRoute(builder: (context) => const AuthNavigator());
+      case '/change-password':
+        return MaterialPageRoute(builder: (context) => const ChangePasswordScreen());
       default:
         return null;
     }

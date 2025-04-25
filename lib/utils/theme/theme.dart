@@ -22,7 +22,7 @@ class AppThemeController {
       hintColor: const Color.fromARGB(255, 33, 33, 33),
       secondaryHeaderColor: const Color.fromARGB(255, 232, 232, 232),
       focusColor: Colors.white70,
-      indicatorColor: Colors.black38);
+      indicatorColor: Colors.black);
 
   static final darkMode = ThemeData(
       primaryColor: AppThemeColor.darkMode,

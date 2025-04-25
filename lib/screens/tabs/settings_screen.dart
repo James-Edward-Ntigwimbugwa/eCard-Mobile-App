@@ -1,8 +1,9 @@
 import 'package:ecard_app/components/custom_widgets.dart';
 import 'package:ecard_app/preferences/user_preference.dart';
-import 'package:ecard_app/providers/auth_provider.dart';
 import 'package:ecard_app/utils/resources/images/images.dart';
+import 'dart:developer' as developer;
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../main.dart';
@@ -20,42 +21,96 @@ class _SettingsScreenState extends State<SettingsScreen> {
   @override
   Widget build(BuildContext context) {
     void showBottomDialog() {
-      showBottomSheet(context: context, builder: (BuildContext context){
-        return SizedBox(
-          height: 200,
-          child: Center(
+      showModalBottomSheet(
+        context: context,
+        isScrollControlled: true,  // Allows the sheet to expand beyond default height
+        backgroundColor: Colors.transparent,  // Makes the sheet background transparent
+        builder: (BuildContext context) {
+          return Container(
+            decoration: BoxDecoration(
+              color: Theme.of(context).highlightColor,
+              borderRadius: const BorderRadius.only(
+                topLeft: Radius.circular(20),
+                topRight: Radius.circular(20),
+              ),
+              boxShadow: [
+                BoxShadow(
+                  color: Theme.of(context).primaryColor.withOpacity(0.3),
+                  spreadRadius: 5,
+                  blurRadius: 7,
+                  offset: const Offset(0, -3),
+                ),
+              ],
+            ),
+            padding: const EdgeInsets.all(20),
+            height: 220,
+            width: double.infinity,
             child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                HeaderBoldWidget(text: "Are you Sure ?", color: Theme.of(context).primaryColor, size: '22.0'),
-                NormalHeaderWidget(text: "Upon logout your session will be restored and required to login again\n", color: Theme.of(context).indicatorColor, size: '20.0'),
+                HeaderBoldWidget(
+                    text: "Are you Sure?",
+                    color: Theme.of(context).primaryColor,
+                    size: '20.0'
+                ),
+                const SizedBox(height: 12),
+                Text("Upon logout your session will be restored and required to login again" , textAlign: TextAlign.center,
+                  style: GoogleFonts.aBeeZee(
+                      textStyle: TextStyle(
+                          color: Theme.of(context).indicatorColor,
+                          fontSize: 18.0,
+                          fontWeight: FontWeight.w500)),
+                ),
+                const SizedBox(height: 24),
                 Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    TextButton(onPressed: (){
-                      Navigator.pop(context);
-                    }, child: HeaderBoldWidget(text: "Cancel", color: Theme.of(context).primaryColor, size: '22.0')),
+                    Expanded(
+                      child: TextButton(
+                          onPressed: () {
+                            Navigator.pop(context);
+                          },
+                          child: HeaderBoldWidget(
+                              text: "Cancel",
+                              color: Theme.of(context).primaryColor,
+                              size: '18.0'
+                          )
+                      ),
+                    ),
+                    SizedBox(
+                      height: 24,
+                      child: VerticalDivider(width: 20 , color: Theme.of(context).indicatorColor),
+                    ),
+                    Expanded(
+                      child: TextButton(
+                          onPressed: () async {
+                            final prefs = await SharedPreferences.getInstance();
+                            prefs.remove("accessToken");
+                            prefs.remove("userUuid");
+                            prefs.remove("userId");
+                            prefs.remove("username");
+                            prefs.remove("phone");
+                            prefs.remove("userEmail");
+                            prefs.remove("type");
+                            UserPreferences.removeUser();
+                            developer.log("======> ${prefs.getString('accessToken')} , ======> ${prefs.getString('username')}");
 
-                    const VerticalDivider(width: 1),
-                    TextButton(onPressed: () async{
-                      final prefs = await SharedPreferences.getInstance();
-                      prefs.remove("accessToken");
-                      prefs.remove("userUuid");
-                      prefs.remove("userId");
-                      prefs.remove("username");
-                      prefs.remove("phone");
-                      prefs.remove("userEmail");
-                      prefs.remove("type");
-                      UserPreferences.removeUser();
-
-                      Navigator.pop(context);
-                      Provider.of<AuthProvider>(context, listen: false).navigateToLoginScreen();
-                    }, child: HeaderBoldWidget(text: "Logout", color: Theme.of(context).primaryColor, size: '22.0')),
+                            Navigator.pushReplacementNamed(context, '/auth');
+                          },
+                          child: HeaderBoldWidget(
+                              text: "Logout",
+                              color: Theme.of(context).primaryColor,
+                              size: '18.0'
+                          )
+                      ),
+                    ),
                   ],
                 )
               ],
             ),
-          ),
-        );
-      });
+          );
+        },
+      );
     }
 
     return Scaffold(
@@ -183,6 +238,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       onTap: showBottomDialog,
                       hasArrow: false,
                       icon: Icons.logout_rounded),
+                  const Divider(height: 1),
+                  SettingItem(title: 'Change Password', onTap: () {}, hasArrow: true)
                 ],
               ),
             ),
