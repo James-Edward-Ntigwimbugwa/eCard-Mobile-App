@@ -26,6 +26,7 @@ dependencies:
   camera: ^0.11.1
   skeletonizer: ^1.4.3
   circle_nav_bar: ^2.2.0
+  flutter_ripple: ^0.0.3
 #  flutter_colorpicker: ^1.1.0
 #  flutter_otp_text_field: ^1.4.0+2
 #  permission_handler: ^11.3.1

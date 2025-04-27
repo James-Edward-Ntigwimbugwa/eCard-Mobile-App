@@ -14,8 +14,8 @@ class _GroupCardsScreenState extends State<GroupCardsScreen>
     super.build(context);
     return SafeArea(
         child: Container(
-          color: Theme.of(context).highlightColor,
-          child: Text('Groups'),
+      color: Theme.of(context).highlightColor,
+      child: Text('Groups'),
     ));
   }
 

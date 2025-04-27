@@ -21,7 +21,8 @@ class PageRouter {
       case '/auth':
         return MaterialPageRoute(builder: (context) => const AuthNavigator());
       case '/change-password':
-        return MaterialPageRoute(builder: (context) => const ChangePasswordScreen());
+        return MaterialPageRoute(
+            builder: (context) => const ChangePasswordScreen());
       default:
         return null;
     }

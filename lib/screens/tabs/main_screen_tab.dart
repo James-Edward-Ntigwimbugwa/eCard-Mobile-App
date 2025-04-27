@@ -44,7 +44,7 @@ class _MainScreenTabState extends State<MainScreenTab>
     // Fix: Retrieve saved tab index
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final screenIndexProvider =
-      Provider.of<TabIndexProvider>(context, listen: false);
+          Provider.of<TabIndexProvider>(context, listen: false);
       if (screenIndexProvider.currentScreenIndex != _tabController.index) {
         _tabController.animateTo(screenIndexProvider.currentScreenIndex);
       }
@@ -56,7 +56,7 @@ class _MainScreenTabState extends State<MainScreenTab>
     if (_tabController.indexIsChanging ||
         _tabController.index != _tabController.previousIndex) {
       final screenIndexProvider =
-      Provider.of<TabIndexProvider>(context, listen: false);
+          Provider.of<TabIndexProvider>(context, listen: false);
       screenIndexProvider.setCurrentIndex(_tabController.index);
     }
   }
@@ -137,7 +137,7 @@ class _MainScreenTabState extends State<MainScreenTab>
               controller: _tabController,
               // Add physics for better swipe behavior
               physics:
-              const ClampingScrollPhysics(), // Important: use the same controller
+                  const ClampingScrollPhysics(), // Important: use the same controller
               children: _tabs,
             )));
   }

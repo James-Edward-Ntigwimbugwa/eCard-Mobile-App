@@ -28,7 +28,7 @@ class _AllCardsScreenState extends State<AllCardsScreen>
     });
   }
 
-  void _initializeData() async{
+  void _initializeData() async {
     final provider = Provider.of<CardProvider>(context, listen: false);
     final prefs = await SharedPreferences.getInstance();
     // final String _userUuid = 'e5936449-aa00-4065-abe6-f864c782abc8';
@@ -108,19 +108,19 @@ class _AllCardsScreenState extends State<AllCardsScreen>
                   } else if (snapshot.hasError) {
                     return Center(
                         child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            const Icon(Icons.error_outline,
-                                size: 48, color: Colors.red),
-                            const SizedBox(height: 16),
-                            Text('Error: ${snapshot.error}'),
-                            const SizedBox(height: 16),
-                            ElevatedButton(
-                              onPressed: _initializeData,
-                              child: const Text('Try Again'),
-                            ),
-                          ],
-                        ));
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        const Icon(Icons.error_outline,
+                            size: 48, color: Colors.red),
+                        const SizedBox(height: 16),
+                        Text('Error: ${snapshot.error}'),
+                        const SizedBox(height: 16),
+                        ElevatedButton(
+                          onPressed: _initializeData,
+                          child: const Text('Try Again'),
+                        ),
+                      ],
+                    ));
                   } else if (!snapshot.hasData || snapshot.data == null) {
                     return Container();
                   }

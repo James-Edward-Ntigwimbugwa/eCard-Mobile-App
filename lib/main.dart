@@ -22,14 +22,12 @@ Future<void> main() async {
     DeviceOrientation.landscapeRight
   ]);
 
-  SystemChrome.setSystemUIOverlayStyle(
-      const SystemUiOverlayStyle(
-        // statusBarColor: Color.fromARGB(255, 0, 132, 112),
-        statusBarIconBrightness: Brightness.dark,
-        systemNavigationBarColor: Colors.transparent,
-        systemNavigationBarIconBrightness: Brightness.dark,
-      )
-  );
+  SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
+    // statusBarColor: Color.fromARGB(255, 0, 132, 112),
+    statusBarIconBrightness: Brightness.dark,
+    systemNavigationBarColor: Colors.transparent,
+    systemNavigationBarIconBrightness: Brightness.dark,
+  ));
 
   final SharedPreferences prefs = await SharedPreferences.getInstance();
   final bool isDarkMode = prefs.getBool("themeMode") ?? false;

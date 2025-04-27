@@ -23,8 +23,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
     void showBottomDialog() {
       showModalBottomSheet(
         context: context,
-        isScrollControlled: true,  // Allows the sheet to expand beyond default height
-        backgroundColor: Colors.transparent,  // Makes the sheet background transparent
+        isScrollControlled:
+            true, // Allows the sheet to expand beyond default height
+        backgroundColor:
+            Colors.transparent, // Makes the sheet background transparent
         builder: (BuildContext context) {
           return Container(
             decoration: BoxDecoration(
@@ -51,10 +53,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 HeaderBoldWidget(
                     text: "Are you Sure?",
                     color: Theme.of(context).primaryColor,
-                    size: '20.0'
-                ),
+                    size: '20.0'),
                 const SizedBox(height: 12),
-                Text("Upon logout your session will be restored and required to login again" , textAlign: TextAlign.center,
+                Text(
+                  "Upon logout your session will be restored and required to login again",
+                  textAlign: TextAlign.center,
                   style: GoogleFonts.aBeeZee(
                       textStyle: TextStyle(
                           color: Theme.of(context).indicatorColor,
@@ -73,13 +76,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
                           child: HeaderBoldWidget(
                               text: "Cancel",
                               color: Theme.of(context).primaryColor,
-                              size: '18.0'
-                          )
-                      ),
+                              size: '18.0')),
                     ),
                     SizedBox(
                       height: 24,
-                      child: VerticalDivider(width: 20 , color: Theme.of(context).indicatorColor),
+                      child: VerticalDivider(
+                          width: 20, color: Theme.of(context).indicatorColor),
                     ),
                     Expanded(
                       child: TextButton(
@@ -93,16 +95,15 @@ class _SettingsScreenState extends State<SettingsScreen> {
                             prefs.remove("userEmail");
                             prefs.remove("type");
                             UserPreferences.removeUser();
-                            developer.log("======> ${prefs.getString('accessToken')} , ======> ${prefs.getString('username')}");
+                            developer.log(
+                                "======> ${prefs.getString('accessToken')} , ======> ${prefs.getString('username')}");
 
                             Navigator.pushReplacementNamed(context, '/auth');
                           },
                           child: HeaderBoldWidget(
                               text: "Logout",
                               color: Theme.of(context).primaryColor,
-                              size: '18.0'
-                          )
-                      ),
+                              size: '18.0')),
                     ),
                   ],
                 )
@@ -166,7 +167,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
             child: Container(
               decoration: BoxDecoration(
                 color: Theme.of(context).highlightColor,
-                borderRadius: BorderRadius.only(topRight: Radius.circular(30) , topLeft: Radius.circular(30)),
+                borderRadius: BorderRadius.only(
+                    topRight: Radius.circular(30),
+                    topLeft: Radius.circular(30)),
               ),
               padding: const EdgeInsets.all(20),
               child: Column(
@@ -186,7 +189,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       title: 'Edit Profile', hasArrow: true, onTap: () {}),
                   const Divider(height: 1),
                   SettingItem(
-                      title: 'ChangePassword', onTap: () {}, hasArrow: true),
+                      title: 'ChangePassword', onTap: () {
+                        Navigator.pushNamed(context, '/change-password');
+                  }, hasArrow: true),
                   const Divider(height: 1),
                   SettingItem(
                       title: 'Add Payment Method',
@@ -239,7 +244,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       hasArrow: false,
                       icon: Icons.logout_rounded),
                   const Divider(height: 1),
-                  SettingItem(title: 'Change Password', onTap: () {}, hasArrow: true)
                 ],
               ),
             ),
@@ -247,55 +251,82 @@ class _SettingsScreenState extends State<SettingsScreen> {
         ],
       ),
     );
-
   }
 }
 
-
-class SettingItem extends StatelessWidget{
+class SettingItem extends StatelessWidget {
   final String title;
   final IconData? icon;
   final VoidCallback onTap;
   final bool hasArrow;
 
-  const SettingItem({super.key, required this.title,  this.icon, required this.onTap, required this.hasArrow});
+  const SettingItem(
+      {super.key,
+      required this.title,
+      this.icon,
+      required this.onTap,
+      required this.hasArrow});
 
   @override
   Widget build(BuildContext context) {
     return InkWell(
       onTap: onTap,
-      child: Padding(padding: const EdgeInsets.symmetric(vertical: 16.0),
-      child: Row(
-        children: [
-          Expanded(child: NormalHeaderWidget(text: title, color: Theme.of(context).indicatorColor, size: '16.0')),
-          if(icon != null)
-            Icon(icon, color: Theme.of(context).indicatorColor,),
-          if(hasArrow)
-            Icon(Icons.chevron_right, color: Theme.of(context).indicatorColor,)
-        ],
-      ),),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 16.0),
+        child: Row(
+          children: [
+            Expanded(
+                child: NormalHeaderWidget(
+                    text: title,
+                    color: Theme.of(context).indicatorColor,
+                    size: '16.0')),
+            if (icon != null)
+              Icon(
+                icon,
+                color: Theme.of(context).indicatorColor,
+              ),
+            if (hasArrow)
+              Icon(
+                Icons.chevron_right,
+                color: Theme.of(context).indicatorColor,
+              )
+          ],
+        ),
+      ),
     );
   }
-
 }
 
-class SettingToggleItem extends StatelessWidget{
+class SettingToggleItem extends StatelessWidget {
   final String title;
   final Function(bool) onChanged;
   final Color activeColor;
   final bool value;
-  const SettingToggleItem({super.key, required this.title, required this.onChanged, required this.activeColor, required this.value});
+  const SettingToggleItem(
+      {super.key,
+      required this.title,
+      required this.onChanged,
+      required this.activeColor,
+      required this.value});
   @override
   Widget build(BuildContext context) {
-    return Padding(padding: const EdgeInsets.symmetric(vertical: 8.0),
-    child: Row(
-      children: [
-        Expanded(child: NormalHeaderWidget(text: title, color: Theme.of(context).indicatorColor, size: '16.0')),
-        Switch(value: value, onChanged: onChanged,
-        activeColor: Theme.of(context).canvasColor,
-        activeTrackColor: activeColor,)
-      ],
-    ),);
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8.0),
+      child: Row(
+        children: [
+          Expanded(
+              child: NormalHeaderWidget(
+                  text: title,
+                  color: Theme.of(context).indicatorColor,
+                  size: '16.0')),
+          Switch(
+            value: value,
+            onChanged: onChanged,
+            activeColor: Theme.of(context).canvasColor,
+            activeTrackColor: activeColor,
+          )
+        ],
+      ),
+    );
   }
-
 }

@@ -166,6 +166,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.0.27"
+  flutter_ripple:
+    dependency: "direct main"
+    description:
+      name: flutter_ripple
+      sha256: c718de3fbd9a5cde64059fc4a5c88ebefd3c19acc2e14dde65aa4abea2b6d58a
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.0.3"
   flutter_test:
     dependency: "direct dev"
     description: flutter
