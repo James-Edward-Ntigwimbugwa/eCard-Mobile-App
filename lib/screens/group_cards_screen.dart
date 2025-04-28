@@ -12,7 +12,10 @@ class _GroupCardsScreenState extends State<GroupCardsScreen>
   @override
   Widget build(BuildContext context) {
     super.build(context);
-    return SafeArea(child: Text('Groups'));
+    return Container(
+      color: Theme.of(context).highlightColor,
+      child: SafeArea(child: Text('Groups')),
+    );
   }
 
   @override

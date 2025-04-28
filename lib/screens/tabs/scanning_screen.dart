@@ -25,7 +25,8 @@ class ScanningScreen extends StatefulWidget {
   State<ScanningScreen> createState() => _ScanningScreenState();
 }
 
-class _ScanningScreenState extends State<ScanningScreen> with TickerProviderStateMixin {
+class _ScanningScreenState extends State<ScanningScreen>
+    with TickerProviderStateMixin {
   late AnimationController _pulseController;
   List<ScanCard> nearbyCards = [
     ScanCard(
@@ -98,9 +99,16 @@ class _ScanningScreenState extends State<ScanningScreen> with TickerProviderStat
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          HeaderBoldWidget(text: "Scan Cards", color: Theme.of(context).indicatorColor, size: '20.0'),
+          HeaderBoldWidget(
+              text: "Scan Cards",
+              color: Theme.of(context).indicatorColor,
+              size: '20.0'),
           IconButton(
-            icon: Icon(Icons.refresh, size: 25, color: Theme.of(context).indicatorColor,),
+            icon: Icon(
+              Icons.refresh,
+              size: 25,
+              color: Theme.of(context).indicatorColor,
+            ),
             onPressed: () {
               // Refresh logic
             },
@@ -190,7 +198,10 @@ class _ScanningScreenState extends State<ScanningScreen> with TickerProviderStat
   }
 
   Widget _buildNearbyCardsHeader() {
-    return NormalHeaderWidget(text: "Nearby Cards", color: Theme.of(context).indicatorColor, size: '18.0');
+    return NormalHeaderWidget(
+        text: "Nearby Cards",
+        color: Theme.of(context).indicatorColor,
+        size: '18.0');
   }
 
   Widget _buildNearbyCardsList() {
@@ -230,14 +241,16 @@ class _ScanningScreenState extends State<ScanningScreen> with TickerProviderStat
                         style: TextStyle(
                           fontWeight: FontWeight.w500,
                           fontSize: 15,
-                          color: Theme.of(context).indicatorColor.withOpacity(0.7),
+                          color:
+                              Theme.of(context).indicatorColor.withOpacity(0.7),
                         ),
                       ),
                       const SizedBox(height: 2),
                       Text(
                         card.cardNumber,
                         style: TextStyle(
-                          color: Theme.of(context).indicatorColor.withOpacity(0.3),
+                          color:
+                              Theme.of(context).indicatorColor.withOpacity(0.3),
                           fontSize: 13,
                         ),
                       ),
@@ -257,7 +270,9 @@ class _ScanningScreenState extends State<ScanningScreen> with TickerProviderStat
                             borderRadius: BorderRadius.circular(4),
                             child: LinearProgressIndicator(
                               value: card.signalStrength / 100,
-                              backgroundColor: Theme.of(context).indicatorColor.withOpacity(0.3),
+                              backgroundColor: Theme.of(context)
+                                  .indicatorColor
+                                  .withOpacity(0.3),
                               color: card.statusColor,
                               minHeight: 6,
                             ),
@@ -267,7 +282,9 @@ class _ScanningScreenState extends State<ScanningScreen> with TickerProviderStat
                         Text(
                           '${card.signalStrength.toInt()}%',
                           style: TextStyle(
-                            color: Theme.of(context).indicatorColor.withOpacity(0.2),
+                            color: Theme.of(context)
+                                .indicatorColor
+                                .withOpacity(0.2),
                             fontSize: 12,
                             fontWeight: FontWeight.w500,
                           ),
@@ -303,7 +320,7 @@ class _ScanningScreenState extends State<ScanningScreen> with TickerProviderStat
         label: const Text('Start New Scan'),
         style: ElevatedButton.styleFrom(
           backgroundColor: Theme.of(context).primaryColor,
-          foregroundColor: Theme.of(context).indicatorColor,
+          foregroundColor: Theme.of(context).highlightColor,
           padding: const EdgeInsets.symmetric(vertical: 12),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(8),

@@ -20,10 +20,10 @@ class ChangePasswordScreenState extends State<ChangePasswordScreen> {
   String _passwordStrength = 'Very Weak ';
   bool formIsSubmitted = false;
   final TextEditingController _currentPasswordController =
-  TextEditingController();
+      TextEditingController();
   final TextEditingController _newPasswordController = TextEditingController();
   final TextEditingController _confirmationPasswordController =
-  TextEditingController();
+      TextEditingController();
   String? _confirmationPassword;
 
   @override
@@ -37,7 +37,7 @@ class ChangePasswordScreenState extends State<ChangePasswordScreen> {
         title: Text(
           "Back",
           style:
-          TextStyle(fontSize: 20, color: Theme.of(context).indicatorColor),
+              TextStyle(fontSize: 20, color: Theme.of(context).indicatorColor),
         ),
         iconTheme: IconThemeData(
           color: Theme.of(context).indicatorColor,
@@ -120,7 +120,7 @@ class ChangePasswordScreenState extends State<ChangePasswordScreen> {
                                 auth.updateFormField('password', value),
                             controller: _currentPasswordController,
                             validator: (value) =>
-                            value!.isEmpty ? "Please Enter password" : null,
+                                value!.isEmpty ? "Please Enter password" : null,
                             obscureText: _obscurePassword,
                             style: GoogleFonts.nunito(
                               backgroundColor: Colors.transparent,
@@ -133,11 +133,11 @@ class ChangePasswordScreenState extends State<ChangePasswordScreen> {
                               hintStyle: TextStyle(color: Colors.grey),
                               border: OutlineInputBorder(
                                 borderRadius:
-                                BorderRadius.all(Radius.circular(30)),
+                                    BorderRadius.all(Radius.circular(30)),
                               ),
                               suffixIcon: IconButton(
                                 onPressed: () => setState(
-                                        () => _obscurePassword = !_obscurePassword),
+                                    () => _obscurePassword = !_obscurePassword),
                                 icon: Icon(_obscurePassword
                                     ? Icons.visibility_off
                                     : Icons.visibility),
@@ -159,7 +159,7 @@ class ChangePasswordScreenState extends State<ChangePasswordScreen> {
                                 auth.updateFormField('password', value),
                             controller: _newPasswordController,
                             validator: (value) =>
-                            value!.isEmpty ? "Please Enter password" : null,
+                                value!.isEmpty ? "Please Enter password" : null,
                             obscureText: _obscurePassword,
                             style: GoogleFonts.nunito(
                               backgroundColor: Colors.transparent,
@@ -172,11 +172,11 @@ class ChangePasswordScreenState extends State<ChangePasswordScreen> {
                               hintStyle: TextStyle(color: Colors.grey),
                               border: OutlineInputBorder(
                                 borderRadius:
-                                BorderRadius.all(Radius.circular(30)),
+                                    BorderRadius.all(Radius.circular(30)),
                               ),
                               suffixIcon: IconButton(
                                 onPressed: () => setState(
-                                        () => _obscurePassword = !_obscurePassword),
+                                    () => _obscurePassword = !_obscurePassword),
                                 icon: Icon(_obscurePassword
                                     ? Icons.visibility_off
                                     : Icons.visibility),
@@ -254,11 +254,11 @@ class ChangePasswordScreenState extends State<ChangePasswordScreen> {
                               hintStyle: TextStyle(color: Colors.grey),
                               border: OutlineInputBorder(
                                 borderRadius:
-                                BorderRadius.all(Radius.circular(30)),
+                                    BorderRadius.all(Radius.circular(30)),
                               ),
                               suffixIcon: IconButton(
                                 onPressed: () => setState(
-                                        () => _obscurePassword = !_obscurePassword),
+                                    () => _obscurePassword = !_obscurePassword),
                                 icon: Icon(_obscurePassword
                                     ? Icons.visibility_off
                                     : Icons.visibility),

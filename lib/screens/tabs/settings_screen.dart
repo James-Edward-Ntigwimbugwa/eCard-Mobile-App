@@ -165,7 +165,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   // Implement sound effects toggle
                 },
               ),
-              const Divider(height: 1,),
+              const Divider(
+                height: 1,
+              ),
 
               // Vibration
               _buildSettingWithSwitch(
@@ -176,7 +178,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   // Implement vibration toggle
                 },
               ),
-
 
               const SizedBox(height: 16),
 
@@ -192,7 +193,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 },
               ),
 
-              const Divider(height: 1,),
+              const Divider(
+                height: 1,
+              ),
               // Change Password
               _buildSettingItem(
                 'Change Password',
@@ -201,7 +204,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   Navigator.pushNamed(context, '/change-password');
                 },
               ),
-              const Divider(height: 1,),
+              const Divider(
+                height: 1,
+              ),
 
               // Two-Factor Authentication
               _buildSettingWithSwitch(
@@ -213,7 +218,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 },
               ),
 
-              const Divider(height: 1,),
+              const Divider(
+                height: 1,
+              ),
               // Biometric Login
               _buildSettingWithSwitch(
                 'Biometric Login',
@@ -242,7 +249,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   });
                 },
               ),
-              const Divider(height: 1,),
+              const Divider(
+                height: 1,
+              ),
               // Email Notifications
               _buildSettingWithSwitch(
                 'Email Notifications',
@@ -254,7 +263,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   });
                 },
               ),
-              const Divider(height: 1,),
+              const Divider(
+                height: 1,
+              ),
 
               // Card Scan Alerts
               _buildSettingWithSwitch(
@@ -268,7 +279,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 },
               ),
 
-              const Divider(height: 1,),
+              const Divider(
+                height: 1,
+              ),
               const SizedBox(height: 16),
 
               // Help & Support
@@ -280,7 +293,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 },
               ),
 
-              const Divider(height: 1,),
+              const Divider(
+                height: 1,
+              ),
 
               // About
               _buildSettingItem(
@@ -292,7 +307,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 },
               ),
 
-              const Divider(height: 1,),
+              const Divider(
+                height: 1,
+              ),
               // Terms & Privacy
               _buildSettingItem(
                 'Terms & Privacy',
@@ -346,11 +363,22 @@ class _SettingsScreenState extends State<SettingsScreen> {
                         color: Theme.of(context).indicatorColor,
                       ),
                     ),
-                    NormalHeaderWidget(text: 'Senior developer', color:Theme.of(context).hintColor.withOpacity(0.6) , size: '14.0'),
+                    NormalHeaderWidget(
+                        text: 'Senior developer',
+                        color: Theme.of(context).hintColor.withOpacity(0.6),
+                        size: '14.0'),
                     const SizedBox(height: 6),
                     ElevatedButton.icon(
-                      icon: Icon(Icons.edit, size: 14,color: Theme.of(context).indicatorColor,),
-                      label: Text('Edit Profile', style: TextStyle(color: Theme.of(context).indicatorColor),),
+                      icon: Icon(
+                        Icons.edit,
+                        size: 14,
+                        color: Theme.of(context).indicatorColor,
+                      ),
+                      label: Text(
+                        'Edit Profile',
+                        style:
+                            TextStyle(color: Theme.of(context).indicatorColor),
+                      ),
                       onPressed: () {
                         // Navigate to edit profile
                       },
@@ -502,7 +530,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     child: Text(
                       'Dark',
                       style: TextStyle(
-                        color:Theme.of(context).indicatorColor,
+                        color: Theme.of(context).indicatorColor,
                         fontWeight: FontWeight.w600,
                       ),
                     ),

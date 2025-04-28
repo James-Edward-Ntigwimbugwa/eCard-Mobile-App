@@ -163,15 +163,13 @@ class _AllCardsScreenState extends State<AllCardsScreen>
           ),
         ),
       ),
-      floatingActionButton: DecoratedBox(
-          decoration: const BoxDecoration(
-            shape: BoxShape.circle,
-          ),
-          child: FloatingActionButton(
-            onPressed: () {},
-            backgroundColor: Theme.of(context).primaryColor,
-            child: const Icon(CupertinoIcons.add),
-          )),
+      floatingActionButton: FloatingActionButton(
+        backgroundColor: Theme.of(context).primaryColor,
+        onPressed: () {},
+        mini: false,
+        shape: CircleBorder(),
+        child: Icon(Icons.add, color: Colors.white, size: 25),
+      ),
     );
   }
 
