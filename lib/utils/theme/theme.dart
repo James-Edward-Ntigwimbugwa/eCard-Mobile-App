@@ -22,7 +22,7 @@ class AppThemeController {
       hintColor: const Color.fromARGB(255, 33, 33, 33),
       secondaryHeaderColor: const Color.fromARGB(255, 232, 232, 232),
       focusColor: Colors.white70,
-      indicatorColor: Colors.black38);
+      indicatorColor: Colors.black);
 
   static final darkMode = ThemeData(
       primaryColor: AppThemeColor.darkMode,
@@ -30,7 +30,7 @@ class AppThemeController {
       primaryColorDark: AppThemeColor.darkMode,
       cardColor: const Color.fromARGB(179, 56, 56, 56),
       canvasColor: const Color.fromARGB(255, 28, 129, 17),
-      highlightColor: const Color.fromARGB(255,0, 0, 0),
+      highlightColor: const Color.fromARGB(255, 53, 53, 52),
       hintColor: const Color.fromARGB(255, 255, 255, 255),
       secondaryHeaderColor: const Color.fromARGB(255, 36, 36, 36),
       focusColor: const Color.fromARGB(179, 56, 56, 56),

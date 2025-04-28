@@ -16,235 +16,576 @@ class SettingsScreen extends StatefulWidget {
 
 class _SettingsScreenState extends State<SettingsScreen> {
   bool pushNotificationEnabled = false;
+  bool emailNotificationsEnabled = false;
+  bool cardScanAlertsEnabled = false;
+  bool biometricLoginEnabled = false;
   bool darkModeEnabled = false;
 
   @override
-  Widget build(BuildContext context) {
-    void showBottomDialog() {
-      showModalBottomSheet(
-        context: context,
-        isScrollControlled:
-            true, // Allows the sheet to expand beyond default height
-        backgroundColor:
-            Colors.transparent, // Makes the sheet background transparent
-        builder: (BuildContext context) {
-          return Container(
-            decoration: BoxDecoration(
-              color: Theme.of(context).highlightColor,
-              borderRadius: const BorderRadius.only(
-                topLeft: Radius.circular(20),
-                topRight: Radius.circular(20),
+  void initState() {
+    super.initState();
+    // You may want to load saved preferences here
+  }
+
+  void showLogoutDialog() {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (BuildContext context) {
+        return Container(
+          decoration: BoxDecoration(
+            color: Theme.of(context).highlightColor,
+            borderRadius: const BorderRadius.only(
+              topLeft: Radius.circular(20),
+              topRight: Radius.circular(20),
+            ),
+            boxShadow: [
+              BoxShadow(
+                color: Theme.of(context).primaryColor.withOpacity(0.3),
+                spreadRadius: 5,
+                blurRadius: 7,
+                offset: const Offset(0, -3),
               ),
-              boxShadow: [
-                BoxShadow(
-                  color: Theme.of(context).primaryColor.withOpacity(0.3),
-                  spreadRadius: 5,
-                  blurRadius: 7,
-                  offset: const Offset(0, -3),
-                ),
-              ],
-            ),
-            padding: const EdgeInsets.all(20),
-            height: 220,
-            width: double.infinity,
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                HeaderBoldWidget(
-                    text: "Are you Sure?",
-                    color: Theme.of(context).primaryColor,
-                    size: '20.0'),
-                const SizedBox(height: 12),
-                Text(
-                  "Upon logout your session will be restored and required to login again",
-                  textAlign: TextAlign.center,
-                  style: GoogleFonts.aBeeZee(
-                      textStyle: TextStyle(
-                          color: Theme.of(context).indicatorColor,
-                          fontSize: 18.0,
-                          fontWeight: FontWeight.w500)),
-                ),
-                const SizedBox(height: 24),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Expanded(
-                      child: TextButton(
-                          onPressed: () {
-                            Navigator.pop(context);
-                          },
-                          child: HeaderBoldWidget(
-                              text: "Cancel",
-                              color: Theme.of(context).primaryColor,
-                              size: '18.0')),
-                    ),
-                    SizedBox(
-                      height: 24,
-                      child: VerticalDivider(
-                          width: 20, color: Theme.of(context).indicatorColor),
-                    ),
-                    Expanded(
-                      child: TextButton(
-                          onPressed: () async {
-                            final prefs = await SharedPreferences.getInstance();
-                            prefs.remove("accessToken");
-                            prefs.remove("userUuid");
-                            prefs.remove("userId");
-                            prefs.remove("username");
-                            prefs.remove("phone");
-                            prefs.remove("userEmail");
-                            prefs.remove("type");
-                            UserPreferences.removeUser();
-                            developer.log(
-                                "======> ${prefs.getString('accessToken')} , ======> ${prefs.getString('username')}");
+            ],
+          ),
+          padding: const EdgeInsets.all(20),
+          height: 220,
+          width: double.infinity,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              HeaderBoldWidget(
+                  text: "Are you Sure?",
+                  color: Theme.of(context).primaryColor,
+                  size: '20.0'),
+              const SizedBox(height: 12),
+              Text(
+                "Upon logout your session will be restored and required to login again",
+                textAlign: TextAlign.center,
+                style: GoogleFonts.aBeeZee(
+                    textStyle: TextStyle(
+                        color: Theme.of(context).indicatorColor,
+                        fontSize: 18.0,
+                        fontWeight: FontWeight.w500)),
+              ),
+              const SizedBox(height: 24),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Expanded(
+                    child: TextButton(
+                        onPressed: () {
+                          Navigator.pop(context);
+                        },
+                        child: HeaderBoldWidget(
+                            text: "Cancel",
+                            color: Theme.of(context).primaryColor,
+                            size: '18.0')),
+                  ),
+                  SizedBox(
+                    height: 24,
+                    child: VerticalDivider(
+                        width: 20, color: Theme.of(context).indicatorColor),
+                  ),
+                  Expanded(
+                    child: TextButton(
+                        onPressed: () async {
+                          final prefs = await SharedPreferences.getInstance();
+                          prefs.remove("accessToken");
+                          prefs.remove("userUuid");
+                          prefs.remove("userId");
+                          prefs.remove("username");
+                          prefs.remove("phone");
+                          prefs.remove("userEmail");
+                          prefs.remove("type");
+                          UserPreferences.removeUser();
+                          developer.log(
+                              "======> ${prefs.getString('accessToken')} , ======> ${prefs.getString('username')}");
 
-                            Navigator.pushReplacementNamed(context, '/auth');
-                          },
-                          child: HeaderBoldWidget(
-                              text: "Logout",
-                              color: Theme.of(context).primaryColor,
-                              size: '18.0')),
-                    ),
-                  ],
-                )
-              ],
-            ),
-          );
-        },
-      );
-    }
+                          Navigator.pushReplacementNamed(context, '/auth');
+                        },
+                        child: HeaderBoldWidget(
+                            text: "Logout",
+                            color: Theme.of(context).primaryColor,
+                            size: '18.0')),
+                  ),
+                ],
+              )
+            ],
+          ),
+        );
+      },
+    );
+  }
 
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Theme.of(context).highlightColor,
-      body: Column(
+      appBar: AppBar(
+        backgroundColor: Theme.of(context).highlightColor,
+        elevation: 0,
+        title: Text(
+          'App Settings',
+          style: TextStyle(
+            color: Theme.of(context).indicatorColor,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+        centerTitle: true,
+        automaticallyImplyLeading: false,
+      ),
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 10.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Profile Card
+              _buildProfileCard(),
+              const SizedBox(height: 24),
+
+              // Theme Settings
+              _buildSectionTitle('Theme'),
+              _buildThemeSelector(),
+              const SizedBox(height: 16),
+
+              // Language Settings
+              _buildSectionTitle('Language'),
+              _buildLanguageSelector(),
+              const SizedBox(height: 16),
+
+              // Sound Effects
+              _buildSettingWithSwitch(
+                'Sound Effects',
+                Icons.volume_up_outlined,
+                true,
+                (value) {
+                  // Implement sound effects toggle
+                },
+              ),
+              const Divider(height: 1,),
+
+              // Vibration
+              _buildSettingWithSwitch(
+                'Vibration',
+                Icons.vibration,
+                true,
+                (value) {
+                  // Implement vibration toggle
+                },
+              ),
+
+
+              const SizedBox(height: 16),
+
+              // Account Section
+              _buildSectionTitle('Account'),
+
+              // Security Settings
+              _buildSettingItem(
+                'Security Settings',
+                Icons.security_outlined,
+                onTap: () {
+                  // Navigate to security settings
+                },
+              ),
+
+              const Divider(height: 1,),
+              // Change Password
+              _buildSettingItem(
+                'Change Password',
+                Icons.key_outlined,
+                onTap: () {
+                  Navigator.pushNamed(context, '/change-password');
+                },
+              ),
+              const Divider(height: 1,),
+
+              // Two-Factor Authentication
+              _buildSettingWithSwitch(
+                'Two-Factor Authentication',
+                Icons.phone_android_outlined,
+                false,
+                (value) {
+                  // Implement 2FA toggle
+                },
+              ),
+
+              const Divider(height: 1,),
+              // Biometric Login
+              _buildSettingWithSwitch(
+                'Biometric Login',
+                Icons.fingerprint,
+                biometricLoginEnabled,
+                (value) {
+                  setState(() {
+                    biometricLoginEnabled = value;
+                  });
+                },
+              ),
+
+              const SizedBox(height: 16),
+
+              // Notification Settings
+              _buildSectionTitle('Notification Preferences'),
+
+              // Push Notifications
+              _buildSettingWithSwitch(
+                'Push Notifications',
+                Icons.notifications_none_outlined,
+                pushNotificationEnabled,
+                (value) {
+                  setState(() {
+                    pushNotificationEnabled = value;
+                  });
+                },
+              ),
+              const Divider(height: 1,),
+              // Email Notifications
+              _buildSettingWithSwitch(
+                'Email Notifications',
+                Icons.email_outlined,
+                emailNotificationsEnabled,
+                (value) {
+                  setState(() {
+                    emailNotificationsEnabled = value;
+                  });
+                },
+              ),
+              const Divider(height: 1,),
+
+              // Card Scan Alerts
+              _buildSettingWithSwitch(
+                'Card Scan Alerts',
+                Icons.qr_code_scanner_outlined,
+                cardScanAlertsEnabled,
+                (value) {
+                  setState(() {
+                    cardScanAlertsEnabled = value;
+                  });
+                },
+              ),
+
+              const Divider(height: 1,),
+              const SizedBox(height: 16),
+
+              // Help & Support
+              _buildSettingItem(
+                'Help & Support',
+                Icons.help_outline,
+                onTap: () {
+                  // Navigate to help & support
+                },
+              ),
+
+              const Divider(height: 1,),
+
+              // About
+              _buildSettingItem(
+                'About',
+                Icons.info_outline,
+                subtitle: 'v2.1.1',
+                onTap: () {
+                  // Navigate to about screen
+                },
+              ),
+
+              const Divider(height: 1,),
+              // Terms & Privacy
+              _buildSettingItem(
+                'Terms & Privacy',
+                Icons.article_outlined,
+                onTap: () {
+                  // Navigate to terms & privacy
+                },
+              ),
+
+              const SizedBox(height: 24),
+
+              // Logout Button
+              _buildLogoutButton(),
+
+              const SizedBox(height: 32),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildProfileCard() {
+    return Container(
+      width: double.infinity,
+      margin: const EdgeInsets.only(top: 10),
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Theme.of(context).secondaryHeaderColor,
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Profile Section with Gradient Background
-          Container(
-            width: double.infinity,
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                begin: Alignment.centerLeft,
-                end: Alignment.centerRight,
-                colors: <Color>[
-                  Theme.of(context).primaryColor,
-                  Theme.of(context).primaryColor.withOpacity(0.98)
-                ],
+          Row(
+            children: [
+              CircleAvatar(
+                radius: 30,
+                backgroundImage: AssetImage(Images.profileImage),
               ),
-            ),
-            child: SafeArea(
-              child: Column(
-                children: [
-                  Container(
-                    width: 80,
-                    height: 80,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      border: Border.all(
-                          color: Theme.of(context).cardColor, width: 2),
-                      image: DecorationImage(
-                          image: AssetImage(Images.profileImage),
-                          fit: BoxFit.cover),
+              const SizedBox(width: 16),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'James Edward',
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 18,
+                        color: Theme.of(context).indicatorColor,
+                      ),
                     ),
-                  ),
-                  const SizedBox(height: 20),
-                  NormalHeaderWidget(
-                      text: 'James Edward',
-                      color: Theme.of(context).highlightColor,
-                      size: '18.0'),
-                  const SizedBox(height: 4),
-                  NormalHeaderWidget(
-                      text: 'Mabibo , Dar es Salaam',
-                      color: Theme.of(context).highlightColor.withAlpha(2),
-                      size: '14'),
-                  const SizedBox(height: 24),
-                ],
+                    NormalHeaderWidget(text: 'Senior developer', color:Theme.of(context).hintColor.withOpacity(0.6) , size: '14.0'),
+                    const SizedBox(height: 6),
+                    ElevatedButton.icon(
+                      icon: Icon(Icons.edit, size: 14,color: Theme.of(context).indicatorColor,),
+                      label: Text('Edit Profile', style: TextStyle(color: Theme.of(context).indicatorColor),),
+                      onPressed: () {
+                        // Navigate to edit profile
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Theme.of(context).primaryColor,
+                        foregroundColor: Theme.of(context).highlightColor,
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 12, vertical: 6),
+                        minimumSize: const Size(0, 32),
+                        textStyle: const TextStyle(fontSize: 12),
+                      ),
+                    ),
+                  ],
+                ),
               ),
+            ],
+          ),
+          const SizedBox(height: 16),
+          Row(
+            children: [
+              Expanded(
+                child: _buildInfoItem('Email', 'john.smith@company.com'),
+              ),
+              Expanded(
+                child: _buildInfoItem('Department', 'Engineering'),
+              ),
+            ],
+          ),
+          const SizedBox(height: 8),
+          Row(
+            children: [
+              Expanded(
+                child: _buildInfoItem('Employee ID', 'EC-4587-1234'),
+              ),
+              Expanded(
+                child: _buildInfoItem('Phone', '+1 (555) 123-4567'),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildInfoItem(String label, String value) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 4),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            label,
+            style: TextStyle(
+              fontSize: 12,
+              color: Theme.of(context).hintColor.withOpacity(0.6),
             ),
           ),
+          Text(
+            value,
+            style: TextStyle(
+              fontSize: 14,
+              fontWeight: FontWeight.w500,
+              color: Theme.of(context).indicatorColor,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
 
-          // Settings Section with White Background
+  Widget _buildSectionTitle(String title) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 8),
+      child: Row(
+        children: [
+          Text(
+            title,
+            style: TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.w600,
+              color: Theme.of(context).indicatorColor,
+            ),
+          ),
+          const Spacer(),
+          if (title == 'Theme' || title == 'Language')
+            Text(
+              title == 'Theme' ? 'Light' : 'English',
+              style: TextStyle(
+                fontSize: 14,
+                color: Theme.of(context).indicatorColor.withOpacity(0.6),
+              ),
+            ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildThemeSelector() {
+    return Consumer<ThemeNotifier>(
+      builder: (context, themeNotifier, child) {
+        return Container(
+          height: 40,
+          decoration: BoxDecoration(
+            color: Theme.of(context).secondaryHeaderColor,
+            borderRadius: BorderRadius.circular(8),
+          ),
+          child: Row(
+            children: [
+              Expanded(
+                child: GestureDetector(
+                  onTap: () {
+                    if (themeNotifier.isDarkMode) {
+                      themeNotifier.toggleTheme();
+                    }
+                  },
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: !themeNotifier.isDarkMode
+                          ? Theme.of(context).primaryColor
+                          : Colors.transparent,
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    alignment: Alignment.center,
+                    child: Text(
+                      'Light',
+                      style: TextStyle(
+                        color: Theme.of(context).indicatorColor,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+              Expanded(
+                child: GestureDetector(
+                  onTap: () {
+                    if (!themeNotifier.isDarkMode) {
+                      themeNotifier.toggleTheme();
+                    }
+                  },
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: themeNotifier.isDarkMode
+                          ? Theme.of(context).primaryColor
+                          : Colors.transparent,
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    alignment: Alignment.center,
+                    child: Text(
+                      'Dark',
+                      style: TextStyle(
+                        color:Theme.of(context).indicatorColor,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+              Expanded(
+                child: Container(
+                  alignment: Alignment.center,
+                  child: Text(
+                    'System',
+                    style: TextStyle(
+                      color: Theme.of(context).indicatorColor,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildLanguageSelector() {
+    return Container(
+      height: 40,
+      decoration: BoxDecoration(
+        color: Theme.of(context).secondaryHeaderColor,
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: Row(
+        children: [
           Expanded(
             child: Container(
               decoration: BoxDecoration(
-                color: Theme.of(context).highlightColor,
-                borderRadius: BorderRadius.only(
-                    topRight: Radius.circular(30),
-                    topLeft: Radius.circular(30)),
+                color: Theme.of(context).primaryColor,
+                borderRadius: BorderRadius.circular(8),
               ),
-              padding: const EdgeInsets.all(20),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  HeaderBoldWidget(
-                      text: "Settings",
-                      color: Theme.of(context).indicatorColor,
-                      size: '24.0'),
-                  const SizedBox(height: 20),
-                  NormalHeaderWidget(
-                      text: 'AccountSettings',
-                      color: Theme.of(context).indicatorColor,
-                      size: '20.0'),
-                  const SizedBox(height: 20),
-                  SettingItem(
-                      title: 'Edit Profile', hasArrow: true, onTap: () {}),
-                  const Divider(height: 1),
-                  SettingItem(
-                      title: 'ChangePassword', onTap: () {
-                        Navigator.pushNamed(context, '/change-password');
-                  }, hasArrow: true),
-                  const Divider(height: 1),
-                  SettingItem(
-                      title: 'Add Payment Method',
-                      onTap: () {},
-                      hasArrow: true),
-                  const Divider(height: 1),
-                  SettingToggleItem(
-                    title: 'Push Notifications',
-                    onChanged: (value) {
-                      setState(() {
-                        pushNotificationEnabled = value;
-                      });
-                    },
-                    activeColor: Theme.of(context).primaryColor,
-                    value: pushNotificationEnabled,
-                  ),
-                  const Divider(height: 1),
-                  Consumer<ThemeNotifier>(
-                    builder: (context, themeNotifier, child) {
-                      return Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 8.0),
-                        child: Row(
-                          children: [
-                            Expanded(
-                              child: NormalHeaderWidget(
-                                  text: "Dark Mode",
-                                  color: Theme.of(context).indicatorColor,
-                                  size: '16.0'),
-                            ),
-                            Switch(
-                              value: themeNotifier.isDarkMode,
-                              onChanged: (value) {
-                                setState(() {
-                                  darkModeEnabled = value;
-                                });
-                                themeNotifier.toggleTheme();
-                              },
-                              activeColor: Theme.of(context).primaryColor,
-                              activeTrackColor: Theme.of(context).cardColor,
-                            ),
-                          ],
-                        ),
-                      );
-                    },
-                  ),
-                  const Divider(height: 1),
-                  SettingItem(
-                      title: 'Logout',
-                      onTap: showBottomDialog,
-                      hasArrow: false,
-                      icon: Icons.logout_rounded),
-                  const Divider(height: 1),
-                ],
+              alignment: Alignment.center,
+              child: Text(
+                'English',
+                style: TextStyle(
+                  color: Theme.of(context).indicatorColor,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ),
+          ),
+          Expanded(
+            child: Container(
+              alignment: Alignment.center,
+              child: Text(
+                'Spanish',
+                style: TextStyle(
+                  color: Theme.of(context).indicatorColor,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ),
+          ),
+          Expanded(
+            child: Container(
+              alignment: Alignment.center,
+              child: Text(
+                'French',
+                style: TextStyle(
+                  color: Theme.of(context).indicatorColor,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ),
+          ),
+          Expanded(
+            child: Container(
+              alignment: Alignment.center,
+              child: Text(
+                'German',
+                style: TextStyle(
+                  color: Theme.of(context).indicatorColor,
+                  fontWeight: FontWeight.w600,
+                ),
               ),
             ),
           ),
@@ -252,80 +593,131 @@ class _SettingsScreenState extends State<SettingsScreen> {
       ),
     );
   }
-}
 
-class SettingItem extends StatelessWidget {
-  final String title;
-  final IconData? icon;
-  final VoidCallback onTap;
-  final bool hasArrow;
-
-  const SettingItem(
-      {super.key,
-      required this.title,
-      this.icon,
-      required this.onTap,
-      required this.hasArrow});
-
-  @override
-  Widget build(BuildContext context) {
+  Widget _buildSettingItem(String title, IconData icon,
+      {String? subtitle, required VoidCallback onTap}) {
     return InkWell(
       onTap: onTap,
+      borderRadius: BorderRadius.circular(12),
       child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 16.0),
+        padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 2),
         child: Row(
           children: [
-            Expanded(
-                child: NormalHeaderWidget(
-                    text: title,
-                    color: Theme.of(context).indicatorColor,
-                    size: '16.0')),
-            if (icon != null)
-              Icon(
-                icon,
-                color: Theme.of(context).indicatorColor,
+            Container(
+              width: 40,
+              height: 40,
+              decoration: BoxDecoration(
+                color: Theme.of(context).primaryColor.withOpacity(0.05),
+                borderRadius: BorderRadius.circular(8),
               ),
-            if (hasArrow)
-              Icon(
-                Icons.chevron_right,
-                color: Theme.of(context).indicatorColor,
-              )
+              child: Icon(
+                icon,
+                color: Theme.of(context).primaryColor,
+                size: 20,
+              ),
+            ),
+            const SizedBox(width: 16),
+            Expanded(
+              child: Text(
+                title,
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w500,
+                  color: Theme.of(context).indicatorColor,
+                ),
+              ),
+            ),
+            if (subtitle != null)
+              Text(
+                subtitle,
+                style: TextStyle(
+                  fontSize: 14,
+                  color: Theme.of(context).indicatorColor,
+                ),
+              ),
+            const SizedBox(width: 8),
+            Icon(
+              Icons.chevron_right,
+              color: Theme.of(context).indicatorColor,
+              size: 20,
+            ),
           ],
         ),
       ),
     );
   }
-}
 
-class SettingToggleItem extends StatelessWidget {
-  final String title;
-  final Function(bool) onChanged;
-  final Color activeColor;
-  final bool value;
-  const SettingToggleItem(
-      {super.key,
-      required this.title,
-      required this.onChanged,
-      required this.activeColor,
-      required this.value});
-  @override
-  Widget build(BuildContext context) {
+  Widget _buildSettingWithSwitch(
+      String title, IconData icon, bool value, Function(bool) onChanged) {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8.0),
+      padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 2),
       child: Row(
         children: [
+          Container(
+            width: 40,
+            height: 40,
+            decoration: BoxDecoration(
+              color: Theme.of(context).primaryColor.withOpacity(0.05),
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: Icon(
+              icon,
+              color: Theme.of(context).primaryColor,
+              size: 20,
+            ),
+          ),
+          const SizedBox(width: 16),
           Expanded(
-              child: NormalHeaderWidget(
-                  text: title,
-                  color: Theme.of(context).indicatorColor,
-                  size: '16.0')),
+            child: Text(
+              title,
+              style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.w500,
+                color: Theme.of(context).indicatorColor,
+              ),
+            ),
+          ),
           Switch(
             value: value,
             onChanged: onChanged,
-            activeColor: Theme.of(context).canvasColor,
-            activeTrackColor: activeColor,
-          )
+            activeColor: Theme.of(context).highlightColor,
+            activeTrackColor: Theme.of(context).primaryColor,
+          ),
         ],
+      ),
+    );
+  }
+
+  Widget _buildLogoutButton() {
+    return InkWell(
+      onTap: showLogoutDialog,
+      borderRadius: BorderRadius.circular(12),
+      child: Container(
+        width: double.infinity,
+        height: 56,
+        decoration: BoxDecoration(
+          color: Colors.red.shade50,
+          borderRadius: BorderRadius.circular(12),
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(
+              Icons.logout,
+              color: Colors.red,
+              size: 20,
+            ),
+            const SizedBox(width: 8),
+            Text(
+              'Logout',
+              style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.w600,
+                color: Colors.red,
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

@@ -39,7 +39,7 @@ class _DashboardPageState extends State<DashboardPage>
   List<dynamic> screens = [
     MainScreenTab(),
     NearbyScreen(),
-    ScanningScreen(imageUrl: '',),
+    ScanningScreen(),
     SettingsScreen()
   ];
 
@@ -52,55 +52,71 @@ class _DashboardPageState extends State<DashboardPage>
     final screenIndexProvider = Provider.of<ScreenIndexProvider>(context);
     int currentIndex = screenIndexProvider.currentScreenIndex;
     return Scaffold(
-      bottomNavigationBar: CircleNavBar(
-        color: Theme.of(context).highlightColor,
-        circleShadowColor: Theme.of(context).primaryColor,
-        padding: const EdgeInsets.symmetric(horizontal: 1.0),
-        circleColor: Theme.of(context).primaryColor,
-        height: 60,
-        elevation: 10,
-        shadowColor: Theme.of(context).primaryColor,
-        circleWidth: 50,
-        cornerRadius: BorderRadius.only(
-            topLeft: Radius.circular(10), topRight: Radius.circular(10)),
-        onTap: (value) => screenIndexProvider.setCurrentIndex(value),
-        activeIcons: [
-          Icon((FontAwesomeIcons.home),
-              color: currentIndex == 0
-                  ? Theme.of(context).highlightColor
-                  : Theme.of(context).primaryColor),
-          Icon((FontAwesomeIcons.qrcode),
-              color: currentIndex == 1
-                  ? Theme.of(context).highlightColor
-                  : Theme.of(context).primaryColor),
-          Icon((FontAwesomeIcons.wifi),
-              color: currentIndex == 2
-                  ? Theme.of(context).highlightColor
-                  : Theme.of(context).primaryColor),
-          Icon((FontAwesomeIcons.gear),
-              color: currentIndex == 3
-                  ? Theme.of(context).highlightColor
-                  : Theme.of(context).primaryColor),
-        ],
-        activeIndex: currentIndex,
-        inactiveIcons: [
-          Icon((FontAwesomeIcons.home),
-              color: currentIndex == 0
-                  ? Theme.of(context).highlightColor
-                  : Theme.of(context).primaryColor),
-          Icon((FontAwesomeIcons.qrcode),
-              color: currentIndex == 1
-                  ? Theme.of(context).highlightColor
-                  : Theme.of(context).primaryColor),
-          Icon((FontAwesomeIcons.wifi),
-              color: currentIndex == 2
-                  ? Theme.of(context).highlightColor
-                  : Theme.of(context).primaryColor),
-          Icon((FontAwesomeIcons.gear),
-              color: currentIndex == 3
-                  ? Theme.of(context).highlightColor
-                  : Theme.of(context).primaryColor),
-        ],
+      extendBodyBehindAppBar: true,
+      bottomNavigationBar: Container(
+        decoration: BoxDecoration(
+          color: Theme.of(context).highlightColor,
+          borderRadius: const BorderRadius.only(
+            topLeft: Radius.circular(10),
+            topRight: Radius.circular(10),
+          ),
+          boxShadow: [
+            BoxShadow(
+              color: Theme.of(context).primaryColor.withOpacity(0.7),
+              blurRadius: 10,
+              spreadRadius: 1,
+            ),
+          ],
+        ),
+        child: CircleNavBar(
+          color: Theme.of(context)
+              .highlightColor, // Use highlightColor instead of transparent
+          circleShadowColor: Theme.of(context).primaryColor.withOpacity(0.3),
+          circleColor: Theme.of(context).primaryColor,
+          height: 60,
+          elevation:
+              0, // Keep elevation at 0 to avoid conflict with container shadow
+          shadowColor: Colors.transparent,
+          circleWidth: 50,
+          onTap: (value) => screenIndexProvider.setCurrentIndex(value),
+          activeIcons: [
+            Icon((FontAwesomeIcons.home),
+                color: currentIndex == 0
+                    ? Theme.of(context).highlightColor
+                    : Theme.of(context).primaryColor),
+            Icon((FontAwesomeIcons.qrcode),
+                color: currentIndex == 1
+                    ? Theme.of(context).highlightColor
+                    : Theme.of(context).primaryColor),
+            Icon((FontAwesomeIcons.wifi),
+                color: currentIndex == 2
+                    ? Theme.of(context).highlightColor
+                    : Theme.of(context).primaryColor),
+            Icon((FontAwesomeIcons.gear),
+                color: currentIndex == 3
+                    ? Theme.of(context).highlightColor
+                    : Theme.of(context).primaryColor),
+          ],
+          activeIndex: currentIndex,
+          inactiveIcons: [
+            Icon((FontAwesomeIcons.home),
+                color: currentIndex == 0
+                    ? Theme.of(context).highlightColor
+                    : Theme.of(context).primaryColor),
+            Icon((FontAwesomeIcons.qrcode),
+                color: currentIndex == 1
+                    ? Theme.of(context).highlightColor
+                    : Theme.of(context).primaryColor),
+            Icon((FontAwesomeIcons.wifi),
+                color: currentIndex == 2
+                    ? Theme.of(context).highlightColor
+                    : Theme.of(context).primaryColor),
+            Icon((FontAwesomeIcons.gear),
+                color: currentIndex == 3
+                    ? Theme.of(context).highlightColor
+                    : Theme.of(context).primaryColor),
+          ],
+        ),
       ),
       body: screens[currentIndex],
     );

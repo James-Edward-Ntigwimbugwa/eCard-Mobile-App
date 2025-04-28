@@ -83,10 +83,11 @@ class _MainScreenTabState extends State<MainScreenTab>
       });
     }
 
-    return Skeletonizer(
+    return Container(
         key: _key,
-        enabled: _showSkeleton,
         child: Scaffold(
+            extendBodyBehindAppBar: true,
+            extendBody: true,
             appBar: PreferredSize(
                 preferredSize: const Size.fromHeight(kToolbarHeight + 48),
                 child: ClipRRect(
@@ -96,7 +97,7 @@ class _MainScreenTabState extends State<MainScreenTab>
                   child: AppBar(
                     title: HeaderBoldWidget(
                         text: "My Cards",
-                        color: Theme.of(context).canvasColor,
+                        color: Theme.of(context).highlightColor,
                         size: '20.0'),
                     backgroundColor: Theme.of(context).primaryColor,
                     centerTitle: true,
@@ -112,12 +113,12 @@ class _MainScreenTabState extends State<MainScreenTab>
                         Tab(
                             child: HeaderBoldWidget(
                                 text: 'All Cards',
-                                color: Theme.of(context).canvasColor,
+                                color: Theme.of(context).highlightColor,
                                 size: '19.0')),
                         Tab(
                           child: HeaderBoldWidget(
                               text: 'Groups',
-                              color: Theme.of(context).canvasColor,
+                              color: Theme.of(context).highlightColor,
                               size: '19.0'),
                         )
                       ],
@@ -126,19 +127,21 @@ class _MainScreenTabState extends State<MainScreenTab>
                         _tabController.animateTo(value);
                       },
                       indicatorSize: TabBarIndicatorSize.label,
-                      indicatorColor: Theme.of(context).canvasColor,
+                      indicatorColor: Theme.of(context).highlightColor,
                       indicatorWeight: 5.0,
                       controller: _tabController,
                     ),
                   ),
                 )),
             // Remove DefaultTabController as we're using our own TabController
-            body: TabBarView(
-              controller: _tabController,
-              // Add physics for better swipe behavior
-              physics:
-                  const ClampingScrollPhysics(), // Important: use the same controller
-              children: _tabs,
+            body: Container(
+              color: Theme.of(context).highlightColor,
+              child: TabBarView(
+                controller: _tabController,
+                physics:
+                    const ClampingScrollPhysics(), // Important: use the same controller
+                children: _tabs,
+              ),
             )));
   }
 

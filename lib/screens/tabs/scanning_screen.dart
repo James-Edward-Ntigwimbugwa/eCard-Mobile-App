@@ -1,275 +1,315 @@
 import 'dart:async';
+import 'package:ecard_app/components/custom_widgets.dart';
 import 'package:flutter/material.dart';
 
-class ScanningScreen extends StatefulWidget {
-  final String? imageUrl;
-  final double? imageSize; // Make this nullable
+class ScanCard {
+  final String name;
+  final String cardNumber;
+  final double signalStrength; // Percentage (0-100)
+  final double distance; // Distance in meters
+  final Color statusColor;
 
-  const ScanningScreen({
-    Key? key,
-    this.imageUrl,
-    this.imageSize,
-  }) : super(key: key);
-
-  @override
-  State<ScanningScreen> createState() => ScanningScreenState();
+  ScanCard({
+    required this.name,
+    required this.cardNumber,
+    required this.signalStrength,
+    required this.distance,
+    required this.statusColor,
+  });
 }
 
-class ScanningScreenState extends State<ScanningScreen> with TickerProviderStateMixin {
-  late AnimationController _controller1;
-  late AnimationController _controller2;
-  late AnimationController _controller3;
+class ScanningScreen extends StatefulWidget {
+  const ScanningScreen({Key? key}) : super(key: key);
 
-  late Animation<double> _animation1;
-  late Animation<double> _animation2;
-  late Animation<double> _animation3;
+  @override
+  State<ScanningScreen> createState() => _ScanningScreenState();
+}
 
-  // Default value if imageSize is null - reduced size
-  double get _effectiveImageSize => widget.imageSize ?? 100.0;
-
-  // Black-greenish color for circles
-  final Color _circleColor = Color.fromARGB(255, 0, 110, 61); // Dark greenish-black
+class _ScanningScreenState extends State<ScanningScreen> with TickerProviderStateMixin {
+  late AnimationController _pulseController;
+  List<ScanCard> nearbyCards = [
+    ScanCard(
+      name: 'Michael Anderson',
+      cardNumber: 'EC-1263-15633',
+      signalStrength: 87.0,
+      distance: 2.2,
+      statusColor: Colors.green,
+    ),
+    ScanCard(
+      name: 'Sarah Johnson',
+      cardNumber: 'EC-1632-1378',
+      signalStrength: 51.0,
+      distance: 4.8,
+      statusColor: Colors.amber,
+    ),
+    ScanCard(
+      name: 'David Williams',
+      cardNumber: 'EC-3548-7782',
+      signalStrength: 42.0,
+      distance: 6.3,
+      statusColor: Colors.amber,
+    ),
+  ];
 
   @override
   void initState() {
     super.initState();
-
-    // First circle animation
-    _controller1 = AnimationController(
-      duration: const Duration(seconds: 2),
+    _pulseController = AnimationController(
       vsync: this,
-    )..repeat(reverse: false);
-    _animation1 = Tween<double>(begin: 0.0, end: 1.0).animate(
-        CurvedAnimation(parent: _controller1, curve: Curves.easeInOut)
-    );
-
-    // Second circle animation (delayed start)
-    _controller2 = AnimationController(
       duration: const Duration(seconds: 2),
-      vsync: this,
-    );
-    _animation2 = Tween<double>(begin: 0.0, end: 1.0).animate(
-        CurvedAnimation(parent: _controller2, curve: Curves.easeInOut)
-    );
-
-    // Third circle animation (more delayed start)
-    _controller3 = AnimationController(
-      duration: const Duration(seconds: 2),
-      vsync: this,
-    );
-    _animation3 = Tween<double>(begin: 0.0, end: 1.0).animate(
-        CurvedAnimation(parent: _controller3, curve: Curves.easeInOut)
-    );
-
-    // Start animations with delays
-    Timer(const Duration(milliseconds: 650), () {
-      _controller2.repeat(reverse: false);
-    });
-
-    Timer(const Duration(milliseconds: 1300), () {
-      _controller3.repeat(reverse: false);
-    });
+    )..repeat();
   }
 
   @override
   void dispose() {
-    _controller1.dispose();
-    _controller2.dispose();
-    _controller3.dispose();
+    _pulseController.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Theme.of(context).highlightColor,
       body: SafeArea(
-        child: Column(
-          children: [
-            const SizedBox(height: 16), // Spacing below SafeArea
-            buildScanningWidget(),
-            // Add your other content below
-            Expanded(
-              child: Container(
-                // Your other content here
-              ),
-            ),
-          ],
+        child: Padding(
+          padding: const EdgeInsets.only(left: 16.0, right: 16.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              _buildHeader(),
+              _buildScannerAnimation(),
+              const SizedBox(height: 20),
+              _buildNearbyCardsHeader(),
+              const SizedBox(height: 12),
+              _buildNearbyCardsList(),
+              const Spacer(),
+              _buildStartScanButton(),
+              const SizedBox(height: 16),
+            ],
+          ),
         ),
       ),
     );
   }
 
-  Widget buildScanningWidget() {
-    return Container(
-      height: _effectiveImageSize * 3, // Container to hold the scanning circles
-      alignment: Alignment.topCenter,
-      child: Stack(
-        alignment: Alignment.center,
+  Widget _buildHeader() {
+    return Padding(
+      padding: const EdgeInsets.only(top: 8.0),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          // Third (outermost) scanning circle
-          AnimatedBuilder(
-            animation: _animation3,
-            builder: (context, child) {
-              return CustomPaint(
-                size: Size(_effectiveImageSize * 2.2, _effectiveImageSize * 2.2),
-                painter: CirclePainter(
-                  progress: _animation3.value,
-                  color: _circleColor.withOpacity(0.3),
-                  strokeWidth: 5.0,
-                ),
-              );
+          HeaderBoldWidget(text: "Scan Cards", color: Theme.of(context).indicatorColor, size: '20.0'),
+          IconButton(
+            icon: Icon(Icons.refresh, size: 25, color: Theme.of(context).indicatorColor,),
+            onPressed: () {
+              // Refresh logic
             },
-          ),
-
-          // Second scanning circle
-          AnimatedBuilder(
-            animation: _animation2,
-            builder: (context, child) {
-              return CustomPaint(
-                size: Size(_effectiveImageSize * 1.8, _effectiveImageSize * 1.8),
-                painter: CirclePainter(
-                  progress: _animation2.value,
-                  color: _circleColor.withOpacity(0.5),
-                  strokeWidth: 4.0,
-                ),
-              );
-            },
-          ),
-
-          // First (innermost) scanning circle
-          AnimatedBuilder(
-            animation: _animation1,
-            builder: (context, child) {
-              return CustomPaint(
-                size: Size(_effectiveImageSize * 1.4, _effectiveImageSize * 1.4),
-                painter: CirclePainter(
-                  progress: _animation1.value,
-                  color: _circleColor.withOpacity(0.7),
-                  strokeWidth: 3.0,
-                ),
-              );
-            },
-          ),
-
-          // Image in the center
-          Container(
-            width: _effectiveImageSize,
-            height: _effectiveImageSize,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.2),
-                  blurRadius: 10,
-                  spreadRadius: 2,
-                ),
-              ],
-            ),
-            child: ClipOval(
-              child: widget.imageUrl != null
-                  ? Image.network(
-                widget.imageUrl!,
-                fit: BoxFit.cover,
-                loadingBuilder: (context, child, loadingProgress) {
-                  if (loadingProgress == null) return child;
-                  return Center(
-                    child: CircularProgressIndicator(
-                      value: loadingProgress.expectedTotalBytes != null
-                          ? loadingProgress.cumulativeBytesLoaded /
-                          loadingProgress.expectedTotalBytes!
-                          : null,
-                      color: _circleColor,
-                    ),
-                  );
-                },
-                errorBuilder: (context, error, stackTrace) {
-                  return Container(
-                    color: Colors.grey[300],
-                    child: Icon(
-                      Icons.image_not_supported,
-                      size: _effectiveImageSize * 0.4,
-                      color: Colors.grey,
-                    ),
-                  );
-                },
-              )
-                  : Container(
-                color: Colors.grey[200],
-                child: Icon(
-                  Icons.camera_alt,
-                  size: _effectiveImageSize * 0.4,
-                  color: _circleColor.withOpacity(0.7),
-                ),
-              ),
-            ),
           ),
         ],
       ),
     );
   }
-}
 
-// Custom painter for drawing the scanning circles
-class CirclePainter extends CustomPainter {
-  final double progress;
-  final Color color;
-  final double strokeWidth;
+  Widget _buildScannerAnimation() {
+    return Container(
+      height: 180,
+      alignment: Alignment.center,
+      child: AnimatedBuilder(
+        animation: _pulseController,
+        builder: (context, child) {
+          return Stack(
+            alignment: Alignment.center,
+            children: [
+              // Outer circle
+              Opacity(
+                opacity: (1 - _pulseController.value) * 0.3,
+                child: Container(
+                  width: 160 + (_pulseController.value * 40),
+                  height: 160 + (_pulseController.value * 40),
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    border: Border.all(
+                      color: Theme.of(context).primaryColor.withOpacity(0.6),
+                      width: 1.5,
+                    ),
+                  ),
+                ),
+              ),
 
-  CirclePainter({
-    required this.progress,
-    required this.color,
-    required this.strokeWidth,
-  });
+              // Middle circle
+              Opacity(
+                opacity: (1 - (_pulseController.value * 0.8)) * 0.5,
+                child: Container(
+                  width: 120 + (_pulseController.value * 30),
+                  height: 120 + (_pulseController.value * 30),
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    border: Border.all(
+                      color: Theme.of(context).primaryColor.withOpacity(0.8),
+                      width: 1.5,
+                    ),
+                  ),
+                ),
+              ),
 
-  @override
-  void paint(Canvas canvas, Size size) {
-    final center = Offset(size.width / 2, size.height / 2);
-    final radius = size.width / 2;
+              // Inner circle
+              Opacity(
+                opacity: (1 - (_pulseController.value * 0.6)) * 0.7,
+                child: Container(
+                  width: 80 + (_pulseController.value * 20),
+                  height: 80 + (_pulseController.value * 20),
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    border: Border.all(
+                      color: Theme.of(context).primaryColor,
+                      width: 1.5,
+                    ),
+                  ),
+                ),
+              ),
 
-    final paint = Paint()
-      ..color = color
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = strokeWidth;
-
-    // Use sweep gradient for a more dynamic 3D effect
-    final gradient = SweepGradient(
-      startAngle: 0,
-      endAngle: 2 * 3.14159,
-      tileMode: TileMode.repeated,
-      colors: [
-        color.withOpacity(0.2),
-        color.withOpacity(0.8),
-        color.withOpacity(0.2),
-      ],
-      stops: const [0.0, 0.5, 1.0],
-      transform: GradientRotation(2 * 3.14159 * progress),
+              // Center wifi icon
+              Container(
+                width: 50,
+                height: 50,
+                decoration: BoxDecoration(
+                  color: Theme.of(context).primaryColor,
+                  shape: BoxShape.circle,
+                ),
+                child: const Icon(
+                  Icons.wifi,
+                  color: Colors.white,
+                  size: 28,
+                ),
+              ),
+            ],
+          );
+        },
+      ),
     );
-
-    paint.shader = gradient.createShader(
-      Rect.fromCircle(center: center, radius: radius),
-    );
-
-    // Draw circle with a small offset to enhance 3D effect
-    final shadowOffset = Offset(1.0, 1.0) * (progress * 0.5);
-    canvas.drawCircle(center + shadowOffset, radius, paint);
-
-    // Draw main circle
-    canvas.drawCircle(center, radius, paint);
   }
 
-  @override
-  bool shouldRepaint(CustomPainter oldDelegate) => true;
-}
+  Widget _buildNearbyCardsHeader() {
+    return NormalHeaderWidget(text: "Nearby Cards", color: Theme.of(context).indicatorColor, size: '18.0');
+  }
 
-// Example of how to use this widget in your app
-class ScanningExample extends StatelessWidget {
-  const ScanningExample({Key? key}) : super(key: key);
+  Widget _buildNearbyCardsList() {
+    return Expanded(
+      child: ListView.builder(
+        padding: EdgeInsets.zero,
+        itemCount: nearbyCards.length,
+        itemBuilder: (context, index) {
+          final card = nearbyCards[index];
+          return Padding(
+            padding: const EdgeInsets.only(bottom: 16.0),
+            child: Row(
+              children: [
+                // Card icon
+                Container(
+                  width: 40,
+                  height: 40,
+                  decoration: BoxDecoration(
+                    color: Theme.of(context).primaryColor.withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Icon(
+                    Icons.credit_card,
+                    color: Theme.of(context).primaryColor,
+                    size: 22,
+                  ),
+                ),
+                const SizedBox(width: 12),
 
-  @override
-  Widget build(BuildContext context) {
-    return const ScanningScreen(
-      imageUrl: "https://via.placeholder.com/100",
-      imageSize: 100, // Smaller size
+                // Card info
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        card.name,
+                        style: TextStyle(
+                          fontWeight: FontWeight.w500,
+                          fontSize: 15,
+                          color: Theme.of(context).indicatorColor.withOpacity(0.7),
+                        ),
+                      ),
+                      const SizedBox(height: 2),
+                      Text(
+                        card.cardNumber,
+                        style: TextStyle(
+                          color: Theme.of(context).indicatorColor.withOpacity(0.3),
+                          fontSize: 13,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+
+                // Signal strength indicator
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: [
+                    Row(
+                      children: [
+                        SizedBox(
+                          width: 60,
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(4),
+                            child: LinearProgressIndicator(
+                              value: card.signalStrength / 100,
+                              backgroundColor: Theme.of(context).indicatorColor.withOpacity(0.3),
+                              color: card.statusColor,
+                              minHeight: 6,
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 8),
+                        Text(
+                          '${card.signalStrength.toInt()}%',
+                          style: TextStyle(
+                            color: Theme.of(context).indicatorColor.withOpacity(0.2),
+                            fontSize: 12,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      '${card.distance} m away',
+                      style: TextStyle(
+                        color: Colors.grey.shade600,
+                        fontSize: 12,
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          );
+        },
+      ),
+    );
+  }
+
+  Widget _buildStartScanButton() {
+    return SizedBox(
+      width: double.infinity,
+      child: ElevatedButton.icon(
+        onPressed: () {
+          // Start scan logic
+        },
+        icon: const Icon(Icons.wifi_tethering),
+        label: const Text('Start New Scan'),
+        style: ElevatedButton.styleFrom(
+          backgroundColor: Theme.of(context).primaryColor,
+          foregroundColor: Theme.of(context).indicatorColor,
+          padding: const EdgeInsets.symmetric(vertical: 12),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(8),
+          ),
+        ),
+      ),
     );
   }
 }
