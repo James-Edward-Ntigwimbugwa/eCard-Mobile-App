@@ -3,4 +3,5 @@ class Images {
   static String errorImage = 'assets/images/close.png';
   static String networkErrorImage = 'assets/images/delete.png';
   static String profileImage = 'assets/images/profile.png';
+  static String scanningImage = 'assets/images/wifi-green.png';
 }

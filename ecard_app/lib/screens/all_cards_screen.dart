@@ -28,7 +28,7 @@ class _AllCardsScreenState extends State<AllCardsScreen>
     });
   }
 
-  void _initializeData() async{
+  void _initializeData() async {
     final provider = Provider.of<CardProvider>(context, listen: false);
     final prefs = await SharedPreferences.getInstance();
     // final String _userUuid = 'e5936449-aa00-4065-abe6-f864c782abc8';
@@ -90,84 +90,86 @@ class _AllCardsScreenState extends State<AllCardsScreen>
       );
     }
     return Scaffold(
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            const SizedBox(height: 20),
-            if (_showBanner && _isEmpty) _buildDismissibleBanner(),
-            Expanded(
-              child: FutureBuilder<Map<String, dynamic>>(
-                future: _cardsFuture,
-                builder: (context, snapshot) {
-                  if (snapshot.connectionState == ConnectionState.waiting) {
-                    return Center(
-                        child: LoadingAnimationWidget.stretchedDots(
-                            color: Theme.of(context).primaryColor, size: 24.0));
-                  } else if (snapshot.hasError) {
-                    return Center(
-                        child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        const Icon(Icons.error_outline,
-                            size: 48, color: Colors.red),
-                        const SizedBox(height: 16),
-                        Text('Error: ${snapshot.error}'),
-                        const SizedBox(height: 16),
-                        ElevatedButton(
-                          onPressed: _initializeData,
-                          child: const Text('Try Again'),
-                        ),
-                      ],
-                    ));
-                  } else if (!snapshot.hasData || snapshot.data == null) {
-                    return Container();
-                  }
-                  if (snapshot.data!['status'] == false) {
-                    return Center(
-                      child: Column(
+      body: Container(
+        color: Theme.of(context).highlightColor,
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              const SizedBox(height: 20),
+              if (_showBanner && _isEmpty) _buildDismissibleBanner(),
+              Expanded(
+                child: FutureBuilder<Map<String, dynamic>>(
+                  future: _cardsFuture,
+                  builder: (context, snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return Center(
+                          child: LoadingAnimationWidget.stretchedDots(
+                              color: Theme.of(context).primaryColor,
+                              size: 24.0));
+                    } else if (snapshot.hasError) {
+                      return Center(
+                          child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          const Icon(Icons.warning_amber,
-                              size: 24, color: Colors.orange),
+                          const Icon(Icons.error_outline,
+                              size: 48, color: Colors.red),
                           const SizedBox(height: 16),
-                          Text('${snapshot.data!['message']}'),
+                          Text('Error: ${snapshot.error}'),
                           const SizedBox(height: 16),
                           ElevatedButton(
                             onPressed: _initializeData,
                             child: const Text('Try Again'),
                           ),
                         ],
-                      ),
-                    );
-                  }
-                  final List<CustomCard> cards = snapshot.data!['cards'];
-                  if (cards.isEmpty) {
-                    return Container();
-                  } else {
-                    return ListView.builder(
-                      itemCount: cards.length,
-                      itemBuilder: (BuildContext context, int index) {
-                        return CardDisplayWidget(card: cards[index]);
-                      },
-                    );
-                  }
-                },
-              ),
-            )
-          ],
+                      ));
+                    } else if (!snapshot.hasData || snapshot.data == null) {
+                      return Container();
+                    }
+                    if (snapshot.data!['status'] == false) {
+                      return Center(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            const Icon(Icons.warning_amber,
+                                size: 24, color: Colors.orange),
+                            const SizedBox(height: 16),
+                            Text('${snapshot.data!['message']}'),
+                            const SizedBox(height: 16),
+                            ElevatedButton(
+                              onPressed: _initializeData,
+                              child: const Text('Try Again'),
+                            ),
+                          ],
+                        ),
+                      );
+                    }
+                    final List<CustomCard> cards = snapshot.data!['cards'];
+                    if (cards.isEmpty) {
+                      return Container();
+                    } else {
+                      return ListView.builder(
+                        itemCount: cards.length,
+                        itemBuilder: (BuildContext context, int index) {
+                          return CardDisplayWidget(card: cards[index]);
+                        },
+                      );
+                    }
+                  },
+                ),
+              )
+            ],
+          ),
         ),
       ),
-      floatingActionButton: DecoratedBox(
-          decoration: const BoxDecoration(
-            shape: BoxShape.circle,
-          ),
-          child: FloatingActionButton(
-            onPressed: () {},
-            backgroundColor: Theme.of(context).primaryColor,
-            child: const Icon(CupertinoIcons.add),
-          )),
+      floatingActionButton: FloatingActionButton(
+        backgroundColor: Theme.of(context).primaryColor,
+        onPressed: () {},
+        mini: false,
+        shape: CircleBorder(),
+        child: Icon(Icons.add, color: Colors.white, size: 25),
+      ),
     );
   }
 

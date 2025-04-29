@@ -28,12 +28,12 @@ class _LoginPageState extends State<LoginPage> {
 
   final formKey = GlobalKey<FormState>();
   @override
-  void initState(){
+  void initState() {
     super.initState();
-    Future.microtask((){
+    Future.microtask(() {
       final auth = Provider.of<AuthProvider>(context, listen: false);
       final formData = auth.formData[AuthScreen.loginScreen];
-      if(formData != null){
+      if (formData != null) {
         _usernameController.text = formData['username'] ?? '';
         _passwordController.text = formData['password'] ?? '';
       }
@@ -41,7 +41,7 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   @override
-  void dispose(){
+  void dispose() {
     _usernameController.dispose();
     _passwordController.dispose();
     super.dispose();
@@ -61,8 +61,7 @@ class _LoginPageState extends State<LoginPage> {
     });
 
     final form = formKey.currentState;
-    if (_usernameController.text.isEmpty ||
-        _passwordController.text.isEmpty) {
+    if (_usernameController.text.isEmpty || _passwordController.text.isEmpty) {
       Alerts.show(
           context,
           "Fill in all fields",
@@ -88,10 +87,12 @@ class _LoginPageState extends State<LoginPage> {
       final auth = Provider.of<AuthProvider>(context, listen: false);
       auth.updateFormField('username', _usernameController.text.trim());
       auth.updateFormField('password', _passwordController.text.trim());
-      auth.login(
+      auth
+          .login(
         _usernameController.text.trim(),
         _passwordController.text.trim(),
-      ).then((response) {
+      )
+          .then((response) {
         Navigator.pop(context);
         if (response['status'] == true) {
           var user = Provider.of<UserProvider>(context, listen: false)
@@ -127,302 +128,314 @@ class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     AuthProvider auth = Provider.of<AuthProvider>(context);
-
     return Scaffold(
-      body: SingleChildScrollView(
-        child: SizedBox(
-          child: Column(
-            children: [
-              DecoratedBox(
-                decoration: BoxDecoration(
-                    color: Theme.of(context).primaryColor,
-                    borderRadius:
-                        BorderRadius.only(bottomRight: Radius.circular(50))),
-                child: SizedBox(
-                  height: MediaQuery.of(context).size.height / 2.6,
-                  width: double.infinity,
-                  child: Padding(
-                      padding:
-                          EdgeInsets.only(left: 20.0, top: 50.0, right: 20.0),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        children: [
-                          Row(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              HeaderBoldWidget(
-                                  text: Headlines.loginToAccessAccount,
+      body: Container(
+        height: MediaQuery.of(context).size.height,
+        color: Theme.of(context).highlightColor,
+        child: SingleChildScrollView(
+          child: SizedBox(
+            child: Column(
+              children: [
+                DecoratedBox(
+                  decoration: BoxDecoration(
+                      color: Theme.of(context).primaryColor,
+                      borderRadius:
+                          BorderRadius.only(bottomRight: Radius.circular(50))),
+                  child: SizedBox(
+                    height: MediaQuery.of(context).size.height / 2.6,
+                    width: double.infinity,
+                    child: Padding(
+                        padding:
+                            EdgeInsets.only(left: 20.0, top: 50.0, right: 20.0),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: [
+                            Row(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                HeaderBoldWidget(
+                                    text: Headlines.loginToAccessAccount,
+                                    color: Theme.of(context).highlightColor,
+                                    size: "24.0"),
+                                const SizedBox(
+                                  width: 100,
+                                ),
+                                ClipOval(
+                                  child: Container(
+                                    width: 50,
+                                    height: 50,
+                                    color: Colors.grey,
+                                    child: Stack(
+                                      children: [
+                                        Positioned(
+                                            left: -10,
+                                            child: Image.asset(
+                                              Images.splashImage,
+                                              height: 60,
+                                              width: 60,
+                                              fit: BoxFit.cover,
+                                            ))
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                            Padding(
+                              padding: EdgeInsets.only(left: 0.0, top: 20.0),
+                              child: NormalHeaderWidget(
+                                  text: Headlines.loginDesc,
                                   color: Theme.of(context).highlightColor,
-                                  size: "24.0"),
+                                  size: "18.0"),
+                            ),
+                          ],
+                        )),
+                  ),
+                ),
+                const SizedBox(
+                  height: 20,
+                ),
+                Form(
+                  autovalidateMode: _formIsSubmitted
+                      ? AutovalidateMode.always
+                      : AutovalidateMode.disabled,
+                  key: formKey,
+                  child: Padding(
+                    padding: EdgeInsets.symmetric(
+                      horizontal: 5.0,
+                    ),
+                    child: DecoratedBox(
+                      decoration: BoxDecoration(
+                        color: Theme.of(context).highlightColor,
+                        border: Border(
+                          top:
+                              BorderSide(color: Theme.of(context).primaryColor),
+                          bottom:
+                              BorderSide(color: Theme.of(context).primaryColor),
+                          left:
+                              BorderSide(color: Theme.of(context).primaryColor),
+                          right:
+                              BorderSide(color: Theme.of(context).primaryColor),
+                        ),
+                        borderRadius: BorderRadius.all(Radius.circular(20)),
+                      ),
+                      child: SizedBox(
+                        height: MediaQuery.of(context).size.height / 2,
+                        width: double.infinity,
+                        child: Padding(
+                          padding: EdgeInsets.only(left: 10, right: 10, top: 0),
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              InputField(
+                                  field: 'username',
+                                  controller: _usernameController,
+                                  hintText: "username",
+                                  icon: Icon(Icons.mail)),
                               const SizedBox(
-                                width: 100,
+                                height: 20,
                               ),
-                              ClipOval(
-                                child: Container(
-                                  width: 50,
+                              TextFormField(
+                                onSaved: (value) => _password = value,
+                                autofocus: false,
+                                onChanged: (value) =>
+                                    auth.updateFormField('password', value),
+                                controller: _passwordController,
+                                validator: (value) => value!.isEmpty
+                                    ? "Please Enter password"
+                                    : null,
+                                obscureText: _obscurePassword,
+                                style: GoogleFonts.nunito(
+                                  textStyle: TextStyle(
+                                      color: Theme.of(context).primaryColor),
+                                  fontWeight: FontWeight.w500,
+                                  backgroundColor: Colors.transparent,
+                                ),
+                                decoration: InputDecoration(
+                                  prefixIcon:
+                                      Icon(CupertinoIcons.padlock_solid),
+                                  hintText: "Password",
+                                  hintStyle: TextStyle(color: Colors.grey),
+                                  border: OutlineInputBorder(
+                                    borderRadius:
+                                        BorderRadius.all(Radius.circular(30)),
+                                  ),
+                                  suffixIcon: IconButton(
+                                    onPressed: () => setState(() =>
+                                        _obscurePassword = !_obscurePassword),
+                                    icon: Icon(_obscurePassword
+                                        ? Icons.visibility_off
+                                        : Icons.visibility),
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(
+                                height: 20,
+                              ),
+                              ElevatedButton(
+                                onPressed: handleLogin,
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor:
+                                      Theme.of(context).primaryColor,
+                                  minimumSize: Size(
+                                      MediaQuery.of(context).size.width / 4,
+                                      48.0),
+                                  padding: const EdgeInsets.symmetric(
+                                      vertical: 12.0),
+                                ),
+                                child: DecoratedBox(
+                                  decoration: BoxDecoration(
+                                    color: Theme.of(context)
+                                        .primaryColor
+                                        .withOpacity(0.1),
+                                    shape: BoxShape.rectangle,
+                                  ),
+                                  child: SizedBox(
+                                    height: 30.0,
+                                    width:
+                                        MediaQuery.of(context).size.width / 6,
+                                    child: Center(
+                                      child: HeaderBoldWidget(
+                                        text: Texts.login,
+                                        color: Theme.of(context).highlightColor,
+                                        size: '24.0',
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                              Center(
+                                child: SizedBox(
                                   height: 50,
-                                  color: Colors.grey,
-                                  child: Stack(
+                                  child: Row(
                                     children: [
-                                      Positioned(
-                                          left: -10,
-                                          child: Image.asset(
-                                            Images.splashImage,
-                                            height: 60,
-                                            width: 60,
-                                            fit: BoxFit.cover,
-                                          ))
+                                      Expanded(
+                                        child: Container(
+                                            height: 1,
+                                            color:
+                                                Theme.of(context).primaryColor),
+                                      ),
+                                      Padding(
+                                        padding: const EdgeInsets.symmetric(
+                                            horizontal: 8.0),
+                                        child: Container(
+                                            color: Colors
+                                                .white, // Match background color to "hide" the line behind the text
+                                            padding: const EdgeInsets.symmetric(
+                                                horizontal: 8.0),
+                                            child: NormalHeaderWidget(
+                                              text: 'OR',
+                                              color: Theme.of(context)
+                                                  .indicatorColor,
+                                              size: '16.0',
+                                              backgroundColor:
+                                                  Colors.transparent,
+                                            )),
+                                      ),
+                                      Expanded(
+                                        child: Container(
+                                          height: 1, // Thickness of the line
+                                          color: Theme.of(context)
+                                              .primaryColor, // Color of the line
+                                        ),
+                                      ),
                                     ],
                                   ),
                                 ),
                               ),
-                            ],
-                          ),
-                          Padding(
-                            padding: EdgeInsets.only(left: 0.0, top: 20.0),
-                            child: NormalHeaderWidget(
-                                text: Headlines.loginDesc,
-                                color: Theme.of(context).highlightColor,
-                                size: "18.0"),
-                          ),
-                        ],
-                      )),
-                ),
-              ),
-              const SizedBox(
-                height: 20,
-              ),
-              Form(
-                autovalidateMode: _formIsSubmitted ? AutovalidateMode.always : AutovalidateMode.disabled,
-                key: formKey,
-                child: Padding(
-                  padding: EdgeInsets.symmetric(
-                    horizontal: 5.0,
-                  ),
-                  child: DecoratedBox(
-                    decoration: BoxDecoration(
-                      border: Border(
-                        top: BorderSide(color: Theme.of(context).primaryColor),
-                        bottom:
-                            BorderSide(color: Theme.of(context).primaryColor),
-                        left: BorderSide(color: Theme.of(context).primaryColor),
-                        right:
-                            BorderSide(color: Theme.of(context).primaryColor),
-                      ),
-                      borderRadius: BorderRadius.all(Radius.circular(20)),
-                    ),
-                    child: SizedBox(
-                      height: MediaQuery.of(context).size.height / 2,
-                      width: double.infinity,
-                      child: Padding(
-                        padding: EdgeInsets.only(left: 10, right: 10, top: 0),
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            InputField(
-                                field: 'username',
-                                controller: _usernameController,
-                                hintText: "username",
-                                icon: Icon(Icons.mail)),
-                            const SizedBox(
-                              height: 20,
-                            ),
-                            TextFormField(
-                              onSaved: (value) => _password = value,
-                              autofocus: false,
-                              onChanged: (value) =>
-                                  auth.updateFormField('password', value),
-                              controller: _passwordController,
-                              validator: (value) => value!.isEmpty
-                                  ? "Please Enter password"
-                                  : null,
-                              obscureText: _obscurePassword,
-                              style: GoogleFonts.nunito(
-                                textStyle: TextStyle(
-                                    color: Theme.of(context).primaryColor),
-                                fontWeight: FontWeight.w500,
-                                backgroundColor: Colors.white,
-                              ),
-                              decoration: InputDecoration(
-                                prefixIcon: Icon(CupertinoIcons.padlock_solid),
-                                hintText: "Password",
-                                hintStyle: TextStyle(color: Colors.grey),
-                                border: OutlineInputBorder(
-                                  borderRadius:
-                                      BorderRadius.all(Radius.circular(30)),
-                                ),
-                                suffixIcon: IconButton(
-                                  onPressed: () => setState(() =>
-                                      _obscurePassword = !_obscurePassword),
-                                  icon: Icon(_obscurePassword
-                                      ? Icons.visibility_off
-                                      : Icons.visibility),
-                                ),
-                              ),
-                            ),
-                            const SizedBox(
-                              height: 20,
-                            ),
-                            ElevatedButton(
-                              onPressed: handleLogin,
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: Theme.of(context).primaryColor,
-                                minimumSize: Size(
-                                    MediaQuery.of(context).size.width / 4,
-                                    48.0),
-                                padding:
-                                    const EdgeInsets.symmetric(vertical: 12.0),
-                              ),
-                              child: DecoratedBox(
-                                decoration: BoxDecoration(
-                                  color: Theme.of(context)
-                                      .primaryColor
-                                      .withOpacity(0.1),
-                                  shape: BoxShape.rectangle,
-                                ),
-                                child: SizedBox(
-                                  height: 30.0,
-                                  width: MediaQuery.of(context).size.width / 6,
-                                  child: Center(
-                                    child: HeaderBoldWidget(
-                                      text: Texts.login,
-                                      color: Theme.of(context).highlightColor,
-                                      size: '24.0',
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ),
-                            Center(
-                              child: SizedBox(
-                                height: 50,
-                                child: Row(
-                                  children: [
-                                    Expanded(
-                                      child: Container(
-                                          height: 1,
-                                          color:
-                                              Theme.of(context).primaryColor),
-                                    ),
-                                    Padding(
-                                      padding: const EdgeInsets.symmetric(
-                                          horizontal: 8.0),
-                                      child: Container(
-                                        color: Colors
-                                            .white, // Match background color to "hide" the line behind the text
-                                        padding: const EdgeInsets.symmetric(
-                                            horizontal: 8.0),
-                                        child: Text(
-                                          "OR",
-                                          style: TextStyle(
-                                            color:
-                                                Theme.of(context).primaryColor,
-                                            fontSize: 16,
-                                            fontWeight: FontWeight.bold,
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                    Expanded(
-                                      child: Container(
-                                        height: 1, // Thickness of the line
-                                        color: Theme.of(context)
-                                            .primaryColor, // Color of the line
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              children: [
-                                for (int i = 0;
-                                    i <
-                                        LoginWidgetClickableIcons.icons(context)
-                                            .length;
-                                    i++) ...[
-                                  Padding(
-                                    padding: EdgeInsets.only(right: 12.0),
-                                    child: Container(
-                                      decoration: BoxDecoration(
-                                        color: Theme.of(context).primaryColor,
-                                        borderRadius: BorderRadius.circular(50),
-                                      ),
-                                      child: Padding(
-                                        padding: const EdgeInsets.all(16.0),
-                                        child: Icon(
-                                          LoginWidgetClickableIcons.icons(
-                                                  context)[i]
-                                              .icon,
-                                          size: 18,
-                                          color:
-                                              Theme.of(context).highlightColor,
-                                        ),
-                                      ),
-                                    ),
-                                  )
-                                ]
-                              ],
-                            ),
-                            const SizedBox(
-                              height: 20,
-                            ),
-                            Center(
-                              child: Row(
+                              Row(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 crossAxisAlignment: CrossAxisAlignment.center,
                                 children: [
-                                  NormalHeaderWidget(
-                                      text: Texts.noAccount,
-                                      color: Theme.of(context).primaryColor,
-                                      size: '18.0'),
-                                  SizedBox(
-                                    width: 3,
-                                  ),
-                                  TextButton(
-                                      onPressed: () =>
-                                          auth.navigateToRegisterScreen(),
-                                      child: Text(Texts.register)),
+                                  for (int i = 0;
+                                      i <
+                                          LoginWidgetClickableIcons.icons(
+                                                  context)
+                                              .length;
+                                      i++) ...[
+                                    Padding(
+                                      padding: EdgeInsets.only(right: 12.0),
+                                      child: Container(
+                                        decoration: BoxDecoration(
+                                          color: Theme.of(context).primaryColor,
+                                          borderRadius:
+                                              BorderRadius.circular(50),
+                                        ),
+                                        child: Padding(
+                                          padding: const EdgeInsets.all(16.0),
+                                          child: Icon(
+                                            LoginWidgetClickableIcons.icons(
+                                                    context)[i]
+                                                .icon,
+                                            size: 18,
+                                            color: Theme.of(context)
+                                                .highlightColor,
+                                          ),
+                                        ),
+                                      ),
+                                    )
+                                  ]
                                 ],
                               ),
-                            ),
-                          ],
+                              const SizedBox(
+                                height: 20,
+                              ),
+                              Center(
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  children: [
+                                    NormalHeaderWidget(
+                                        text: Texts.noAccount,
+                                        color: Theme.of(context).primaryColor,
+                                        size: '18.0'),
+                                    SizedBox(
+                                      width: 3,
+                                    ),
+                                    TextButton(
+                                        onPressed: () =>
+                                            auth.navigateToRegisterScreen(),
+                                        child: Text(Texts.register)),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
                       ),
                     ),
                   ),
                 ),
-              ),
-              const SizedBox(
-                height: 20,
-              ),
-              Center(
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    SizedBox(
-                      width: 3,
-                    ),
-                    NormalHeaderWidget(
-                        text: Texts.forgotPassword,
-                        color: Theme.of(context).primaryColor,
-                        size: '18.0'),
-                    const SizedBox(
-                      width: 20,
-                    ),
-                    TextButton(
-                        onPressed: () => auth.navigateToForgotPasswordScreen(),
-                        child: Text(Texts.resetPassword)),
-                  ],
+                const SizedBox(
+                  height: 20,
                 ),
-              ),
-            ],
+                Center(
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      SizedBox(
+                        width: 3,
+                      ),
+                      NormalHeaderWidget(
+                          text: Texts.forgotPassword,
+                          color: Theme.of(context).primaryColor,
+                          size: '18.0'),
+                      const SizedBox(
+                        width: 20,
+                      ),
+                      TextButton(
+                          onPressed: () =>
+                              auth.navigateToForgotPasswordScreen(),
+                          child: Text(Texts.resetPassword)),
+                    ],
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),

@@ -9,7 +9,6 @@ import '../utils/resources/images/images.dart';
 import '../utils/resources/strings/strings.dart';
 import '../components/alert_reminder.dart';
 
-
 class RegisterPage extends StatefulWidget {
   const RegisterPage({super.key});
   @override
@@ -43,7 +42,7 @@ class _RegisterPageState extends State<RegisterPage> {
         _middleNameController.text.isEmpty ||
         _lastNameController.text.isEmpty ||
         _emailController.text.isEmpty ||
-        _phoneNumberController.text.isEmpty){
+        _phoneNumberController.text.isEmpty) {
       Alerts.show(
           context,
           "Fill in all required fields",
@@ -52,8 +51,7 @@ class _RegisterPageState extends State<RegisterPage> {
             height: 30,
             width: 30,
           ));
-      Future.delayed(Duration(seconds: 2), ()
-      {
+      Future.delayed(Duration(seconds: 2), () {
         Navigator.of(context).pop();
       });
       return;
@@ -69,10 +67,10 @@ class _RegisterPageState extends State<RegisterPage> {
   @override
   void initState() {
     super.initState();
-    Future.microtask((){
+    Future.microtask(() {
       final auth = Provider.of<AuthProvider>(context, listen: false);
       final formData = auth.formData[AuthScreen.registerScreen];
-      if(formData != null){
+      if (formData != null) {
         _firstNameController.text = formData['firstName'] ?? '';
         _middleNameController.text = formData['secondName'] ?? '';
         _lastNameController.text = formData['lastName'] ?? '';
@@ -88,7 +86,7 @@ class _RegisterPageState extends State<RegisterPage> {
   }
 
   @override
-  void dispose(){
+  void dispose() {
     _firstNameController.dispose();
     _middleNameController.dispose();
     _lastNameController.dispose();
@@ -102,13 +100,13 @@ class _RegisterPageState extends State<RegisterPage> {
     super.dispose();
   }
 
-
   @override
   Widget build(BuildContext context) {
     final authProvider = Provider.of<AuthProvider>(context);
     final formKey = GlobalKey<FormState>();
     return Scaffold(
-      body: SingleChildScrollView(
+      body: Container(
+        color: Theme.of(context).highlightColor,
         child: SizedBox(
           height: double.maxFinite,
           child: Column(
@@ -176,7 +174,9 @@ class _RegisterPageState extends State<RegisterPage> {
               ),
               Form(
                 key: _formKey,
-                autovalidateMode: _formIsSubmitted ? AutovalidateMode.always: AutovalidateMode.disabled,
+                autovalidateMode: _formIsSubmitted
+                    ? AutovalidateMode.always
+                    : AutovalidateMode.disabled,
                 child: Padding(
                   padding: EdgeInsets.symmetric(horizontal: 5.0),
                   child: SizedBox(
@@ -290,7 +290,7 @@ class _RegisterPageState extends State<RegisterPage> {
                                   textStyle: TextStyle(
                                       color: Theme.of(context).primaryColor),
                                   fontWeight: FontWeight.w500,
-                                  backgroundColor: Colors.white,
+                                  backgroundColor: Colors.transparent,
                                 ),
                                 decoration: InputDecoration(
                                   prefixIcon:

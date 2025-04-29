@@ -97,7 +97,8 @@ class AuthProvider with ChangeNotifier {
       var userData = responseData['data'];
       User authenticatedUser = User.fromJson(userData);
       UserPreferences.saveUser(authenticatedUser);
-      developer.log("\n\nAuthenticated user${authenticatedUser.toString()}\n\n");
+      developer
+          .log("\n\nAuthenticated user${authenticatedUser.toString()}\n\n");
 
       _loggedInStatus = Status.LoggedIn;
       notifyListeners();

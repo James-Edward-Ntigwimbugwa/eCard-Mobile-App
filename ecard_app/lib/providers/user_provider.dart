@@ -11,9 +11,8 @@ class UserProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  void clearSession(){
+  void clearSession() {
     _user = User();
     notifyListeners();
   }
-
 }

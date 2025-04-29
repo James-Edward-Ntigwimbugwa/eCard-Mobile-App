@@ -4,4 +4,5 @@ class RouterPath {
   static const String analysis = "/scan";
   static const String profile = "/profile";
   static const String nearby = "/nearby";
+  static const String splash = '/';
 }

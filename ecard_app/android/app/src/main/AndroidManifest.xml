@@ -4,6 +4,8 @@
     <application
         android:label="eCard"
         android:name="${applicationName}"
+        <meta-data android:name="com.google.android.geo.API_KEY"
+        android:value="AIzaSyCAu5iP5hy8vWZJTwKNjFeeBm4vamK-hE4"/>
         android:icon="@mipmap/ic_launcher">
         <activity
             android:name=".MainActivity"
