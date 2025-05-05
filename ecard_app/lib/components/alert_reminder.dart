@@ -1,5 +1,4 @@
 import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'custom_widgets.dart';
 
@@ -11,6 +10,8 @@ class Alerts {
       builder: (context) => PopScope(
         canPop: false,
         child: GestureDetector(
+          behavior: HitTestBehavior.opaque,
+
           child: AlertDialog(
             content: Column(
               mainAxisSize: MainAxisSize.min,
@@ -19,11 +20,12 @@ class Alerts {
                 const SizedBox(height: 20),
                 NormalHeaderWidget(
                   text: message,
-                  color: Theme.of(context).hintColor,
+                  color: Theme.of(context).indicatorColor,
                   size: '24.0',
                 ),
               ],
             ),
+            backgroundColor: Theme.of(context).secondaryHeaderColor,
           ),
           // onTap: () => Navigator.pop(context),
         ),

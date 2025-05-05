@@ -148,8 +148,12 @@ class _InputFieldState extends State<InputField> {
         backgroundColor: Colors.transparent,
       ),
       decoration: InputDecoration(
+        focusedBorder: OutlineInputBorder(
+            borderSide: BorderSide(color: Theme.of(context).primaryColor),
+            borderRadius: BorderRadius.all(Radius.circular(30))),
         prefixIcon: widget.icon,
-        hintText: widget.hintText,
+        labelText: widget.hintText,
+        labelStyle: TextStyle(color: Theme.of(context).indicatorColor),
         hintStyle: TextStyle(color: Colors.grey),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.all(Radius.circular(30)),

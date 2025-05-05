@@ -1,5 +1,4 @@
 import 'package:ecard_app/providers/card_provider.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:provider/provider.dart';
@@ -165,7 +164,9 @@ class _AllCardsScreenState extends State<AllCardsScreen>
       ),
       floatingActionButton: FloatingActionButton(
         backgroundColor: Theme.of(context).primaryColor,
-        onPressed: () {},
+        onPressed: () {
+          Navigator.pushNamed(context, '/new_card');
+        },
         mini: false,
         shape: CircleBorder(),
         child: Icon(Icons.add, color: Colors.white, size: 25),

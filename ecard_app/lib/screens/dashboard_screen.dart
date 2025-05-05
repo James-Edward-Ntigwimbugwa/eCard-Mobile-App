@@ -22,6 +22,8 @@ class DashboardPage extends StatefulWidget {
 
 class _DashboardPageState extends State<DashboardPage>
     with SingleTickerProviderStateMixin {
+  // TabController? tabController;
+  // int currentTab = 0;remote: Support for password authentication was removed on August 13, 2021.
 
   String tabLocation = RouterPath.dashboard;
   late StatefulWidget app;

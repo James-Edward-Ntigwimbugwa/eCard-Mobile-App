@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:ecard_app/services/app_urls.dart';
 import 'package:http/http.dart' as http;
+import 'dart:developer' as developer;
 
 class AuthRequests {
   static Future<http.Response> login(String path, Object object) async {
@@ -25,6 +26,19 @@ class AuthRequests {
           "Accept": "application/json"
         },
         body: jsonEncode(object));
+
+    developer.log("========>Full endpoint ${AppUrl.baseEndpoint}/auth/$path");
+
+    return response;
+  }
+
+  static Future<http.Response> activateAccount(String otp) {
+    var response = http.get(
+        Uri.parse("${AppUrl.baseEndpoint}/auth/activate?otp='$otp'"),
+        headers: {
+          'Content-type': 'Application/json',
+          'Accept': 'application/json'
+        });
 
     return response;
   }

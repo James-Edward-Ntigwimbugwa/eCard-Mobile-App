@@ -1,8 +1,11 @@
+import 'dart:async';
+
 import 'package:ecard_app/providers/auth_provider.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:provider/provider.dart';
 import '../components/custom_widgets.dart';
 import '../utils/resources/images/images.dart';
@@ -51,6 +54,9 @@ class _RegisterPageState extends State<RegisterPage> {
             height: 30,
             width: 30,
           ));
+      Future.delayed(Duration(seconds: 2) , () {
+        Navigator.pop(context);
+      });
       Future.delayed(Duration(seconds: 2), () {
         Navigator.of(context).pop();
       });
@@ -60,8 +66,49 @@ class _RegisterPageState extends State<RegisterPage> {
       print("Invalid form...==>");
       return;
     }
-
     form.save();
+    Alerts.show(
+        context,
+        "Loading ...",
+        LoadingAnimationWidget.stretchedDots(
+            color: Theme.of(context).primaryColor, size: 20));
+    Timer(const Duration(seconds: 1), () {
+      final auth = Provider.of<AuthProvider>(context, listen: false);
+      auth.updateFormField('firstName', _firstNameController.text.trim());
+      auth.updateFormField('secondName', _middleNameController.text.trim());
+      auth.updateFormField('lastName', _lastNameController.text.trim());
+      auth.updateFormField('email', _emailController.text.trim());
+      auth.updateFormField('phoneNumber', _phoneNumberController.text.trim());
+      auth.updateFormField('bio', _bioController.text.trim());
+      auth.updateFormField('companyTitle', _companyTitleController.text.trim());
+      auth.updateFormField('username', _usernameController.text.trim());
+      auth.updateFormField('password', _passwordController.text.trim());
+
+      auth
+          .register(
+              _firstNameController.text.trim(),
+              _middleNameController.text.trim(),
+              _usernameController.text.trim(),
+              _lastNameController.text.trim(),
+              _emailController.text.trim(),
+              "USER",
+              _passwordController.text.trim(),
+              _phoneNumberController.text.trim(),
+              _bioController.text.trim(),
+              _companyTitleController.text.trim(),
+              _jobTitleController.text.trim().isEmpty
+                  ? "N/A"
+                  : _jobTitleController.text.trim())
+          .then((response) {
+        if (response['status'] == true) {
+          Navigator.pop(context);
+          Navigator.pushReplacementNamed(context, '/verify_with_otp');
+        } else {
+          Alerts.show(context, response['message'] ?? 'Registration failed',
+              Image.asset(Images.errorImage));
+        }
+      }).catchError((error) => print(error));
+    });
   }
 
   @override
@@ -275,11 +322,20 @@ class _RegisterPageState extends State<RegisterPage> {
                                 hintText: "username",
                                 field: 'username',
                               ),
-                              const SizedBox(
-                                height: 20,
-                              ),
+                              const SizedBox(height: 20),
                               TextFormField(
-                                onSaved: (value) => _password = value,
+                                onSaved: (value) {
+                                  if (value != null) {
+                                    if (value.length < 8) {
+                                      Alerts.show(
+                                          context,
+                                          'Password must be at least 8 characters long',
+                                          Image.asset(Images.errorImage));
+                                    } else {
+                                      _password = value;
+                                    }
+                                  }
+                                },
                                 autofocus: false,
                                 controller: _passwordController,
                                 validator: (value) => value!.isEmpty
@@ -295,7 +351,15 @@ class _RegisterPageState extends State<RegisterPage> {
                                 decoration: InputDecoration(
                                   prefixIcon:
                                       Icon(CupertinoIcons.padlock_solid),
-                                  hintText: "Password",
+                                  labelText: "Password",
+                                  labelStyle: TextStyle(
+                                      color: Theme.of(context).indicatorColor),
+                                  focusedBorder: OutlineInputBorder(
+                                      borderSide: BorderSide(
+                                          color:
+                                              Theme.of(context).primaryColor),
+                                      borderRadius: BorderRadius.all(
+                                          Radius.circular(30))),
                                   hintStyle: TextStyle(color: Colors.grey),
                                   border: OutlineInputBorder(
                                     borderRadius:
@@ -346,35 +410,14 @@ class _RegisterPageState extends State<RegisterPage> {
               ),
               const SizedBox(height: 20),
               ElevatedButton(
-                onPressed: () {
-                  Navigator.pushReplacementNamed(context, '/dashboard');
-                },
+                onPressed: _handleRegister,
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Theme.of(context)
-                      .primaryColor, // Set the background color to green
-                  minimumSize: Size(MediaQuery.of(context).size.width / 4,
-                      48.0), // Set width to half of the screen width and height to 48.0
-                  padding: EdgeInsets.symmetric(
-                      vertical: 12.0), // Adjust padding for better appearance
-                ),
-                child: DecoratedBox(
-                  decoration: BoxDecoration(
-                    color: Theme.of(context).primaryColor.withOpacity(0.1),
-                    shape: BoxShape.rectangle,
-                  ),
-                  child: SizedBox(
-                    height: 30.0,
-                    width: MediaQuery.of(context).size.width /
-                        4.9, // Reduce width further if needed
-                    child: Center(
-                      // Center the child widget
-                      child: HeaderBoldWidget(
-                        text: Texts.register,
-                        color: Theme.of(context).highlightColor,
-                        size: '24.0',
-                      ),
-                    ),
-                  ),
+                    backgroundColor: Theme.of(context).primaryColor,
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.all(Radius.circular(10)))),
+                child: Text(
+                  Texts.register,
+                  style: TextStyle(color: Colors.white),
                 ),
               ),
             ],
