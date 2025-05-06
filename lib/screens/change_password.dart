@@ -1,6 +1,5 @@
 import 'package:ecard_app/components/custom_widgets.dart';
 import 'package:ecard_app/providers/auth_provider.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
@@ -17,7 +16,7 @@ class ChangePasswordScreenState extends State<ChangePasswordScreen> {
   bool _obscurePassword = true;
   String? _currentPassword;
   String? _newPassword;
-  String _passwordStrength = 'Very Weak ';
+  final String _passwordStrength = 'Very Weak ';
   bool formIsSubmitted = false;
   final TextEditingController _currentPasswordController =
       TextEditingController();
@@ -275,16 +274,16 @@ class ChangePasswordScreenState extends State<ChangePasswordScreen> {
                                 ElevatedButton(
                                   onPressed: () {},
                                   style: ButtonStyle(
-                                    backgroundColor: MaterialStateProperty.all(
+                                    backgroundColor: WidgetStateProperty.all(
                                         Theme.of(context).focusColor),
-                                    elevation: MaterialStateProperty.all(
+                                    elevation: WidgetStateProperty.all(
                                         2), // Subtle elevation
-                                    shadowColor: MaterialStateProperty.all(
+                                    shadowColor: WidgetStateProperty.all(
                                       Theme.of(context)
                                           .primaryColor
                                           .withOpacity(1), // Very subtle shadow
                                     ),
-                                    shape: MaterialStateProperty.all(
+                                    shape: WidgetStateProperty.all(
                                       RoundedRectangleBorder(
                                         borderRadius: BorderRadius.circular(
                                             10), // Optional: Add border radius
@@ -300,16 +299,16 @@ class ChangePasswordScreenState extends State<ChangePasswordScreen> {
                                 ElevatedButton(
                                   onPressed: () {},
                                   style: ButtonStyle(
-                                    backgroundColor: MaterialStateProperty.all(
+                                    backgroundColor: WidgetStateProperty.all(
                                         Theme.of(context).primaryColor),
-                                    elevation: MaterialStateProperty.all(
+                                    elevation: WidgetStateProperty.all(
                                         2), // Subtle elevation
-                                    shadowColor: MaterialStateProperty.all(
+                                    shadowColor: WidgetStateProperty.all(
                                       Theme.of(context)
                                           .primaryColor
                                           .withOpacity(1), // Very subtle shadow
                                     ),
-                                    shape: MaterialStateProperty.all(
+                                    shape: WidgetStateProperty.all(
                                       RoundedRectangleBorder(
                                         borderRadius: BorderRadius.circular(
                                             10), // Optional: Add border radius

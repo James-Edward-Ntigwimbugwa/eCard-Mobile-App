@@ -1,4 +1,3 @@
-import 'package:ecard_app/preferences/user_preference.dart';
 import 'package:ecard_app/services/app_urls.dart';
 import 'package:http/http.dart';
 import 'dart:developer' as developer;

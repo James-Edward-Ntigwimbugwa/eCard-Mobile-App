@@ -102,8 +102,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
                           UserPreferences.removeUser();
                           developer.log(
                               "======> ${prefs.getString('accessToken')} , ======> ${prefs.getString('username')}");
-
-                          Navigator.pushReplacementNamed(context, '/auth');
+                          //predicate: This is a function that takes a Route and returns a boolean.
+                          // It's called for each route in the stack, and if it returns true,
+                          // the route will be removed.
+                          //In this case (route) => false, we are telling it to remove all routes
+                          //so it go back to the auth screen.
+                          Navigator.pushNamedAndRemoveUntil(context,'/auth' ,(route) => false);
                         },
                         child: HeaderBoldWidget(
                             text: "Logout",
@@ -344,13 +348,17 @@ class _SettingsScreenState extends State<SettingsScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          // Profile info row with responsive layout
           Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              // Avatar
               CircleAvatar(
                 radius: 30,
                 backgroundImage: AssetImage(Images.profileImage),
               ),
               const SizedBox(width: 16),
+              // User info with flexible layout
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -362,34 +370,84 @@ class _SettingsScreenState extends State<SettingsScreen> {
                         fontSize: 18,
                         color: Theme.of(context).indicatorColor,
                       ),
+                      overflow: TextOverflow.ellipsis,
                     ),
                     NormalHeaderWidget(
-                        text: 'Senior developer',
-                        color: Theme.of(context).hintColor.withOpacity(0.6),
-                        size: '14.0'),
+                      text: 'Senior developer',
+                      color: Theme.of(context).hintColor.withOpacity(0.6),
+                      size: '14.0',
+                    ),
                     const SizedBox(height: 6),
-                    ElevatedButton.icon(
-                      icon: Icon(
-                        Icons.edit,
-                        size: 14,
-                        color: Theme.of(context).indicatorColor,
+                    // Row for buttons with flexible layout
+                    Wrap(
+                      spacing: 12,
+                      runSpacing: 8,
+                      children: [
+                        ElevatedButton.icon(
+                          icon: Icon(
+                            Icons.edit,
+                            size: 14,
+                            color: Theme.of(context).indicatorColor,
+                          ),
+                          label: Text(
+                            'Edit Profile',
+                            style: TextStyle(
+                              color: Theme.of(context).indicatorColor,
+                            ),
+                          ),
+                          onPressed: () {
+                            // Navigate to edit profile
+                          },
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Theme.of(context).primaryColor,
+                            foregroundColor: Theme.of(context).highlightColor,
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 12,
+                              vertical: 6,
+                            ),
+                            minimumSize: const Size(0, 32),
+                            textStyle: const TextStyle(fontSize: 12),
+                          ),
+                        ),
+                        const Spacer(),
+                        ElevatedButton.icon(
+                          icon: Icon(
+                            Icons.location_on,
+                            size: 14,
+                            color: Theme.of(context).indicatorColor,
+                          ),
+                          label: Text(
+                            'Your location',
+                            style: TextStyle(
+                              color: Theme.of(context).indicatorColor,
+                            ),
+                          ),
+                          onPressed: () {
+                            Navigator.pushNamed(context, '/location-picker');
+                          },
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Theme.of(context).primaryColor,
+                            foregroundColor: Theme.of(context).highlightColor,
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 12,
+                              vertical: 6,
+                            ),
+                            minimumSize: const Size(0, 32),
+                            textStyle: const TextStyle(fontSize: 12),
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 4),
+                    // Location display with text overflow handling
+                    Text(
+                      'Mabibo, Dar es Salaam',
+                      style: TextStyle(
+                        fontSize: 12,
+                        color:
+                            Theme.of(context).indicatorColor.withOpacity(0.6),
                       ),
-                      label: Text(
-                        'Edit Profile',
-                        style:
-                            TextStyle(color: Theme.of(context).indicatorColor),
-                      ),
-                      onPressed: () {
-                        // Navigate to edit profile
-                      },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Theme.of(context).primaryColor,
-                        foregroundColor: Theme.of(context).highlightColor,
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 12, vertical: 6),
-                        minimumSize: const Size(0, 32),
-                        textStyle: const TextStyle(fontSize: 12),
-                      ),
+                      overflow: TextOverflow.ellipsis,
                     ),
                   ],
                 ),
@@ -397,6 +455,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
             ],
           ),
           const SizedBox(height: 16),
+          // Contact information layout (unchanged)
           Row(
             children: [
               Expanded(

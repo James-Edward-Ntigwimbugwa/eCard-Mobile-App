@@ -7,7 +7,6 @@ import 'package:provider/provider.dart';
 
 class AuthNavigator extends StatefulWidget {
   const AuthNavigator({super.key});
-
   @override
   State<StatefulWidget> createState() => _AuthNavigatorState();
 }
@@ -31,8 +30,6 @@ class _AuthNavigatorState extends State<AuthNavigator> {
       case AuthScreen.forgotPassword:
         currentScreen = _forgetPasswordPage;
         break;
-      default:
-        currentScreen = _loginScreen;
     }
     return currentScreen;
   }

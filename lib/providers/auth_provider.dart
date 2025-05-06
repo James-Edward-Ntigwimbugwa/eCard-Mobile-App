@@ -118,7 +118,7 @@ class AuthProvider with ChangeNotifier {
     return result;
   }
 
-  Future<FutureOr> register(
+  Future<Map<String, dynamic>> register(
     String firstName,
     String middleName,
     String username,
@@ -146,13 +146,15 @@ class AuthProvider with ChangeNotifier {
     };
 
     _registeredStatus = Status.Registering;
+
+
     notifyListeners();
     return await AuthRequests.register('register', registrationData)
         .then(onValue)
         .catchError(onError);
   }
 
-  Future<FutureOr> onValue(Response response) async {
+  Future<Map<String, dynamic>> onValue(Response response) async {
     Map<String, Object> result;
     final Map<String, dynamic> responseData = json.decode(response.body);
     if (response.statusCode == 200) {

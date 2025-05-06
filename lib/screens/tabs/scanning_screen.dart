@@ -1,4 +1,3 @@
-import 'dart:async';
 import 'package:ecard_app/components/custom_widgets.dart';
 import 'package:flutter/material.dart';
 
@@ -19,7 +18,7 @@ class ScanCard {
 }
 
 class ScanningScreen extends StatefulWidget {
-  const ScanningScreen({Key? key}) : super(key: key);
+  const ScanningScreen({super.key});
 
   @override
   State<ScanningScreen> createState() => _ScanningScreenState();

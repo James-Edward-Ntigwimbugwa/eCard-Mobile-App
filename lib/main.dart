@@ -9,6 +9,7 @@ import 'package:ecard_app/screens/dashboard_screen.dart';
 import 'package:ecard_app/screens/splash_screen.dart';
 import 'package:ecard_app/utils/theme/theme.dart';
 import 'package:flutter/material.dart';
+import 'package:device_preview/device_preview.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -24,7 +25,8 @@ Future<void> main() async {
 
   final SharedPreferences prefs = await SharedPreferences.getInstance();
   final bool isDarkMode = prefs.getBool("themeMode") ?? false;
-  runApp(EcardApp(isDarkMode: isDarkMode));
+  runApp(DevicePreview(builder:(context)=>EcardApp(isDarkMode: isDarkMode)));
+  // runApp(EcardApp(isDarkMode: isDarkMode));
 }
 
 class EcardApp extends StatelessWidget {
@@ -65,8 +67,8 @@ class EcardApp extends StatelessWidget {
             data: themeNotifier.isDarkMode
                 ? AppThemeController.darkMode
                 : AppThemeController.lightMode,
-            duration: const Duration(milliseconds: 1000),
-            curve: Curves.easeInOut,
+            duration: const Duration(milliseconds: 100),
+            curve: Curves.easeIn,
             child: MaterialApp(
               debugShowCheckedModeBanner: false,
               theme: AppThemeController.lightMode,

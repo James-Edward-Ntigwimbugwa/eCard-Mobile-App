@@ -153,15 +153,12 @@ class _LoginPageState extends State<LoginPage> {
                           children: [
                             Row(
                               crossAxisAlignment: CrossAxisAlignment.start,
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              mainAxisAlignment: MainAxisAlignment.spaceAround,
                               children: [
                                 HeaderBoldWidget(
                                     text: Headlines.loginToAccessAccount,
                                     color: Theme.of(context).highlightColor,
                                     size: "24.0"),
-                                const SizedBox(
-                                  width: 100,
-                                ),
                                 ClipOval(
                                   child: Container(
                                     width: 50,
@@ -170,7 +167,8 @@ class _LoginPageState extends State<LoginPage> {
                                     child: Stack(
                                       children: [
                                         Positioned(
-                                            left: -10,
+                                            left: 0,
+                                            right: -10,
                                             child: Image.asset(
                                               Images.splashImage,
                                               height: 60,
@@ -255,9 +253,17 @@ class _LoginPageState extends State<LoginPage> {
                                   backgroundColor: Colors.transparent,
                                 ),
                                 decoration: InputDecoration(
+                                  focusedBorder: OutlineInputBorder(
+                                      borderSide: BorderSide(
+                                          color:
+                                              Theme.of(context).primaryColor),
+                                      borderRadius: BorderRadius.all(
+                                          Radius.circular(30))),
                                   prefixIcon:
                                       Icon(CupertinoIcons.padlock_solid),
-                                  hintText: "Password",
+                                  labelText: "Password",
+                                  labelStyle: TextStyle(
+                                      color: Theme.of(context).indicatorColor),
                                   hintStyle: TextStyle(color: Colors.grey),
                                   border: OutlineInputBorder(
                                     borderRadius:
@@ -278,33 +284,14 @@ class _LoginPageState extends State<LoginPage> {
                               ElevatedButton(
                                 onPressed: handleLogin,
                                 style: ElevatedButton.styleFrom(
-                                  backgroundColor:
-                                      Theme.of(context).primaryColor,
-                                  minimumSize: Size(
-                                      MediaQuery.of(context).size.width / 4,
-                                      48.0),
-                                  padding: const EdgeInsets.symmetric(
-                                      vertical: 12.0),
-                                ),
-                                child: DecoratedBox(
-                                  decoration: BoxDecoration(
-                                    color: Theme.of(context)
-                                        .primaryColor
-                                        .withOpacity(0.1),
-                                    shape: BoxShape.rectangle,
-                                  ),
-                                  child: SizedBox(
-                                    height: 30.0,
-                                    width:
-                                        MediaQuery.of(context).size.width / 6,
-                                    child: Center(
-                                      child: HeaderBoldWidget(
-                                        text: Texts.login,
-                                        color: Theme.of(context).highlightColor,
-                                        size: '24.0',
-                                      ),
-                                    ),
-                                  ),
+                                    backgroundColor:
+                                        Theme.of(context).primaryColor,
+                                    shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.all(
+                                            Radius.circular(10)))),
+                                child: Text(
+                                  Texts.login,
+                                  style: TextStyle(color: Colors.white),
                                 ),
                               ),
                               Center(

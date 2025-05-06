@@ -3,7 +3,6 @@ import 'package:ecard_app/providers/screen_index_provider.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:skeletonizer/skeletonizer.dart';
 import '../../utils/resources/images/images.dart';
 import '../all_cards_screen.dart';
 import '../group_cards_screen.dart';
@@ -17,7 +16,7 @@ class MainScreenTab extends StatefulWidget {
 class _MainScreenTabState extends State<MainScreenTab>
     with SingleTickerProviderStateMixin, AutomaticKeepAliveClientMixin {
   late TabController _tabController;
-  int _notificationCount = 3;
+  final int _notificationCount = 3;
   bool _showSkeleton = true;
   final GlobalKey<FormState> _key = GlobalKey();
   final List<Widget> _tabs = [
