@@ -398,8 +398,14 @@ class _RegisterPageState extends State<RegisterPage> {
                                 ),
                               ),
                               const SizedBox(
-                                height: 20,
+                                height: 10,
                               ),
+                              TextButton(onPressed: () {
+                                final auth = Provider.of<AuthProvider>(context , listen: false);
+                                auth.navigateToVerifyWithOptScreen();
+                              }, child: Text(Texts.activateAccountWithOtp)),
+
+                              const SizedBox(height: 10,),
                             ],
                           ),
                         ),
