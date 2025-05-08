@@ -104,7 +104,7 @@ class _RegisterPageState extends State<RegisterPage> {
           Navigator.pop(context);
           Navigator.pushReplacementNamed(context, '/verify_with_otp');
         } else {
-          Alerts.show(context, response['message'] ?? 'Registration failed',
+          Alerts.show(context,response['message'] ?? 'Registration failed',
               Image.asset(Images.errorImage));
         }
       }).catchError((error) => print(error));
