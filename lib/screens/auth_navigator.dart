@@ -34,7 +34,7 @@ class _AuthNavigatorState extends State<AuthNavigator> {
         break;
       case AuthScreen.verifyWithOtp:
         currentScreen = _otpVerifier;
-        break ;
+        break;
     }
     return currentScreen;
   }

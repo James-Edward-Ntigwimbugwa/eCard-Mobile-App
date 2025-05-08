@@ -92,6 +92,7 @@ class _SplashScreenState extends State<SplashScreen> {
         duration: 3000,
         splashIconSize: 500,
         backgroundColor: Theme.of(context).primaryColor,
-        nextScreen: _nextScreen ?? const AuthNavigator()); // Use the determined next screen or default to AuthNavigator
+        nextScreen: _nextScreen ??
+            const AuthNavigator()); // Use the determined next screen or default to AuthNavigator
   }
 }

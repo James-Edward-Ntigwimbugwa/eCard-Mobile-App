@@ -1,5 +1,3 @@
-import 'package:ecard_app/modals/user_modal.dart';
-import 'package:ecard_app/preferences/user_preference.dart';
 import 'package:ecard_app/providers/auth_provider.dart';
 import 'package:ecard_app/providers/card_provider.dart';
 import 'package:ecard_app/providers/screen_index_provider.dart';
@@ -24,7 +22,7 @@ Future<void> main() async {
 
   final SharedPreferences prefs = await SharedPreferences.getInstance();
   final bool isDarkMode = prefs.getBool("themeMode") ?? false;
-  runApp(DevicePreview(builder:(context)=>EcardApp(isDarkMode: isDarkMode)));
+  runApp(DevicePreview(builder: (context) => EcardApp(isDarkMode: isDarkMode)));
   // runApp(EcardApp(isDarkMode: isDarkMode));
 }
 
@@ -38,9 +36,9 @@ class EcardApp extends StatelessWidget {
     SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
       systemNavigationBarColor: Theme.of(context).highlightColor,
       systemNavigationBarIconBrightness:
-      brightness == Brightness.dark ? Brightness.light : Brightness.dark,
+          brightness == Brightness.dark ? Brightness.light : Brightness.dark,
       statusBarIconBrightness:
-      brightness == Brightness.dark ? Brightness.light : Brightness.dark,
+          brightness == Brightness.dark ? Brightness.light : Brightness.dark,
       statusBarColor: Colors.transparent,
     ));
 
@@ -68,7 +66,7 @@ class EcardApp extends StatelessWidget {
               theme: AppThemeController.lightMode,
               darkTheme: AppThemeController.darkMode,
               themeMode:
-              themeNotifier.isDarkMode ? ThemeMode.dark : ThemeMode.light,
+                  themeNotifier.isDarkMode ? ThemeMode.dark : ThemeMode.light,
               initialRoute: '/',
               onGenerateRoute: PageRouter.switchRoute,
               home: SplashScreen(), // Always start with SplashScreen

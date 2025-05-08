@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:ecard_app/components/custom_widgets.dart';
 import 'package:ecard_app/providers/auth_provider.dart';
+import 'package:ecard_app/screens/register_screen.dart';
 import 'package:ecard_app/services/auth_requests.dart';
 import 'package:ecard_app/components/alert_reminder.dart';
 import 'package:ecard_app/utils/resources/images/images.dart';
@@ -8,7 +9,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_otp_text_field/flutter_otp_text_field.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:provider/provider.dart';
-
+import 'dart:developer' as developer;
+import '../providers/user_provider.dart';
 import '../utils/resources/strings/strings.dart';
 
 class OtpVerifier extends StatefulWidget {
@@ -24,11 +26,8 @@ class OtpVerifierState extends State<OtpVerifier> {
 
   Future<void> _verifyOtp() async {
     if (_otpCode.length < 6) {
-      Alerts.show(
-          context,
-          "Please enter the complete 6-digit OTP code",
-          Image.asset(Images.errorImage, height: 30, width: 30)
-      );
+      Alerts.show(context, "Please enter the complete 6-digit OTP code",
+          Image.asset(Images.errorImage, height: 30, width: 30));
       return;
     }
 
@@ -40,10 +39,7 @@ class OtpVerifierState extends State<OtpVerifier> {
         context,
         "Verifying OTP...",
         LoadingAnimationWidget.stretchedDots(
-            color: Theme.of(context).primaryColor,
-            size: 20
-        )
-    );
+            color: Theme.of(context).primaryColor, size: 20));
 
     try {
       final response = await AuthRequests.activateAccount(_otpCode);
@@ -53,30 +49,49 @@ class OtpVerifierState extends State<OtpVerifier> {
 
       if (response.statusCode == 200) {
         // Account activated successfully
-        Alerts.show(
-            context,
-            "Account activated successfully!",
-            Icon(Icons.check_circle, color: Colors.green, size: 30)
-        );
+        Alerts.show(context, "Account activated successfully!",
+            Icon(Icons.check_circle, color: Colors.green, size: 30));
 
         // Wait for alert to show before navigating
         Timer(const Duration(seconds: 2), () {
           Navigator.pop(context); // Close alert
-
+          Alerts.show(
+              context,
+              "Logging in ...",
+              LoadingAnimationWidget.stretchedDots(
+                  color: Theme.of(context).primaryColor, size: 20));
           // Get auth provider and mark account as verified
-          final authProvider = Provider.of<AuthProvider>(context, listen: false);
+          final authProvider =
+              Provider.of<AuthProvider>(context, listen: false);
           authProvider.setAccountVerified(true);
-
+          final username = RegisterPageState.usernameController;
+          final password = RegisterPageState.passwordController;
+          authProvider.login(username.text, password.text).then((response) {
+            if (response['status'] == 200) {
+              var user = Provider.of<UserProvider>(context, listen: false)
+                  .setUser(response['user']);
+              Navigator.pop(context);
+              Navigator.pushReplacementNamed(context, '/dashboard');
+            }
+          }).catchError((error) {
+            developer.log("Error verifying otp=======> $error");
+            Alerts.show(context, "Error logging in.Please try again",
+                Image.asset(Images.errorImage, height: 30, width: 30));
+            return;
+          });
           // Navigate to login screen
-          Navigator.pushReplacementNamed(context, '/auth');
+          // Navigator.pushReplacementNamed(context, '/auth');
         });
       } else {
         // Activation failed
         Alerts.show(
             context,
             "Invalid OTP code. Please try again.",
-            Image.asset(Images.errorImage , height: 30, width: 30,)
-        );
+            Image.asset(
+              Images.errorImage,
+              height: 30,
+              width: 30,
+            ));
         setState(() {
           _isSubmitting = false;
         });
@@ -86,8 +101,7 @@ class OtpVerifierState extends State<OtpVerifier> {
       Alerts.show(
           context,
           "Verification failed. Please check your connection and try again.",
-          Image.asset(Images.errorImage)
-      );
+          Image.asset(Images.errorImage));
       setState(() {
         _isSubmitting = false;
       });
@@ -113,14 +127,12 @@ class OtpVerifierState extends State<OtpVerifier> {
                 HeaderBoldWidget(
                     text: Headlines.verifyOtp,
                     color: Theme.of(context).indicatorColor,
-                    size: '24.0'
-                ),
+                    size: '24.0'),
                 const SizedBox(height: 20),
                 NormalHeaderWidget(
                     text: "Enter the 6-digit code sent to your phone",
                     color: Theme.of(context).primaryColor,
-                    size: '16.0'
-                ),
+                    size: '16.0'),
                 const SizedBox(height: 30),
                 OtpTextField(
                   numberOfFields: 6,
@@ -143,11 +155,10 @@ class OtpVerifierState extends State<OtpVerifier> {
                   onPressed: _isSubmitting ? null : _verifyOtp,
                   style: ElevatedButton.styleFrom(
                       backgroundColor: Theme.of(context).primaryColor,
-                      padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 12),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 40, vertical: 12),
                       shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.all(Radius.circular(10))
-                      )
-                  ),
+                          borderRadius: BorderRadius.all(Radius.circular(10)))),
                   child: Text(
                     'Verify OTP',
                     style: TextStyle(color: Colors.white),
@@ -160,8 +171,8 @@ class OtpVerifierState extends State<OtpVerifier> {
                     Alerts.show(
                         context,
                         "OTP code resent!",
-                        Icon(Icons.email, color: Theme.of(context).primaryColor, size: 30)
-                    );
+                        Icon(Icons.email,
+                            color: Theme.of(context).primaryColor, size: 30));
                   },
                   child: Text(
                     "Didn't receive the code? Resend",
@@ -170,16 +181,19 @@ class OtpVerifierState extends State<OtpVerifier> {
                     ),
                   ),
                 ),
-
                 const SizedBox(
                   height: 10,
                 ),
-                TextButton(onPressed: () {
-                  final auth = Provider.of<AuthProvider>(context , listen: false);
-                  auth.navigateToRegisterScreen();
-                }, child: Text(Texts.backToRegister)),
-
-                const SizedBox(height: 10,),
+                TextButton(
+                    onPressed: () {
+                      final auth =
+                          Provider.of<AuthProvider>(context, listen: false);
+                      auth.navigateToRegisterScreen();
+                    },
+                    child: Text(Texts.backToRegister)),
+                const SizedBox(
+                  height: 10,
+                ),
               ],
             ),
           ),

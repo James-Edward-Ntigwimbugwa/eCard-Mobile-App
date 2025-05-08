@@ -4,7 +4,6 @@ import 'package:http/http.dart' as http;
 import 'dart:developer' as developer;
 
 class AuthRequests {
-
   // login method
   static Future<http.Response> login(String path, Object object) async {
     final url = Uri.parse("${AppUrl.loginUrl}/$path");
@@ -25,45 +24,39 @@ class AuthRequests {
     final url = Uri.parse("${AppUrl.baseEndpoint}/auth/$path");
     developer.log("Register endpoint: $url");
 
-    var response = await http.post(
-        url,
+    var response = await http.post(url,
         headers: {
           "Content-type": "application/json",
           "Accept": "application/json"
         },
-        body: jsonEncode(object)
-    );
+        body: jsonEncode(object));
 
     return response;
   }
 
   static Future<http.Response> activateAccount(String otp) async {
-    final url = Uri.parse("${AppUrl.baseEndpoint}/auth/activate-account?otp=$otp");
+    final url =
+        Uri.parse("${AppUrl.baseEndpoint}/auth/activate-account?otp=$otp");
     developer.log("Activation endpoint: $url");
 
-    var response = await http.post(
-        url,
-        headers: {
-          'Content-type': 'application/json',
-          'Accept': 'application/json'
-        }
-    );
+    var response = await http.post(url, headers: {
+      'Content-type': 'application/json',
+      'Accept': 'application/json'
+    });
 
     return response;
   }
 
   // Add method to check if account is verified
   static Future<http.Response> checkAccountStatus(String username) async {
-    final url = Uri.parse("${AppUrl.baseEndpoint}/auth/status?username=$username");
+    final url =
+        Uri.parse("${AppUrl.baseEndpoint}/auth/status?username=$username");
     developer.log("Status check endpoint: $url");
 
-    var response = await http.get(
-        url,
-        headers: {
-          'Content-type': 'application/json',
-          'Accept': 'application/json'
-        }
-    );
+    var response = await http.get(url, headers: {
+      'Content-type': 'application/json',
+      'Accept': 'application/json'
+    });
 
     return response;
   }
@@ -73,14 +66,12 @@ class AuthRequests {
     final url = Uri.parse("${AppUrl.baseEndpoint}/auth/resend-otp");
     developer.log("Resend OTP endpoint: $url");
 
-    var response = await http.post(
-        url,
+    var response = await http.post(url,
         headers: {
           'Content-type': 'application/json',
           'Accept': 'application/json'
         },
-        body: jsonEncode({'email': email})
-    );
+        body: jsonEncode({'email': email}));
 
     return response;
   }

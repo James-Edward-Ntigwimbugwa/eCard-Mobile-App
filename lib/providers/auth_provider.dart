@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 // Define authentication screens
-enum AuthScreen { loginScreen, registerScreen, forgotPassword , verifyWithOtp }
+enum AuthScreen { loginScreen, registerScreen, forgotPassword, verifyWithOtp }
 
 class AuthProvider extends ChangeNotifier {
   AuthScreen _currentScreen = AuthScreen.loginScreen;
@@ -126,18 +126,18 @@ class AuthProvider extends ChangeNotifier {
 
   // Register method
   Future<Map<String, dynamic>> register(
-      String firstName,
-      String middleName,
-      String username,
-      String lastName,
-      String email,
-      String role,
-      String password,
-      String phoneNumber,
-      String bio,
-      String companyTitle,
-      String jobTitle,
-      ) async {
+    String firstName,
+    String middleName,
+    String username,
+    String lastName,
+    String email,
+    String role,
+    String password,
+    String phoneNumber,
+    String bio,
+    String companyTitle,
+    String jobTitle,
+  ) async {
     try {
       final Map<String, String> registerData = {
         'firstName': firstName,
