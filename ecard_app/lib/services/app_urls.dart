@@ -1,6 +1,6 @@
 class AppUrl {
   static const String liveUrl = "https://alltanzaniaecard.onrender.com";
-  static const String localhost = "http://192.168.1.255:8080";
+  static const String localhost = "http://192.168.1.163:8080";
 
   static const String baseEndpoint = localhost;
   static const String loginUrl = "$baseEndpoint/auth";

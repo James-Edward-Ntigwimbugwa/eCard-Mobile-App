@@ -15,10 +15,10 @@ import '../components/alert_reminder.dart';
 class RegisterPage extends StatefulWidget {
   const RegisterPage({super.key});
   @override
-  State<StatefulWidget> createState() => _RegisterPageState();
+  State<StatefulWidget> createState() => RegisterPageState();
 }
 
-class _RegisterPageState extends State<RegisterPage> {
+class RegisterPageState extends State<RegisterPage> {
   final TextEditingController _firstNameController = TextEditingController();
   final TextEditingController _middleNameController = TextEditingController();
   final TextEditingController _lastNameController = TextEditingController();
@@ -27,8 +27,10 @@ class _RegisterPageState extends State<RegisterPage> {
   final TextEditingController _bioController = TextEditingController();
   final TextEditingController _companyTitleController = TextEditingController();
   final TextEditingController _jobTitleController = TextEditingController();
-  final TextEditingController _usernameController = TextEditingController();
-  final TextEditingController _passwordController = TextEditingController();
+  static final TextEditingController usernameController =
+      TextEditingController();
+  static final TextEditingController passwordController =
+      TextEditingController();
   final _formKey = GlobalKey<FormState>();
 
   bool obscure = true;
@@ -54,7 +56,7 @@ class _RegisterPageState extends State<RegisterPage> {
             height: 30,
             width: 30,
           ));
-      Future.delayed(Duration(seconds: 2) , () {
+      Future.delayed(Duration(seconds: 2), () {
         Navigator.pop(context);
       });
       Future.delayed(Duration(seconds: 2), () {
@@ -81,18 +83,18 @@ class _RegisterPageState extends State<RegisterPage> {
       auth.updateFormField('phoneNumber', _phoneNumberController.text.trim());
       auth.updateFormField('bio', _bioController.text.trim());
       auth.updateFormField('companyTitle', _companyTitleController.text.trim());
-      auth.updateFormField('username', _usernameController.text.trim());
-      auth.updateFormField('password', _passwordController.text.trim());
+      auth.updateFormField('username', usernameController.text.trim());
+      auth.updateFormField('password', passwordController.text.trim());
 
       auth
           .register(
               _firstNameController.text.trim(),
               _middleNameController.text.trim(),
-              _usernameController.text.trim(),
+              usernameController.text.trim(),
               _lastNameController.text.trim(),
               _emailController.text.trim(),
               "USER",
-              _passwordController.text.trim(),
+              passwordController.text.trim(),
               _phoneNumberController.text.trim(),
               _bioController.text.trim(),
               _companyTitleController.text.trim(),
@@ -126,8 +128,8 @@ class _RegisterPageState extends State<RegisterPage> {
         _bioController.text = formData['bio'] ?? '';
         _companyTitleController.text = formData['companyTitle'] ?? '';
         _jobTitleController.text = formData['jobTitle'] ?? '';
-        _usernameController.text = formData['username'] ?? '';
-        _passwordController.text = formData['password'] ?? '';
+        usernameController.text = formData['username'] ?? '';
+        passwordController.text = formData['password'] ?? '';
       }
     });
   }
@@ -142,8 +144,8 @@ class _RegisterPageState extends State<RegisterPage> {
     _bioController.dispose();
     _companyTitleController.dispose();
     _jobTitleController.dispose();
-    _usernameController.dispose();
-    _passwordController.dispose();
+    usernameController.dispose();
+    passwordController.dispose();
     super.dispose();
   }
 
@@ -317,7 +319,7 @@ class _RegisterPageState extends State<RegisterPage> {
                                 height: 20,
                               ),
                               InputField(
-                                controller: _usernameController,
+                                controller: usernameController,
                                 icon: Icon(Icons.contact_mail),
                                 hintText: "username",
                                 field: 'username',
@@ -337,7 +339,7 @@ class _RegisterPageState extends State<RegisterPage> {
                                   }
                                 },
                                 autofocus: false,
-                                controller: _passwordController,
+                                controller: passwordController,
                                 validator: (value) => value!.isEmpty
                                     ? "Please Enter password"
                                     : null,
@@ -398,7 +400,18 @@ class _RegisterPageState extends State<RegisterPage> {
                                 ),
                               ),
                               const SizedBox(
-                                height: 20,
+                                height: 10,
+                              ),
+                              TextButton(
+                                  onPressed: () {
+                                    final auth = Provider.of<AuthProvider>(
+                                        context,
+                                        listen: false);
+                                    auth.navigateToVerifyWithOptScreen();
+                                  },
+                                  child: Text(Texts.activateAccountWithOtp)),
+                              const SizedBox(
+                                height: 10,
                               ),
                             ],
                           ),
