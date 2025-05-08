@@ -24,6 +24,9 @@ class Loaders {
 }
 
 class Texts {
+  static String backToRegister = "Back To Registration";
+  static String activateAccountWithOtp =
+      'Already have an OTP ?. Verify Account ';
   static String changeLogo = "Change Company logo";
   static String noAccount = "Don't have an account ?";
   static String register = "Register";

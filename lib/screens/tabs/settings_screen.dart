@@ -107,7 +107,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
                           // the route will be removed.
                           //In this case (route) => false, we are telling it to remove all routes
                           //so it go back to the auth screen.
-                          Navigator.pushNamedAndRemoveUntil(context,'/auth' ,(route) => false);
+                          Navigator.pushNamedAndRemoveUntil(
+                              context, '/auth', (route) => false);
                         },
                         child: HeaderBoldWidget(
                             text: "Logout",

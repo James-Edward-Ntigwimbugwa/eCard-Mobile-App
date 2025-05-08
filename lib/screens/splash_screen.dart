@@ -1,5 +1,8 @@
 import 'package:animated_splash_screen/animated_splash_screen.dart';
 import 'package:ecard_app/components/custom_widgets.dart';
+import 'package:ecard_app/modals/user_modal.dart';
+import 'package:ecard_app/preferences/user_preference.dart';
+import 'package:ecard_app/screens/dashboard_screen.dart';
 import 'package:ecard_app/utils/resources/images/images.dart';
 import 'package:ecard_app/utils/resources/strings/strings.dart';
 import 'package:flutter/material.dart';
@@ -15,6 +18,29 @@ class SplashScreen extends StatefulWidget {
 }
 
 class _SplashScreenState extends State<SplashScreen> {
+  @override
+  void initState() {
+    super.initState();
+    // Fetch user data when the splash screen initializes
+    _checkUserAuthentication();
+  }
+
+  // Variable to store the next screen
+  Widget? _nextScreen;
+
+  // Check if user is authenticated
+  Future<void> _checkUserAuthentication() async {
+    User user = await UserPreferences().getUser();
+
+    setState(() {
+      if (user.accessToken != null) {
+        _nextScreen = DashboardPage(user: user);
+      } else {
+        _nextScreen = const AuthNavigator();
+      }
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return AnimatedSplashScreen(
@@ -66,6 +92,7 @@ class _SplashScreenState extends State<SplashScreen> {
         duration: 3000,
         splashIconSize: 500,
         backgroundColor: Theme.of(context).primaryColor,
-        nextScreen: const AuthNavigator());
+        nextScreen: _nextScreen ??
+            const AuthNavigator()); // Use the determined next screen or default to AuthNavigator
   }
 }
