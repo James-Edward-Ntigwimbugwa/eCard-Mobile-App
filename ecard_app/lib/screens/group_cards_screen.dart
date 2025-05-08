@@ -1,4 +1,4 @@
-import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 
 class GroupCardsScreen extends StatefulWidget {
   const GroupCardsScreen({super.key});
@@ -12,10 +12,10 @@ class _GroupCardsScreenState extends State<GroupCardsScreen>
   @override
   Widget build(BuildContext context) {
     super.build(context);
-    return SafeArea(
-        child: Center(
-      child: Text('Groups'),
-    ));
+    return Container(
+      color: Theme.of(context).highlightColor,
+      child: SafeArea(child: Text('Groups')),
+    );
   }
 
   @override

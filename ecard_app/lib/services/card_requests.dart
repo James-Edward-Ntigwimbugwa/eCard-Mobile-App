@@ -1,4 +1,3 @@
-import 'package:ecard_app/preferences/user_preference.dart';
 import 'package:ecard_app/services/app_urls.dart';
 import 'package:http/http.dart';
 import 'dart:developer' as developer;
@@ -19,8 +18,8 @@ class CardRequests {
 
       final url = Uri.parse("${AppUrl.getAllCardsById}?uuid=$uuid");
 
-      developer.log("Valid token found: ${bearerToken.substring(
-          0, 5)}..."); // Log first 5 chars for security
+      developer.log(
+          "Valid token found: ${bearerToken.substring(0, 5)}..."); // Log first 5 chars for security
 
       final response = await get(
         url,

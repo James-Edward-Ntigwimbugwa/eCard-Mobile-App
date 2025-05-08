@@ -1,181 +1,252 @@
-import 'dart:async';
 import 'dart:convert';
-import 'dart:developer' as developer;
-import 'package:ecard_app/modals/user_modal.dart';
 import 'package:ecard_app/services/auth_requests.dart';
-import 'package:flutter/cupertino.dart';
-import 'package:http/http.dart';
-import '../preferences/user_preference.dart';
+import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
-enum Status {
-  NotLoggedIn,
-  NotRegistered,
-  LoggedIn,
-  Registered,
-  Authenticating,
-  Registering,
-  LoggedOut
-}
+// Define authentication screens
+enum AuthScreen { loginScreen, registerScreen, forgotPassword, verifyWithOtp }
 
-enum AuthScreen { forgotPassword, loginScreen, registerScreen }
+class AuthProvider extends ChangeNotifier {
+  AuthScreen _currentScreen = AuthScreen.loginScreen;
+  AuthScreen get currentScreen => _currentScreen;
 
-class AuthProvider with ChangeNotifier {
-  AuthScreen _currentAuthScreen = AuthScreen.loginScreen;
-  AuthScreen get currentScreen => _currentAuthScreen;
+  // Add a flag to track if account is verified
+  bool _isAccountVerified = false;
+  bool get isAccountVerified => _isAccountVerified;
 
-  Status _loggedInStatus = Status.NotLoggedIn;
-  Status _registeredStatus = Status.NotRegistered;
+  // Track login status
+  bool _isLoggedIn = false;
+  bool get isLoggedIn => _isLoggedIn;
 
-  Status get loggedInStatus => _loggedInStatus;
-  Status get registeredStatus => _registeredStatus;
+  // Store user data
+  Map<String, dynamic> _userData = {};
+  Map<String, dynamic> get userData => _userData;
 
-  final Map<AuthScreen, Map<String, String>> formData = {
-    AuthScreen.loginScreen: {'userName': '', 'password': ''},
-    AuthScreen.registerScreen: {
-      "firstName": "",
-      "middleName": "",
-      "lastName": "",
-      "username": "",
-      "email": "",
-      "password": "",
-      "phoneNumber": "",
-      "biography": "",
-      "companyTitle": " ",
-      "jobTitle": ""
-    },
-    AuthScreen.forgotPassword: {'email': ''}
+  // Store form data for each screen to persist input across screen transitions
+  Map<AuthScreen, Map<String, String>> formData = {
+    AuthScreen.loginScreen: {},
+    AuthScreen.registerScreen: {},
+    AuthScreen.forgotPassword: {},
   };
 
+  void updateFormField(String field, String value) {
+    formData[_currentScreen] ??= {};
+    formData[_currentScreen]![field] = value;
+  }
+
   void navigateToLoginScreen() {
-    _currentAuthScreen = AuthScreen.loginScreen;
+    _currentScreen = AuthScreen.loginScreen;
+    notifyListeners();
+  }
+
+  void navigateToVerifyWithOptScreen() {
+    _currentScreen = AuthScreen.verifyWithOtp;
     notifyListeners();
   }
 
   void navigateToRegisterScreen() {
-    _currentAuthScreen = AuthScreen.registerScreen;
+    _currentScreen = AuthScreen.registerScreen;
     notifyListeners();
   }
 
   void navigateToForgotPasswordScreen() {
-    _currentAuthScreen = AuthScreen.forgotPassword;
+    _currentScreen = AuthScreen.forgotPassword;
     notifyListeners();
   }
 
-  void updateFormField(String field, String value) {
-    if (formData[_currentAuthScreen]?.containsKey(field) ?? false) {
-      formData[_currentAuthScreen]![field] = value;
-      notifyListeners();
-    }
-  }
-
-  void clearCurrentForm() {
-    Map<String, String> emptyForm = {};
-    formData[_currentAuthScreen]?.forEach((key, _) {
-      emptyForm[key] = '';
-    });
-    formData[_currentAuthScreen] = emptyForm;
+  void setAccountVerified(bool value) {
+    _isAccountVerified = value;
     notifyListeners();
   }
 
+  // Check verification status when app starts
+  Future<void> checkVerificationStatus() async {
+    final prefs = await SharedPreferences.getInstance();
+    _isAccountVerified = prefs.getBool('accountVerified') ?? false;
+    notifyListeners();
+  }
+
+  // Save verification status
+  Future<void> saveVerificationStatus() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool('accountVerified', _isAccountVerified);
+  }
+
+  // Login method
   Future<Map<String, dynamic>> login(String username, String password) async {
-    Map<String, dynamic> result;
-    final Map<String, dynamic> logInData = {
-      'username': username,
-      'password': password
-    };
-
-    _loggedInStatus = Status.Authenticating;
-    notifyListeners();
-
-    final response = await AuthRequests.login('login', logInData);
-
-    if (response.statusCode == 200) {
-      final Map<String, dynamic> responseData = json.decode(response.body);
-      developer.log("response code: ${response.statusCode}");
-      developer.log("response body: ${response.body}");
-
-      var userData = responseData['data'];
-      User authenticatedUser = User.fromJson(userData);
-      UserPreferences.saveUser(authenticatedUser);
-      developer.log("\n\nAuthenticated user${authenticatedUser.toString()}\n\n");
-
-      _loggedInStatus = Status.LoggedIn;
-      notifyListeners();
-      result = {
-        "status": true,
-        "message": "Success",
-        "user": authenticatedUser
+    try {
+      final Map<String, String> loginData = {
+        'username': username,
+        'password': password,
       };
-    } else {
-      _loggedInStatus = Status.NotLoggedIn;
-      notifyListeners();
-      result = {
-        "status": false,
-        "message": json.decode(response.body)['error']
+
+      // Make the login request
+      final response = await AuthRequests.login('login', loginData);
+      final responseData = json.decode(response.body);
+
+      if (response.statusCode == 200) {
+        // Check if account is verified before allowing login
+        if (responseData['accountVerified'] == true || _isAccountVerified) {
+          _isLoggedIn = true;
+          _userData = responseData['userData'] ?? {};
+
+          // Save user data and verification status
+          final prefs = await SharedPreferences.getInstance();
+          await prefs.setBool('isLoggedIn', true);
+          await prefs.setString('userData', json.encode(_userData));
+          await prefs.setBool('accountVerified', true);
+          _isAccountVerified = true;
+
+          notifyListeners();
+          return {
+            'status': true,
+            'message': 'Login successful',
+          };
+        } else {
+          // Account is not verified, redirect to OTP verification
+          return {
+            'status': false,
+            'message': 'Please verify your account first',
+            'needsVerification': true,
+          };
+        }
+      } else {
+        return {
+          'status': false,
+          'message': responseData['message'] ?? 'Login failed',
+        };
+      }
+    } catch (e) {
+      return {
+        'status': false,
+        'message': 'An error occurred. Please try again.',
       };
     }
-    return result;
   }
 
-  Future<FutureOr> register(
+  // Register method
+  Future<Map<String, dynamic>> register(
     String firstName,
     String middleName,
     String username,
     String lastName,
     String email,
-    String userRole,
+    String role,
     String password,
     String phoneNumber,
-    String biography,
+    String bio,
     String companyTitle,
     String jobTitle,
   ) async {
-    final Map<String, dynamic> registrationData = {
-      "firstName": firstName,
-      "username": username,
-      "middleName": middleName,
-      "lastName": lastName,
-      "email": email,
-      "userRole": userRole,
-      "password": password,
-      "phoneNumber": phoneNumber,
-      "biography": biography,
-      "companyTitle": companyTitle,
-      "jobTitle": jobTitle,
-    };
-
-    _registeredStatus = Status.Registering;
-    notifyListeners();
-    return await AuthRequests.register('register', registrationData)
-        .then(onValue)
-        .catchError(onError);
-  }
-
-  Future<FutureOr> onValue(Response response) async {
-    Map<String, Object> result;
-    final Map<String, dynamic> responseData = json.decode(response.body);
-    if (response.statusCode == 200) {
-      var userData = responseData['data'];
-      User authUser = User.fromJson(userData);
-      UserPreferences.saveUser(authUser);
-      // developer.log("saved user : ${authUser.toString()}")
-      result = {
-        "status": true,
-        "message": "registered Successfully",
-        "data": authUser
+    try {
+      final Map<String, String> registerData = {
+        'firstName': firstName,
+        'middleName': middleName,
+        'username': username,
+        'lastName': lastName,
+        'email': email,
+        'role': role,
+        'password': password,
+        'phoneNumber': phoneNumber,
+        'bio': bio,
+        'companyTitle': companyTitle,
+        'jobTitle': jobTitle,
       };
-    } else {
-      result = {
-        "status": false,
-        "message": "registration failed",
-        "data": responseData
+
+      final response = await AuthRequests.register('register', registerData);
+      final responseData = json.decode(response.body);
+
+      if (response.statusCode == 201 || response.statusCode == 200) {
+        // Save temporary user data but don't log in yet
+        _userData = {
+          'firstName': firstName,
+          'email': email,
+          'username': username,
+          // Add other fields as needed
+        };
+
+        // Mark account as not verified
+        _isAccountVerified = false;
+        await saveVerificationStatus();
+
+        notifyListeners();
+        return {
+          'status': true,
+          'message': 'Registration successful. Please verify your account.',
+        };
+      } else {
+        return {
+          'status': false,
+          'message': responseData['message'] ?? 'Registration failed',
+        };
+      }
+    } catch (e) {
+      return {
+        'status': false,
+        'message': 'An error occurred. Please try again.',
       };
     }
-    return result;
   }
 
-  static onError(error) {
-    print("the error is $error.detail");
-    return {"status": false, "message": "Unsuccessful request", "data": error};
+  // Verify OTP and activate account
+  Future<Map<String, dynamic>> verifyOtp(String otp) async {
+    try {
+      final response = await AuthRequests.activateAccount(otp);
+      final responseData = json.decode(response.body);
+
+      if (response.statusCode == 200) {
+        // Mark account as verified
+        _isAccountVerified = true;
+        await saveVerificationStatus();
+
+        notifyListeners();
+        return {
+          'status': true,
+          'message': 'Account verified successfully',
+        };
+      } else {
+        return {
+          'status': false,
+          'message': responseData['message'] ?? 'Verification failed',
+        };
+      }
+    } catch (e) {
+      return {
+        'status': false,
+        'message': 'An error occurred. Please try again.',
+      };
+    }
+  }
+
+  // Logout method
+  Future<void> logout() async {
+    _isLoggedIn = false;
+    _userData = {};
+
+    // Clear user data but keep verification status
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool('isLoggedIn', false);
+    await prefs.remove('userData');
+
+    notifyListeners();
+  }
+
+  // Check login status when app starts
+  Future<bool> checkLoginStatus() async {
+    final prefs = await SharedPreferences.getInstance();
+    _isLoggedIn = prefs.getBool('isLoggedIn') ?? false;
+
+    if (_isLoggedIn) {
+      final userDataStr = prefs.getString('userData');
+      if (userDataStr != null) {
+        _userData = json.decode(userDataStr);
+      }
+    }
+
+    // Also check verification status
+    _isAccountVerified = prefs.getBool('accountVerified') ?? false;
+
+    notifyListeners();
+    return _isLoggedIn;
   }
 }

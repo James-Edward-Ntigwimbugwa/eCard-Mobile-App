@@ -29,9 +29,14 @@ class NormalHeaderWidget extends StatelessWidget {
   String text;
   Color color;
   String size;
+  Color? backgroundColor;
 
   NormalHeaderWidget(
-      {super.key, required this.text, required this.color, required this.size});
+      {super.key,
+      required this.text,
+      required this.color,
+      required this.size,
+      this.backgroundColor});
 
   @override
   Widget build(BuildContext context) {
@@ -41,6 +46,9 @@ class NormalHeaderWidget extends StatelessWidget {
           textStyle: TextStyle(
               color: color,
               fontSize: double.parse(size),
+              background: Paint()
+                ..color = backgroundColor ?? Colors.transparent
+                ..style = PaintingStyle.fill,
               fontWeight: FontWeight.w500)),
     );
   }
@@ -127,20 +135,25 @@ class _InputFieldState extends State<InputField> {
         // Update form data when text changes
         authProvider.updateFormField(widget.field, value);
       },
-      validator: widget.validator ?? (value) {
-        if (value == null || value.isEmpty) {
-          return 'Please enter ${widget.hintText}';
-        }
-        return null;
-      },
+      validator: widget.validator ??
+          (value) {
+            if (value == null || value.isEmpty) {
+              return 'Please enter ${widget.hintText}';
+            }
+            return null;
+          },
       style: GoogleFonts.nunito(
         textStyle: TextStyle(color: Theme.of(context).primaryColor),
         fontWeight: FontWeight.w500,
-        backgroundColor: Colors.white,
+        backgroundColor: Colors.transparent,
       ),
       decoration: InputDecoration(
+        focusedBorder: OutlineInputBorder(
+            borderSide: BorderSide(color: Theme.of(context).primaryColor),
+            borderRadius: BorderRadius.all(Radius.circular(30))),
         prefixIcon: widget.icon,
-        hintText: widget.hintText,
+        labelText: widget.hintText,
+        labelStyle: TextStyle(color: Theme.of(context).indicatorColor),
         hintStyle: TextStyle(color: Colors.grey),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.all(Radius.circular(30)),

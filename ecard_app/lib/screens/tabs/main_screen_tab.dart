@@ -1,8 +1,8 @@
 import 'package:ecard_app/components/custom_widgets.dart';
 import 'package:ecard_app/providers/screen_index_provider.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:skeletonizer/skeletonizer.dart';
 import '../../utils/resources/images/images.dart';
 import '../all_cards_screen.dart';
 import '../group_cards_screen.dart';
@@ -16,6 +16,7 @@ class MainScreenTab extends StatefulWidget {
 class _MainScreenTabState extends State<MainScreenTab>
     with SingleTickerProviderStateMixin, AutomaticKeepAliveClientMixin {
   late TabController _tabController;
+  final int _notificationCount = 3;
   bool _showSkeleton = true;
   final GlobalKey<FormState> _key = GlobalKey();
   final List<Widget> _tabs = [
@@ -26,13 +27,9 @@ class _MainScreenTabState extends State<MainScreenTab>
   @override
   void initState() {
     super.initState();
-    // Fix: Use 'late' keyword instead of nullable and properly initialize
     _tabController = TabController(length: _tabs.length, vsync: this);
-
-    // Listen to tab changes to ensure UI is updated properly
     _tabController.addListener(_handleTabChange);
 
-    // Fix: Properly structure loading state with setState
     Future.delayed(const Duration(seconds: 1), () {
       if (mounted) {
         setState(() {
@@ -41,7 +38,6 @@ class _MainScreenTabState extends State<MainScreenTab>
       }
     });
 
-    // Fix: Retrieve saved tab index
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final screenIndexProvider =
           Provider.of<TabIndexProvider>(context, listen: false);
@@ -52,7 +48,6 @@ class _MainScreenTabState extends State<MainScreenTab>
   }
 
   void _handleTabChange() {
-    // Only update provider when tab actually changes
     if (_tabController.indexIsChanging ||
         _tabController.index != _tabController.previousIndex) {
       final screenIndexProvider =
@@ -73,9 +68,7 @@ class _MainScreenTabState extends State<MainScreenTab>
     super.build(context);
     final screenIndexProvider = Provider.of<TabIndexProvider>(context);
 
-    // Make sure UI reflects the current state
     if (_tabController.index != screenIndexProvider.currentScreenIndex) {
-      // Use animateTo instead of just updating index for smooth transition
       WidgetsBinding.instance.addPostFrameCallback((_) {
         if (mounted) {
           _tabController.animateTo(screenIndexProvider.currentScreenIndex);
@@ -83,63 +76,132 @@ class _MainScreenTabState extends State<MainScreenTab>
       });
     }
 
-    return Skeletonizer(
-        key: _key,
-        enabled: _showSkeleton,
-        child: Scaffold(
-            appBar: PreferredSize(
-                preferredSize: const Size.fromHeight(kToolbarHeight + 48),
-                child: ClipRRect(
-                  borderRadius: const BorderRadius.only(
-                      bottomRight: Radius.circular(20.0),
-                      bottomLeft: Radius.circular(20.0)),
-                  child: AppBar(
-                    title: HeaderBoldWidget(
-                        text: "My Cards",
-                        color: Theme.of(context).canvasColor,
-                        size: '20.0'),
-                    backgroundColor: Theme.of(context).primaryColor,
-                    centerTitle: true,
-                    leading: Container(
-                      margin: const EdgeInsets.only(left: 10.0, top: 10.0),
-                      child: CircleAvatar(
-                        child: Image.asset(Images.profileImage),
-                      ),
+    return Container(
+      key: _key,
+      child: Scaffold(
+        backgroundColor: Theme.of(context).highlightColor,
+        appBar: AppBar(
+          automaticallyImplyLeading: false,
+          elevation: 0,
+          centerTitle: true,
+          backgroundColor: Theme.of(context).highlightColor,
+          title: HeaderBoldWidget(
+              text: "My Cards",
+              color: Theme.of(context).indicatorColor,
+              size: '20.0'),
+          leading: Padding(
+            padding: const EdgeInsets.only(top: 10.0, left: 10.0),
+            child: CircleAvatar(
+              radius: 18,
+              child: Image.asset(Images.profileImage),
+            ),
+          ),
+          actions: [
+            DecoratedBox(
+              decoration: BoxDecoration(
+                  shape: BoxShape.rectangle,
+                  color: Theme.of(context).primaryColor.withOpacity(0.1),
+                  borderRadius: BorderRadius.all(Radius.circular(10.0))),
+              child: IconButton(
+                icon: Icon(
+                  Icons.search,
+                  color: Theme.of(context).indicatorColor,
+                  size: 24.0,
+                ),
+                onPressed: () {
+                  // Search functionality
+                },
+              ),
+            ),
+            const SizedBox(
+              width: 4,
+            ),
+            Stack(
+              children: [
+                DecoratedBox(
+                  decoration: BoxDecoration(
+                      shape: BoxShape.rectangle,
+                      color: Theme.of(context).primaryColor.withOpacity(0.1),
+                      borderRadius: BorderRadius.all(Radius.circular(10.0))),
+                  child: IconButton(
+                    icon: Icon(
+                      CupertinoIcons.bell,
+                      color: Theme.of(context).indicatorColor,
+                      size: 24.0,
                     ),
-                    automaticallyImplyLeading: false,
-                    bottom: TabBar(
-                      tabs: [
-                        Tab(
-                            child: HeaderBoldWidget(
-                                text: 'All Cards',
-                                color: Theme.of(context).canvasColor,
-                                size: '19.0')),
-                        Tab(
-                          child: HeaderBoldWidget(
-                              text: 'Groups',
-                              color: Theme.of(context).canvasColor,
-                              size: '19.0'),
-                        )
-                      ],
-                      onTap: (value) {
-                        // This will trigger the listener above
-                        _tabController.animateTo(value);
-                      },
-                      indicatorSize: TabBarIndicatorSize.label,
-                      indicatorColor: Theme.of(context).canvasColor,
-                      indicatorWeight: 5.0,
-                      controller: _tabController,
-                    ),
+                    onPressed: () {
+                      // Search functionality
+                    },
                   ),
-                )),
-            // Remove DefaultTabController as we're using our own TabController
-            body: TabBarView(
-              controller: _tabController,
-              // Add physics for better swipe behavior
-              physics:
-                  const ClampingScrollPhysics(), // Important: use the same controller
-              children: _tabs,
-            )));
+                ),
+                Positioned(
+                    right: 0,
+                    top: 0,
+                    child: Container(
+                      padding: const EdgeInsets.all(4),
+                      decoration: BoxDecoration(
+                        color: Colors.red,
+                        shape: BoxShape.circle,
+                        border: Border.all(
+                          color: Theme.of(context).scaffoldBackgroundColor,
+                          width: 1.5,
+                        ),
+                      ),
+                      constraints:
+                          const BoxConstraints(minWidth: 20, minHeight: 20),
+                      child: Text(
+                        '$_notificationCount',
+                        style: TextStyle(
+                            color: Theme.of(context).indicatorColor,
+                            fontSize: 12),
+                        textAlign: TextAlign.center,
+                      ),
+                    ))
+              ],
+            ),
+            const SizedBox(
+              width: 4,
+            ),
+          ],
+        ),
+        body: Column(
+          children: [
+            Container(
+              decoration: BoxDecoration(
+                color: Theme.of(context).highlightColor,
+              ),
+              child: TabBar(
+                controller: _tabController,
+                tabs: [
+                  Tab(
+                    text: 'All Cards',
+                  ),
+                  Tab(
+                    text: 'Groups',
+                  ),
+                ],
+                labelColor: Theme.of(context).primaryColor,
+                unselectedLabelColor: Colors.grey,
+                indicatorSize: TabBarIndicatorSize.tab,
+                indicatorColor: Theme.of(context).primaryColor,
+                indicatorWeight: 3.5,
+              ),
+            ),
+            // TabBarView
+            Expanded(
+              child: Container(
+                color: Colors.white,
+                child: TabBarView(
+                  controller: _tabController,
+                  physics: const ClampingScrollPhysics(),
+                  children: _tabs,
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 
   @override

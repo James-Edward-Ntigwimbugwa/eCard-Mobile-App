@@ -1,14 +1,12 @@
-import 'package:ecard_app/modals/user_modal.dart';
-import 'package:ecard_app/preferences/user_preference.dart';
 import 'package:ecard_app/providers/auth_provider.dart';
 import 'package:ecard_app/providers/card_provider.dart';
 import 'package:ecard_app/providers/screen_index_provider.dart';
 import 'package:ecard_app/providers/user_provider.dart';
 import 'package:ecard_app/router/page_router.dart';
-import 'package:ecard_app/screens/dashboard_screen.dart';
 import 'package:ecard_app/screens/splash_screen.dart';
 import 'package:ecard_app/utils/theme/theme.dart';
 import 'package:flutter/material.dart';
+import 'package:device_preview/device_preview.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -22,31 +20,28 @@ Future<void> main() async {
     DeviceOrientation.landscapeRight
   ]);
 
-  // SystemChrome.setSystemUIOverlayStyle(
-  //     const SystemUiOverlayStyle(
-  //       statusBarColor: Color.fromARGB(255, 0, 132, 112),
-  //       statusBarIconBrightness: Brightness.dark,
-  //       systemNavigationBarColor: Color.fromARGB(255, 0, 132, 112),
-  //       systemNavigationBarIconBrightness: Brightness.dark,
-  //     )
-  // );
-
   final SharedPreferences prefs = await SharedPreferences.getInstance();
   final bool isDarkMode = prefs.getBool("themeMode") ?? false;
-  runApp(EcardApp(isDarkMode: isDarkMode));
+  runApp(DevicePreview(builder: (context) => EcardApp(isDarkMode: isDarkMode)));
+  // runApp(EcardApp(isDarkMode: isDarkMode));
 }
 
 class EcardApp extends StatelessWidget {
   final bool isDarkMode;
   const EcardApp({super.key, required this.isDarkMode});
 
-  // Introduce a delay to simulate loading time
-  Future<User> getUserData() async {
-    return UserPreferences().getUser();
-  }
-
   @override
   Widget build(BuildContext context) {
+    final brightness = Theme.of(context).brightness;
+    SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
+      systemNavigationBarColor: Theme.of(context).highlightColor,
+      systemNavigationBarIconBrightness:
+          brightness == Brightness.dark ? Brightness.light : Brightness.dark,
+      statusBarIconBrightness:
+          brightness == Brightness.dark ? Brightness.light : Brightness.dark,
+      statusBarColor: Colors.transparent,
+    ));
+
     return MultiProvider(
       providers: [
         ChangeNotifierProvider<ThemeNotifier>(
@@ -59,39 +54,22 @@ class EcardApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => CardProvider())
       ],
       child: Consumer<ThemeNotifier>(
-        builder: (context, theme, _) {
-          return MaterialApp(
-            debugShowCheckedModeBanner: false,
-            theme: AppThemeController.lightMode,
-            darkTheme: AppThemeController.darkMode,
-            themeMode: theme.isDarkMode ? ThemeMode.dark : ThemeMode.light,
-            initialRoute: '/',
-            onGenerateRoute: PageRouter.switchRoute,
-            home: FutureBuilder<User>(
-              future: getUserData(),
-              builder: (context, snapshot) {
-                switch (snapshot.connectionState) {
-                  case ConnectionState.none:
-                  case ConnectionState.waiting:
-                    return SplashScreen(); // Show SplashScreen while waiting
-                  case ConnectionState.done:
-                    if (snapshot.hasError) {
-                      return Text('Error: ${snapshot.error}');
-                    }
-                    if (snapshot.hasData &&
-                        snapshot.data!.accessToken == null) {
-                      return SplashScreen(); // User not logged in
-                    }
-                    if (snapshot.hasData &&
-                        snapshot.data!.accessToken != null) {
-                      return DashboardPage(
-                          user: snapshot.data!); // User logged in
-                    }
-                    return SplashScreen(); // Default to login if no data or token
-                  default:
-                    return SplashScreen();
-                }
-              },
+        builder: (context, themeNotifier, _) {
+          return AnimatedTheme(
+            data: themeNotifier.isDarkMode
+                ? AppThemeController.darkMode
+                : AppThemeController.lightMode,
+            duration: const Duration(milliseconds: 100),
+            curve: Curves.easeIn,
+            child: MaterialApp(
+              debugShowCheckedModeBanner: false,
+              theme: AppThemeController.lightMode,
+              darkTheme: AppThemeController.darkMode,
+              themeMode:
+                  themeNotifier.isDarkMode ? ThemeMode.dark : ThemeMode.light,
+              initialRoute: '/',
+              onGenerateRoute: PageRouter.switchRoute,
+              home: SplashScreen(), // Always start with SplashScreen
             ),
           );
         },
