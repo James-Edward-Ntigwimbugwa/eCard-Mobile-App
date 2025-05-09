@@ -1,1 +1,0 @@
-/home/immah/Public/Projects/eCard-Mobile-App/ecard_app/build/app/intermediates/cxx/Debug/2626x5p1/obj/armeabi-v7a

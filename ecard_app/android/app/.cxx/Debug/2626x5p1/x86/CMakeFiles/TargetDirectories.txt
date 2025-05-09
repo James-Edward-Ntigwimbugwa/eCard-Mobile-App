@@ -1,2 +1,0 @@
-/home/immah/Public/Projects/eCard-Mobile-App/ecard_app/android/app/.cxx/Debug/2626x5p1/x86/CMakeFiles/edit_cache.dir
-/home/immah/Public/Projects/eCard-Mobile-App/ecard_app/android/app/.cxx/Debug/2626x5p1/x86/CMakeFiles/rebuild_cache.dir
