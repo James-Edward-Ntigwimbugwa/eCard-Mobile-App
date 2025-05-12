@@ -31,7 +31,11 @@ class _ForgetPasswordPageState extends State<ForgetPasswordPage> {
   }
 
   void showLoader() {
-    Alerts.showLoader(context: context, message: "Loading...", icon: LoadingAnimationWidget.stretchedDots(color: Theme.of(context).primaryColor, size: 20.0));
+    Alerts.showLoader(
+        context: context,
+        message: "Loading...",
+        icon: LoadingAnimationWidget.stretchedDots(
+            color: Theme.of(context).primaryColor, size: 20.0));
   }
 
   void handleResetPassword() {
@@ -41,7 +45,14 @@ class _ForgetPasswordPageState extends State<ForgetPasswordPage> {
 
     final form = formKey.currentState;
     if (_emailController.text.isEmpty) {
-      Alerts.showError(context: context, message: "Please enter your email", icon: Image.asset(Images.errorImage, width: 40, height: 40,));
+      Alerts.showError(
+          context: context,
+          message: "Please enter your email",
+          icon: Image.asset(
+            Images.errorImage,
+            width: 40,
+            height: 40,
+          ));
       return;
     }
 
@@ -58,11 +69,15 @@ class _ForgetPasswordPageState extends State<ForgetPasswordPage> {
       Navigator.pop(context); // Close loader
 
       // Show success message
-      Alerts.showSuccess(context: context, message: "Password reset link sent", icon: Icon(
-        Icons.check_circle_outline,
-        color: Theme.of(context).primaryColor,
-        size: 40,
-      ),);
+      Alerts.showSuccess(
+        context: context,
+        message: "Password reset link sent",
+        icon: Icon(
+          Icons.check_circle_outline,
+          color: Theme.of(context).primaryColor,
+          size: 40,
+        ),
+      );
 
       Future.delayed(Duration(seconds: 2), () {
         Navigator.pop(context); // Close alert

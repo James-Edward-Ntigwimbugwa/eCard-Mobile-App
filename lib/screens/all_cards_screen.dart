@@ -1,6 +1,8 @@
 import 'package:ecard_app/providers/card_provider.dart';
+import 'package:ecard_app/utils/resources/animes/lottie_animes.dart';
 import 'package:flutter/material.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
+import 'package:lottie/lottie.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../components/card_display_widget.dart';
@@ -98,7 +100,17 @@ class _AllCardsScreenState extends State<AllCardsScreen>
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               const SizedBox(height: 20),
-              if (_showBanner && _isEmpty) _buildDismissibleBanner(),
+              if (_showBanner && _isEmpty) 
+                Container(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Column(
+                    children: [
+                      Lottie.asset(LottieAnimes.noContent),
+                      const SizedBox(height: 16),
+                      const Text("Create your first Card" , textAlign: TextAlign.center, ),
+                    ],
+                  ),
+                ),
               Expanded(
                 child: FutureBuilder<Map<String, dynamic>>(
                   future: _cardsFuture,

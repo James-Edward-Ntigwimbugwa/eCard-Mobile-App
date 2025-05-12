@@ -34,6 +34,7 @@ class AuthRequests {
     return response;
   }
 
+  // activate account
   static Future<http.Response> activateAccount(String otp) async {
     final url =
         Uri.parse("${AppUrl.baseEndpoint}/auth/activate-account?otp=$otp");

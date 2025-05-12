@@ -20,103 +20,97 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
-  final TextEditingController _usernameController = TextEditingController();
-  final TextEditingController _passwordController = TextEditingController();
-  String? _password;
+  final _usernameController = TextEditingController();
+  final _passwordController = TextEditingController();
   bool _obscurePassword = true;
   bool _formIsSubmitted = false;
+  final _formKey = GlobalKey<FormState>();
+  String? _password;
 
-  final formKey = GlobalKey<FormState>();
-  @override
-  void initState() {
-    super.initState();
-    Future.microtask(() {
-      final auth = Provider.of<AuthProvider>(context, listen: false);
-      final formData = auth.formData[AuthScreen.loginScreen];
-      if (formData != null) {
-        _usernameController.text = formData['username'] ?? '';
-        _passwordController.text = formData['password'] ?? '';
-      }
-    });
+@override
+void initState() {
+  super.initState();
+  Future.microtask(() {
+    final auth = Provider.of<AuthProvider>(context, listen: false);
+    final data = auth.formData[AuthScreen.loginScreen];
+    if (data != null) {
+      _usernameController.text = data['username'] ?? '';
+      _passwordController.text = data['password'] ?? '';
+    }
+  });
+}
+
+@override
+void dispose() {
+  _usernameController.dispose();
+  _passwordController.dispose();
+  super.dispose();
+}
+
+void showLoader() => Alerts.showLoader(
+    context: context,
+    message: Loaders.loading,
+    icon: LoadingAnimationWidget.stretchedDots(
+      color: Theme.of(context).primaryColor,
+      size: 24.0,
+    ));
+
+Future<void> handleLogin() async {
+  setState(() => _formIsSubmitted = true);
+  if (_usernameController.text.isEmpty || _passwordController.text.isEmpty) {
+    Alerts.showError(
+      context: context,
+      message: "Fill in all fields",
+      icon: Image.asset(Images.errorImage, height: 30, width: 30),
+    );
+    return;
   }
+  if (!_formKey.currentState!.validate()) return;
+  _formKey.currentState!.save();
 
-  @override
-  void dispose() {
-    _usernameController.dispose();
-    _passwordController.dispose();
-    super.dispose();
-  }
+  showLoader();
+  try {
+    final auth = Provider.of<AuthProvider>(context, listen: false);
+    auth.updateFormField('username', _usernameController.text.trim());
+    auth.updateFormField('password', _passwordController.text.trim());
 
-  void showLoader() {
-    Alerts.showLoader(
-        context: context,
-        message: Loaders.loading,
-        icon: LoadingAnimationWidget.stretchedDots(
-            color: Theme.of(context).primaryColor, size: 24.0));
-  }
+    final response = await auth.login(
+      _usernameController.text.trim(),
+      _passwordController.text.trim(),
+    ).timeout(const Duration(seconds: 60));
 
-  void handleLogin() {
-    setState(() {
-      _formIsSubmitted = true;
-    });
-
-    final form = formKey.currentState;
-    if (_usernameController.text.isEmpty || _passwordController.text.isEmpty) {
+    Navigator.pop(context);
+    if (response['status'] == true) {
+      Provider.of<UserProvider>(context, listen: false)
+          .setUser(response['user']);
+      Navigator.pushReplacementNamed(context, '/dashboard');
+    } else {
       Alerts.showError(
-          context: context,
-          message: "Fill in all fields",
-          icon: Image.asset(
-            Images.errorImage,
-            height: 30,
-            width: 30,
-          ));
-      return;
+        context: context,
+        message: response['message'] ?? 'Invalid credentials',
+        icon: Image.asset(Images.errorImage, height: 30, width: 30),
+      );
     }
-
-    if (form == null || !form.validate()) {
-      print("Invalid form...==>");
-      return;
-    }
-
-    form.save();
-    showLoader();
-    Timer(Duration(seconds: 1), () {
-      final auth = Provider.of<AuthProvider>(context, listen: false);
-      auth.updateFormField('username', _usernameController.text.trim());
-      auth.updateFormField('password', _passwordController.text.trim());
-      auth
-          .login(
-        _usernameController.text.trim(),
-        _passwordController.text.trim(),
-      )
-          .then((response) {
-        Navigator.pop(context);
-        if (response['status'] == true) {
-          var user = Provider.of<UserProvider>(context, listen: false)
-              .setUser(response['user']);
-          Navigator.pushReplacementNamed(context, '/dashboard');
-        } else {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(response['message'] ?? 'Invalid credentials'),
-              backgroundColor: Colors.red,
-              duration: const Duration(seconds: 3),
-            ),
-          );
-        }
-      }).catchError((error) {
-        developer.log("Error $error");
-        Alerts.showError(
-            context: context,
-            message: "Network error",
-            icon: Image.asset(
-              Images.networkErrorImage,
-              width: 40,
-              height: 40,
-            ));
-      });
-    });
+  } on TimeoutException {
+    Navigator.pop(context);
+    Alerts.showError(
+        context: context,
+        message:
+        "Login request timed out. Please check your internet connection.",
+        icon: Image.asset(Images.errorImage, height: 30, width: 30));
+  } catch (e, stack) {
+    Navigator.pop(context);
+    developer.log("Login screen error: $e", stackTrace: stack);
+    Alerts.showError(
+        context: context,
+        message: "An error occurred. Please try again. ${e.toString()}",
+        icon: Image.asset(
+          Images.networkErrorImage,
+          width: 40,
+          height: 40,
+        ));
   }
+}
 
   @override
   Widget build(BuildContext context) {
@@ -192,7 +186,7 @@ class _LoginPageState extends State<LoginPage> {
                   autovalidateMode: _formIsSubmitted
                       ? AutovalidateMode.always
                       : AutovalidateMode.disabled,
-                  key: formKey,
+                  key: _formKey,
                   child: Padding(
                     padding: EdgeInsets.symmetric(
                       horizontal: 5.0,

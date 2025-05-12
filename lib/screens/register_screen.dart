@@ -100,8 +100,10 @@ class RegisterPageState extends State<RegisterPage> {
           Navigator.pop(context);
           Navigator.pushReplacementNamed(context, '/verify_with_otp');
         } else {
-          Alerts.showError(context: context, message:response['message'] ?? 'Registration failed',
-             icon:  Image.asset(Images.errorImage));
+          Alerts.showError(
+              context: context,
+              message: response['message'] ?? 'Registration failed',
+              icon: Image.asset(Images.errorImage));
         }
       }).catchError((error) => print(error));
     });
@@ -325,7 +327,8 @@ class RegisterPageState extends State<RegisterPage> {
                                     if (value.length < 8) {
                                       Alerts.showError(
                                           context: context,
-                                          message: 'Password must be at least 8 characters long',
+                                          message:
+                                              'Password must be at least 8 characters long',
                                           icon: Image.asset(Images.errorImage));
                                     } else {
                                       _password = value;

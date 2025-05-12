@@ -30,10 +30,12 @@ class _SplashScreenState extends State<SplashScreen> {
 
   // Check if user is authenticated
   Future<void> _checkUserAuthentication() async {
-    User user = await UserPreferences().getUser();
+    // Allow for a null result
+    User? user = await UserPreferences().getUser();
 
     setState(() {
-      if (user.accessToken != null) {
+      // If user is non-null and has a token, go to dashboard
+      if (user != null && user.accessToken != null && user.accessToken!.isNotEmpty) {
         _nextScreen = DashboardPage(user: user);
       } else {
         _nextScreen = const AuthNavigator();

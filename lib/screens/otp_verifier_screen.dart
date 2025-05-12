@@ -26,7 +26,9 @@ class OtpVerifierState extends State<OtpVerifier> {
 
   Future<void> _verifyOtp() async {
     if (_otpCode.length < 6) {
-      Alerts.showError(context: context,message:  "Please enter the complete 6-digit OTP code",
+      Alerts.showError(
+          context: context,
+          message: "Please enter the complete 6-digit OTP code",
           icon: Image.asset(Images.errorImage, height: 30, width: 30));
       return;
     }
@@ -49,38 +51,28 @@ class OtpVerifierState extends State<OtpVerifier> {
 
       if (response.statusCode == 200) {
         // Account activated successfully
-        Alerts.showSuccess(context: context, message: "Account activated successfully!",
+        Alerts.showSuccess(
+            context: context,
+            message: "Account activated successfully!",
             icon: Icon(Icons.check_circle, color: Colors.green, size: 30));
 
         // Wait for alert to show before navigating
         Timer(const Duration(seconds: 2), () {
           Navigator.pop(context); // Close alert
-          Alerts.showLoader(
-              context: context,
-              message: "Logging in ...",
-              icon: LoadingAnimationWidget.stretchedDots(
-                  color: Theme.of(context).primaryColor, size: 20));
-          // Get auth provider and mark account as verified
-          final authProvider =
-              Provider.of<AuthProvider>(context, listen: false);
-          authProvider.setAccountVerified(true);
+
+          // Check if username and password are available
           final username = RegisterPageState.usernameController;
           final password = RegisterPageState.passwordController;
-          authProvider.login(username.text, password.text).then((response) {
-            if (response['status'] == 200) {
-              var user = Provider.of<UserProvider>(context, listen: false)
-                  .setUser(response['user']);
-              Navigator.pop(context);
-              Navigator.pushReplacementNamed(context, '/dashboard');
-            }
-          }).catchError((error) {
-            developer.log("Error verifying otp=======> $error");
-            Alerts.showError(context: context,message:  "Error logging in.Please try again",
-                icon: Image.asset(Images.errorImage, height: 30, width: 30));
-            return;
-          });
-          // Navigate to login screen
-          // Navigator.pushReplacementNamed(context, '/auth');
+
+          if (username.text.isNotEmpty && password.text.isNotEmpty) {
+            // Proceed with auto-login
+            _performAutoLogin(username.text, password.text);
+          } else {
+            // Navigate back to login screen if credentials are not available
+            final authProvider =
+                Provider.of<AuthProvider>(context, listen: false);
+            authProvider.navigateToLoginScreen();
+          }
         });
       } else {
         // Activation failed
@@ -100,12 +92,67 @@ class OtpVerifierState extends State<OtpVerifier> {
       Navigator.pop(context); // Close loading dialog
       Alerts.showError(
           context: context,
-          message: "Verification failed. Please check your connection and try again.",
+          message:
+              "Verification failed. Please check your connection and try again.",
           icon: Image.asset(Images.errorImage));
       setState(() {
         _isSubmitting = false;
       });
     }
+  }
+
+  void _performAutoLogin(String username, String password) {
+    Alerts.showLoader(
+        context: context,
+        message: "Logging in ...",
+        icon: LoadingAnimationWidget.stretchedDots(
+            color: Theme.of(context).primaryColor, size: 20));
+
+    // Get auth provider and mark account as verified
+    final authProvider = Provider.of<AuthProvider>(context, listen: false);
+
+    authProvider.login(username, password).then((response) {
+      if (response != null && response['status'] == 200) {
+        var userProvider = Provider.of<UserProvider>(context, listen: false);
+        userProvider.setUser(response['user']);
+
+        Navigator.pop(context); // Close loader
+        Navigator.pushReplacementNamed(context, '/dashboard');
+      } else {
+        Navigator.pop(context); // Close loader
+        Alerts.showError(
+            context: context,
+            message: response?['message'] ?? "Login failed. Please try again.",
+            icon: Image.asset(Images.errorImage, height: 30, width: 30));
+        // Navigate to login screen
+        authProvider.navigateToLoginScreen();
+      }
+    }).timeout(const Duration(seconds: 60), onTimeout: () {
+      Navigator.pop(context); // Close loader
+      Alerts.showError(
+          context: context,
+          message:
+              "Login request timed out. Please check your internet connection.",
+          icon: Image.asset(Images.errorImage, height: 30, width: 30));
+      // Navigate to login screen
+      final authProvider = Provider.of<AuthProvider>(context, listen: false);
+      authProvider.navigateToLoginScreen();
+    }).catchError((error) {
+      developer.log("Error during auto-login: $error",
+          name: 'OtpVerifierScreen',
+          error: error,
+          stackTrace: StackTrace.current);
+
+      Navigator.pop(context); // Close loader
+      Alerts.showError(
+          context: context,
+          message: "Error logging in. Please try again.",
+          icon: Image.asset(Images.errorImage, height: 30, width: 30));
+
+      // Navigate to login screen
+      final authProvider = Provider.of<AuthProvider>(context, listen: false);
+      authProvider.navigateToLoginScreen();
+    });
   }
 
   @override
@@ -181,9 +228,7 @@ class OtpVerifierState extends State<OtpVerifier> {
                     ),
                   ),
                 ),
-                const SizedBox(
-                  height: 10,
-                ),
+                const SizedBox(height: 10),
                 TextButton(
                     onPressed: () {
                       final auth =
@@ -191,9 +236,7 @@ class OtpVerifierState extends State<OtpVerifier> {
                       auth.navigateToRegisterScreen();
                     },
                     child: Text(Texts.backToRegister)),
-                const SizedBox(
-                  height: 10,
-                ),
+                const SizedBox(height: 10),
               ],
             ),
           ),

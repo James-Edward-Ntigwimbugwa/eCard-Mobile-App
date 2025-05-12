@@ -5,6 +5,7 @@ import 'dart:developer' as developer;
 import 'package:shared_preferences/shared_preferences.dart';
 
 class CardRequests {
+  // method to fetchUserCards
   static Future<Response> fetchUserCards(String uuid) async {
     try {
       final prefs = await SharedPreferences.getInstance();

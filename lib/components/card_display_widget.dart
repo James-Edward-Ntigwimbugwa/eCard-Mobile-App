@@ -3,17 +3,25 @@ import 'package:ecard_app/modals/card_modal.dart';
 
 class CardDisplayWidget extends StatelessWidget {
   final CustomCard card;
+  final Function()? onShare;
+  final Function()? onFavorite;
 
-  const CardDisplayWidget({super.key, required this.card});
+  const CardDisplayWidget({
+    super.key,
+    required this.card,
+    this.onShare,
+    this.onFavorite,
+  });
 
   @override
   Widget build(BuildContext context) {
-    // Parse colors from string values or use defaults
-    final Color backgroundColor = Colors.white;
-    final Color fontColor = Colors.black87;
+    // Generate a background color based on the card company or use a default
+    final Color backgroundColor = _getCardBackgroundColor(card);
 
-    // Get indicator color based on card type or use a default
-    Color indicatorColor = _getIndicatorColor(card);
+    // Determine text color based on background brightness
+    final bool isDark = _isColorDark(backgroundColor);
+    final Color textColor = isDark ? Colors.white : Colors.black87;
+    final Color iconColor = isDark ? Colors.white70 : Colors.black54;
 
     return Container(
       margin: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
@@ -22,139 +30,129 @@ class CardDisplayWidget extends StatelessWidget {
         borderRadius: BorderRadius.circular(12),
         boxShadow: [
           BoxShadow(
-            color: Colors.grey.withOpacity(0.1),
+            color: Colors.grey.withOpacity(0.2),
             spreadRadius: 1,
-            blurRadius: 3,
-            offset: const Offset(0, 1),
+            blurRadius: 6,
+            offset: const Offset(0, 2),
           ),
         ],
-        border: Border(
-          top: BorderSide(color: indicatorColor, width: 3),
-        ),
       ),
       child: Padding(
-        padding: const EdgeInsets.all(12.0),
-        child: Row(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Profile photo
-            CircleAvatar(
-              radius: 25,
-              backgroundImage: card.profilePhoto != null
-                  ? NetworkImage(card.profilePhoto!)
-                  : null,
-              backgroundColor: Colors.grey.shade200,
-              child: card.profilePhoto == null
-                  ? const Icon(Icons.person, size: 25)
-                  : null,
-            ),
-            const SizedBox(width: 12),
-
-            // Card content
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  // Job title
-                  Text(
-                    card.company ?? 'Company name',
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                      color: fontColor,
-                    ),
-                  ),
-
-                  // Company name
-                  Text(
-                    card.company ?? 'Company Name',
-                    style: TextStyle(
-                      fontSize: 14,
-                      color: Colors.grey[700],
-                    ),
-                  ),
-
-                  // Job description
-                  if (card.cardDescription != null)
-                    Padding(
-                      padding: const EdgeInsets.only(top: 4.0),
-                      child: Text(
-                        card.cardDescription!,
-                        style: TextStyle(
-                          fontSize: 12,
-                          color: Colors.grey[600],
-                        ),
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
-                      ),
+            // Top row with profile info and action buttons
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Profile photo with company logo overlay
+                Stack(
+                  children: [
+                    // User profile photo
+                    CircleAvatar(
+                      radius: 24,
+                      backgroundColor: isDark ? Colors.white24 : Colors.grey.shade200,
+                      backgroundImage: card.profilePhoto != null
+                          ? NetworkImage(card.profilePhoto!)
+                          : null,
+                      child: card.profilePhoto == null
+                          ? Icon(Icons.person, size: 24, color: isDark ? Colors.white : Colors.grey)
+                          : null,
                     ),
 
-                  // Published date
-                  Padding(
-                    padding: const EdgeInsets.only(top: 4.0),
-                    child: Row(
-                      children: [
-                        Icon(
-                          Icons.calendar_today,
-                          size: 12,
-                          color: Colors.grey[600],
-                        ),
-                        const SizedBox(width: 4),
-                        Text(
-                          'Published: ${card.publishCard ?? 'Private'}',
-                          style: TextStyle(
-                            fontSize: 12,
-                            color: Colors.grey[600],
+                    // Company logo overlay (positioned at bottom right of avatar)
+                    if (card.cardLogo != null)
+                      Positioned(
+                        bottom: 0,
+                        right: 0,
+                        child: Container(
+                          height: 16,
+                          width: 16,
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            shape: BoxShape.circle,
+                            border: Border.all(color: backgroundColor, width: 1.5),
+                          ),
+                          child: ClipOval(
+                            child: Image.network(
+                              card.cardLogo!,
+                              fit: BoxFit.cover,
+                            ),
                           ),
                         ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-            ),
-
-            // Action buttons
-            Column(
-              children: [
-                IconButton(
-                  icon: Icon(
-                    card.active
-                        ? Icons.check_circle
-                        : Icons.check_circle_outline,
-                    color: card.active
-                        ? Theme.of(context).primaryColor
-                        : Colors.grey,
-                  ),
-                  onPressed: () {
-                    // Toggle favorite
-                  },
-                  constraints: BoxConstraints(
-                    minWidth: 40,
-                    minHeight: 40,
-                  ),
-                  padding: EdgeInsets.zero,
+                      ),
+                  ],
                 ),
-                if (card.company == 'Design Studio Co.' ||
-                    card.company == 'Global Marketing Solutions')
-                  Container(
-                    height: 24,
-                    width: 24,
-                    decoration: BoxDecoration(
-                      color: Colors.black,
-                      borderRadius: BorderRadius.circular(4),
-                    ),
-                    child: Center(
-                      child: Text(
-                        'C',
+
+                const SizedBox(width: 12),
+
+                // Name and job title
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        card.organization ?? 'Name',
                         style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 12,
+                          fontSize: 16,
                           fontWeight: FontWeight.bold,
+                          color: textColor,
                         ),
                       ),
-                    ),
+                      Text(
+                        card.department ?? 'Job Title',
+                        style: TextStyle(
+                          fontSize: 14,
+                          color: textColor.withOpacity(0.8),
+                        ),
+                      ),
+                      const SizedBox(height: 2),
+                      Text(
+                        card.company ?? 'Company',
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: textColor.withOpacity(0.7),
+                        ),
+                      ),
+                    ],
                   ),
+                ),
+
+                // Action buttons
+                Row(
+                  children: [
+                    // Favorite/Star button
+                    IconButton(
+                      icon: Icon(
+                        card.active ? Icons.star : Icons.star_border,
+                        color: iconColor,
+                        size: 20,
+                      ),
+                      onPressed: onFavorite,
+                      padding: EdgeInsets.zero,
+                      constraints: const BoxConstraints(
+                        minWidth: 40,
+                        minHeight: 40,
+                      ),
+                    ),
+
+                    // Share button
+                    IconButton(
+                      icon: Icon(
+                        Icons.share,
+                        color: iconColor,
+                        size: 20,
+                      ),
+                      onPressed: onShare,
+                      padding: EdgeInsets.zero,
+                      constraints: const BoxConstraints(
+                        minWidth: 40,
+                        minHeight: 40,
+                      ),
+                    ),
+                  ],
+                ),
               ],
             ),
           ],
@@ -163,36 +161,38 @@ class CardDisplayWidget extends StatelessWidget {
     );
   }
 
-  // Helper method to determine indicator color based on card info
-  Color _getIndicatorColor(CustomCard card) {
-    // Example mapping of companies to colors
-    // In your implementation, you might want to use a field from the card
-    // or derive this from some other property
-    if (card.company == 'Tech Solutions Inc.') {
-      return Colors.blue;
-    } else if (card.company == 'Design Studio Co.') {
-      return Colors.purple;
-    } else if (card.company == 'Global Marketing Solutions') {
-      return Colors.green;
+  // Helper method to determine background color based on card info
+  Color _getCardBackgroundColor(CustomCard card) {
+    // Map specific companies to colors like in the image
+    // First card in image is blue, second is orange
+    if (card.company == 'Wealth Partners Inc.') {
+      return const Color(0xFF005BBB); // Blue color for first card
+    } else if (card.company == 'Sport Central Studio') {
+      return const Color(0xFFFF8C00); // Orange color for second card
     }
 
-    // Default color - you should replace with your app's primary color
-    return Colors.blue;
+    // Generate a color based on the company name if no specific mapping
+    if (card.company != null) {
+      final int hash = card.company!.hashCode;
+      final List<Color> colorOptions = [
+        const Color(0xFF1E88E5), // Blue
+        const Color(0xFFFF8C00), // Orange
+        const Color(0xFF43A047), // Green
+        const Color(0xFF5E35B1), // Purple
+        const Color(0xFFE53935), // Red
+      ];
+      return colorOptions[hash.abs() % colorOptions.length];
+    }
+
+    // Default color
+    return const Color(0xFF1E88E5); // Blue
   }
 
-  // Helper method to parse color from string
-  Color _parseColor(String? colorString, Color defaultColor) {
-    if (colorString == null || colorString.isEmpty) {
-      return defaultColor;
-    }
-
-    try {
-      if (colorString.startsWith('#')) {
-        return Color(int.parse('0xFF${colorString.substring(1)}'));
-      }
-      return defaultColor;
-    } catch (e) {
-      return defaultColor;
-    }
+  // Helper method to determine if a color is dark
+  bool _isColorDark(Color color) {
+    // Calculate perceived brightness using formula:
+    // (299 * R + 587 * G + 114 * B) / 1000
+    final double brightness = (color.red * 299 + color.green * 587 + color.blue * 114) / 1000;
+    return brightness < 128; // If less than 128, consider it dark
   }
 }
