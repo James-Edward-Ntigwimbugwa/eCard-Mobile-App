@@ -30,7 +30,8 @@ class _AllCardsScreenState extends State<AllCardsScreen>
   void _initializeData() async {
     final provider = Provider.of<CardProvider>(context, listen: false);
     final prefs = await SharedPreferences.getInstance();
-    // final String _userUuid = 'e5936449-aa00-4065-abe6-f864c782abc8';
+
+    // fetch userUuid  to pass as accessToken
     final String userUuid = prefs.getString("userUuid").toString();
     setState(() {
       _cardsFuture = provider.fetchCards(userUuid).then((data) {
