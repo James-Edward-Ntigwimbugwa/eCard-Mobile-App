@@ -1,0 +1,9 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="Ecard" type="FlutterRunConfigurationType" factoryName="Flutter">
+    <option name="envs">
+      <entry key="GoogleMapAPiKey" value="AIzaSyCAu5iP5hy8vWZJTwKNjFeeBm4vamK-hE4" />
+    </option>
+    <option name="filePath" value="$PROJECT_DIR$/lib/main.dart" />
+    <method v="2" />
+  </configuration>
+</component>

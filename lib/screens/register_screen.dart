@@ -56,9 +56,6 @@ class RegisterPageState extends State<RegisterPage> {
             height: 30,
             width: 30,
           ));
-      // Future.delayed(Duration(seconds: 2), () {
-      //   Navigator.of(context).pop();
-      // });
       return;
     }
     if (form == null || !form.validate()) {
@@ -141,8 +138,8 @@ class RegisterPageState extends State<RegisterPage> {
     _bioController.dispose();
     _companyTitleController.dispose();
     _jobTitleController.dispose();
-    usernameController.dispose();
-    passwordController.dispose();
+    // usernameController.dispose();
+    // passwordController.dispose();
     super.dispose();
   }
 

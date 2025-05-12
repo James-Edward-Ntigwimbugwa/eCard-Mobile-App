@@ -69,7 +69,7 @@ class EcardApp extends StatelessWidget {
                   themeNotifier.isDarkMode ? ThemeMode.dark : ThemeMode.light,
               initialRoute: '/',
               onGenerateRoute: PageRouter.switchRoute,
-              home: SplashScreen(), // Always start with SplashScreen
+              // home: SplashScreen(), // Always start with SplashScreen
             ),
           );
         },
