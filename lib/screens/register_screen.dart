@@ -48,20 +48,17 @@ class RegisterPageState extends State<RegisterPage> {
         _lastNameController.text.isEmpty ||
         _emailController.text.isEmpty ||
         _phoneNumberController.text.isEmpty) {
-      Alerts.show(
-          context,
-          "Fill in all required fields",
-          Image.asset(
+      Alerts.showError(
+          context: context,
+          message: "Fill in all required fields",
+          icon: Image.asset(
             Images.errorImage,
             height: 30,
             width: 30,
           ));
-      Future.delayed(Duration(seconds: 2), () {
-        Navigator.pop(context);
-      });
-      Future.delayed(Duration(seconds: 2), () {
-        Navigator.of(context).pop();
-      });
+      // Future.delayed(Duration(seconds: 2), () {
+      //   Navigator.of(context).pop();
+      // });
       return;
     }
     if (form == null || !form.validate()) {
@@ -69,10 +66,10 @@ class RegisterPageState extends State<RegisterPage> {
       return;
     }
     form.save();
-    Alerts.show(
-        context,
-        "Loading ...",
-        LoadingAnimationWidget.stretchedDots(
+    Alerts.showLoader(
+        context: context,
+        message: "Loading ...",
+        icon: LoadingAnimationWidget.stretchedDots(
             color: Theme.of(context).primaryColor, size: 20));
     Timer(const Duration(seconds: 1), () {
       final auth = Provider.of<AuthProvider>(context, listen: false);
@@ -106,8 +103,8 @@ class RegisterPageState extends State<RegisterPage> {
           Navigator.pop(context);
           Navigator.pushReplacementNamed(context, '/verify_with_otp');
         } else {
-          Alerts.show(context, response['message'] ?? 'Registration failed',
-              Image.asset(Images.errorImage));
+          Alerts.showError(context: context, message:response['message'] ?? 'Registration failed',
+             icon:  Image.asset(Images.errorImage));
         }
       }).catchError((error) => print(error));
     });
@@ -329,10 +326,10 @@ class RegisterPageState extends State<RegisterPage> {
                                 onSaved: (value) {
                                   if (value != null) {
                                     if (value.length < 8) {
-                                      Alerts.show(
-                                          context,
-                                          'Password must be at least 8 characters long',
-                                          Image.asset(Images.errorImage));
+                                      Alerts.showError(
+                                          context: context,
+                                          message: 'Password must be at least 8 characters long',
+                                          icon: Image.asset(Images.errorImage));
                                     } else {
                                       _password = value;
                                     }

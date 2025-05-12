@@ -26,8 +26,8 @@ class OtpVerifierState extends State<OtpVerifier> {
 
   Future<void> _verifyOtp() async {
     if (_otpCode.length < 6) {
-      Alerts.show(context, "Please enter the complete 6-digit OTP code",
-          Image.asset(Images.errorImage, height: 30, width: 30));
+      Alerts.showError(context: context,message:  "Please enter the complete 6-digit OTP code",
+          icon: Image.asset(Images.errorImage, height: 30, width: 30));
       return;
     }
 
@@ -35,10 +35,10 @@ class OtpVerifierState extends State<OtpVerifier> {
       _isSubmitting = true;
     });
 
-    Alerts.show(
-        context,
-        "Verifying OTP...",
-        LoadingAnimationWidget.stretchedDots(
+    Alerts.showLoader(
+        context: context,
+        message: "Verifying OTP...",
+        icon: LoadingAnimationWidget.stretchedDots(
             color: Theme.of(context).primaryColor, size: 20));
 
     try {
@@ -49,16 +49,16 @@ class OtpVerifierState extends State<OtpVerifier> {
 
       if (response.statusCode == 200) {
         // Account activated successfully
-        Alerts.show(context, "Account activated successfully!",
-            Icon(Icons.check_circle, color: Colors.green, size: 30));
+        Alerts.showSuccess(context: context, message: "Account activated successfully!",
+            icon: Icon(Icons.check_circle, color: Colors.green, size: 30));
 
         // Wait for alert to show before navigating
         Timer(const Duration(seconds: 2), () {
           Navigator.pop(context); // Close alert
-          Alerts.show(
-              context,
-              "Logging in ...",
-              LoadingAnimationWidget.stretchedDots(
+          Alerts.showLoader(
+              context: context,
+              message: "Logging in ...",
+              icon: LoadingAnimationWidget.stretchedDots(
                   color: Theme.of(context).primaryColor, size: 20));
           // Get auth provider and mark account as verified
           final authProvider =
@@ -75,8 +75,8 @@ class OtpVerifierState extends State<OtpVerifier> {
             }
           }).catchError((error) {
             developer.log("Error verifying otp=======> $error");
-            Alerts.show(context, "Error logging in.Please try again",
-                Image.asset(Images.errorImage, height: 30, width: 30));
+            Alerts.showError(context: context,message:  "Error logging in.Please try again",
+                icon: Image.asset(Images.errorImage, height: 30, width: 30));
             return;
           });
           // Navigate to login screen
@@ -84,10 +84,10 @@ class OtpVerifierState extends State<OtpVerifier> {
         });
       } else {
         // Activation failed
-        Alerts.show(
-            context,
-            "Invalid OTP code. Please try again.",
-            Image.asset(
+        Alerts.showError(
+            context: context,
+            message: "Invalid OTP code. Please try again.",
+            icon: Image.asset(
               Images.errorImage,
               height: 30,
               width: 30,
@@ -98,10 +98,10 @@ class OtpVerifierState extends State<OtpVerifier> {
       }
     } catch (error) {
       Navigator.pop(context); // Close loading dialog
-      Alerts.show(
-          context,
-          "Verification failed. Please check your connection and try again.",
-          Image.asset(Images.errorImage));
+      Alerts.showError(
+          context: context,
+          message: "Verification failed. Please check your connection and try again.",
+          icon: Image.asset(Images.errorImage));
       setState(() {
         _isSubmitting = false;
       });
@@ -168,10 +168,10 @@ class OtpVerifierState extends State<OtpVerifier> {
                 TextButton(
                   onPressed: () {
                     // Here you would implement resend OTP functionality
-                    Alerts.show(
-                        context,
-                        "OTP code resent!",
-                        Icon(Icons.email,
+                    Alerts.showSuccess(
+                        context: context,
+                        message: "OTP code resent!",
+                        icon: Icon(Icons.email,
                             color: Theme.of(context).primaryColor, size: 30));
                   },
                   child: Text(

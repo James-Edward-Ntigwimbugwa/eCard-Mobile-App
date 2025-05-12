@@ -48,10 +48,10 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   void showLoader() {
-    Alerts.show(
-        context,
-        Loaders.loading,
-        LoadingAnimationWidget.stretchedDots(
+    Alerts.showLoader(
+        context: context,
+        message: Loaders.loading,
+        icon: LoadingAnimationWidget.stretchedDots(
             color: Theme.of(context).primaryColor, size: 24.0));
   }
 
@@ -62,17 +62,14 @@ class _LoginPageState extends State<LoginPage> {
 
     final form = formKey.currentState;
     if (_usernameController.text.isEmpty || _passwordController.text.isEmpty) {
-      Alerts.show(
-          context,
-          "Fill in all fields",
-          Image.asset(
+      Alerts.showError(
+          context: context,
+          message: "Fill in all fields",
+          icon: Image.asset(
             Images.errorImage,
             height: 30,
             width: 30,
           ));
-      Future.delayed(Duration(seconds: 2), () {
-        Navigator.of(context).pop();
-      });
       return;
     }
 
@@ -109,18 +106,14 @@ class _LoginPageState extends State<LoginPage> {
         }
       }).catchError((error) {
         developer.log("Error $error");
-        Alerts.show(
-            context,
-            "Network error",
-            Image.asset(
+        Alerts.showError(
+            context: context,
+            message: "Network error",
+            icon: Image.asset(
               Images.networkErrorImage,
               width: 40,
               height: 40,
             ));
-        Future.delayed(Duration(seconds: 4), () {
-          Navigator.pop(context);
-          Navigator.pop(context);
-        });
       });
     });
   }
