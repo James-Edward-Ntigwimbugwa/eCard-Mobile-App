@@ -42,9 +42,6 @@ class _ForgetPasswordPageState extends State<ForgetPasswordPage> {
     final form = formKey.currentState;
     if (_emailController.text.isEmpty) {
       Alerts.showError(context: context, message: "Please enter your email", icon: Image.asset(Images.errorImage, width: 40, height: 40,));
-      Future.delayed(Duration(seconds: 2), () {
-        Navigator.of(context).pop();
-      });
       return;
     }
 
