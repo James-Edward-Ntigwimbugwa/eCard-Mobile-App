@@ -70,7 +70,8 @@ class CardRequests {
     }
   }
 
-  static Future<Response> updateCard(String cardId, Map<String, dynamic> cardData) async {
+  static Future<Response> updateCard(
+      String cardId, Map<String, dynamic> cardData) async {
     try {
       final prefs = await SharedPreferences.getInstance();
       final bearerToken = prefs.getString("accessToken");

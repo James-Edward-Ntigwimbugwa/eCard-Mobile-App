@@ -3,34 +3,34 @@ import 'package:ecard_app/modals/card_modal.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
 
-class DatabaseHelper{
+class DatabaseHelper {
   static final DatabaseHelper instance = DatabaseHelper._init();
 
   static Database? _database;
   DatabaseHelper._init();
 
-  Future<Database?> get database async{
-    if(_database != null) return _database;
+  Future<Database?> get database async {
+    if (_database != null) return _database;
     _database = await _initDB('ecard.db');
     return _database;
   }
 
-  Future<Database?> _initDB(String filePath) async{
+  Future<Database?> _initDB(String filePath) async {
     final dbPath = await getDatabasesPath();
     final path = join(dbPath, filePath);
 
     return await openDatabase(
-        path,
-        onCreate: _createDB,
-        version: 1,
+      path,
+      onCreate: _createDB,
+      version: 1,
     );
   }
 
   // create database
-  Future _createDB(Database db , int version) async {
+  Future _createDB(Database db, int version) async {
     const idType = "TEXT PRIMARY KEY";
-    const textType = "TEXT" ;
-    const boolType = "INTEGER" ;
+    const textType = "TEXT";
+    const boolType = "INTEGER";
 
     await db.execute('''
     CREATE TABLE cards (
@@ -80,31 +80,28 @@ class DatabaseHelper{
     final db = await instance.database;
     int result = 0;
 
-    try{
-      await db?.transaction((txn) async{
-        for(var card in cards){
-          result += await txn.insert(
-              'cards',
-              _cardToMap(card),
-              conflictAlgorithm: ConflictAlgorithm.replace
-          );
+    try {
+      await db?.transaction((txn) async {
+        for (var card in cards) {
+          result += await txn.insert('cards', _cardToMap(card),
+              conflictAlgorithm: ConflictAlgorithm.replace);
         }
       });
       return result;
-
-    }catch(error) {
+    } catch (error) {
       developer.log("Error inserting cards: =======> $error");
       return -1;
     }
   }
 
   // method to get all cards
-  Future<List<CustomCard>?> getAllCards() async{
+  Future<List<CustomCard>?> getAllCards() async {
     final db = await instance.database;
     try {
-      final result = await db?.query('cards', where: 'deleted = ?', whereArgs: [0]);
-      return result?.map((json)=>CustomCard.fromJson(json)).toList();
-    }catch(error){
+      final result =
+          await db?.query('cards', where: 'deleted = ?', whereArgs: [0]);
+      return result?.map((json) => CustomCard.fromJson(json)).toList();
+    } catch (error) {
       developer.log("Error fetching cards: ======>$error");
     }
     return [];
@@ -114,10 +111,11 @@ class DatabaseHelper{
   Future<List<CustomCard>?> getCardsByUser(String userUuid) async {
     final db = await instance.database;
 
-    try{
-      final result = await db?.query('cards' , where: 'created = ? AND deleted = ?', whereArgs: [userUuid, 0]);
-      return result?.map((json)=>CustomCard.fromJson(json)).toList();
-    }catch(error){
+    try {
+      final result = await db?.query('cards',
+          where: 'created = ? AND deleted = ?', whereArgs: [userUuid, 0]);
+      return result?.map((json) => CustomCard.fromJson(json)).toList();
+    } catch (error) {
       developer.log("Error fetching cards=======>: $error");
       return [];
     }

@@ -27,90 +27,92 @@ class _LoginPageState extends State<LoginPage> {
   final _formKey = GlobalKey<FormState>();
   String? _password;
 
-@override
-void initState() {
-  super.initState();
-  Future.microtask(() {
-    final auth = Provider.of<AuthProvider>(context, listen: false);
-    final data = auth.formData[AuthScreen.loginScreen];
-    if (data != null) {
-      _usernameController.text = data['username'] ?? '';
-      _passwordController.text = data['password'] ?? '';
-    }
-  });
-}
-
-@override
-void dispose() {
-  _usernameController.dispose();
-  _passwordController.dispose();
-  super.dispose();
-}
-
-void showLoader() => Alerts.showLoader(
-    context: context,
-    message: Loaders.loading,
-    icon: LoadingAnimationWidget.stretchedDots(
-      color: Theme.of(context).primaryColor,
-      size: 24.0,
-    ));
-
-Future<void> handleLogin() async {
-  setState(() => _formIsSubmitted = true);
-  if (_usernameController.text.isEmpty || _passwordController.text.isEmpty) {
-    Alerts.showError(
-      context: context,
-      message: "Fill in all fields",
-      icon: Image.asset(Images.errorImage, height: 30, width: 30),
-    );
-    return;
+  @override
+  void initState() {
+    super.initState();
+    Future.microtask(() {
+      final auth = Provider.of<AuthProvider>(context, listen: false);
+      final data = auth.formData[AuthScreen.loginScreen];
+      if (data != null) {
+        _usernameController.text = data['username'] ?? '';
+        _passwordController.text = data['password'] ?? '';
+      }
+    });
   }
-  if (!_formKey.currentState!.validate()) return;
-  _formKey.currentState!.save();
 
-  showLoader();
-  try {
-    final auth = Provider.of<AuthProvider>(context, listen: false);
-    auth.updateFormField('username', _usernameController.text.trim());
-    auth.updateFormField('password', _passwordController.text.trim());
+  @override
+  void dispose() {
+    _usernameController.dispose();
+    _passwordController.dispose();
+    super.dispose();
+  }
 
-    final response = await auth.login(
-      _usernameController.text.trim(),
-      _passwordController.text.trim(),
-    ).timeout(const Duration(seconds: 60));
+  void showLoader() => Alerts.showLoader(
+      context: context,
+      message: Loaders.loading,
+      icon: LoadingAnimationWidget.stretchedDots(
+        color: Theme.of(context).primaryColor,
+        size: 24.0,
+      ));
 
-    Navigator.pop(context);
-    if (response['status'] == true) {
-      Provider.of<UserProvider>(context, listen: false)
-          .setUser(response['user']);
-      Navigator.pushReplacementNamed(context, '/dashboard');
-    } else {
+  Future<void> handleLogin() async {
+    setState(() => _formIsSubmitted = true);
+    if (_usernameController.text.isEmpty || _passwordController.text.isEmpty) {
       Alerts.showError(
         context: context,
-        message: response['message'] ?? 'Invalid credentials',
+        message: "Fill in all fields",
         icon: Image.asset(Images.errorImage, height: 30, width: 30),
       );
+      return;
     }
-  } on TimeoutException {
-    Navigator.pop(context);
-    Alerts.showError(
-        context: context,
-        message:
-        "Login request timed out. Please check your internet connection.",
-        icon: Image.asset(Images.errorImage, height: 30, width: 30));
-  } catch (e, stack) {
-    Navigator.pop(context);
-    developer.log("Login screen error: $e", stackTrace: stack);
-    Alerts.showError(
-        context: context,
-        message: "An error occurred. Please try again. ${e.toString()}",
-        icon: Image.asset(
-          Images.networkErrorImage,
-          width: 40,
-          height: 40,
-        ));
+    if (!_formKey.currentState!.validate()) return;
+    _formKey.currentState!.save();
+
+    showLoader();
+    try {
+      final auth = Provider.of<AuthProvider>(context, listen: false);
+      auth.updateFormField('username', _usernameController.text.trim());
+      auth.updateFormField('password', _passwordController.text.trim());
+
+      final response = await auth
+          .login(
+            _usernameController.text.trim(),
+            _passwordController.text.trim(),
+          )
+          .timeout(const Duration(seconds: 60));
+
+      Navigator.pop(context);
+      if (response['status'] == true) {
+        Provider.of<UserProvider>(context, listen: false)
+            .setUser(response['user']);
+        Navigator.pushReplacementNamed(context, '/dashboard');
+      } else {
+        Alerts.showError(
+          context: context,
+          message: response['message'] ?? 'Invalid credentials',
+          icon: Image.asset(Images.errorImage, height: 30, width: 30),
+        );
+      }
+    } on TimeoutException {
+      Navigator.pop(context);
+      Alerts.showError(
+          context: context,
+          message:
+              "Login request timed out. Please check your internet connection.",
+          icon: Image.asset(Images.errorImage, height: 30, width: 30));
+    } catch (e, stack) {
+      Navigator.pop(context);
+      developer.log("Login screen error: $e", stackTrace: stack);
+      Alerts.showError(
+          context: context,
+          message: "An error occurred. Please try again. ${e.toString()}",
+          icon: Image.asset(
+            Images.networkErrorImage,
+            width: 40,
+            height: 40,
+          ));
+    }
   }
-}
 
   @override
   Widget build(BuildContext context) {

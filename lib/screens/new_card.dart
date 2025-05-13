@@ -21,7 +21,7 @@ class CreateNewCardState extends State<CreateNewCard> {
 
   final TextEditingController _titleController = TextEditingController();
   final TextEditingController _organizationNameController =
-      TextEditingController();
+  TextEditingController();
   final TextEditingController _jobTitleController = TextEditingController();
   final TextEditingController _locationController = TextEditingController();
   final TextEditingController _emailAddressController = TextEditingController();
@@ -164,7 +164,7 @@ class CreateNewCardState extends State<CreateNewCard> {
                           _titleController,
                           Icon(CupertinoIcons.doc_text,
                               color: Theme.of(context).indicatorColor),
-                          (value) {
+                              (value) {
                             if (value == null || value.isEmpty) {
                               return 'Please enter a title';
                             }
@@ -180,7 +180,7 @@ class CreateNewCardState extends State<CreateNewCard> {
                           _organizationNameController,
                           Icon(CupertinoIcons.building_2_fill,
                               color: Theme.of(context).indicatorColor),
-                          (value) {
+                              (value) {
                             if (value == null || value.isEmpty) {
                               return 'Please enter organization name';
                             }
@@ -201,7 +201,7 @@ class CreateNewCardState extends State<CreateNewCard> {
                           _jobTitleController,
                           Icon(CupertinoIcons.person,
                               color: Theme.of(context).indicatorColor),
-                          (value) {
+                              (value) {
                             if (value == null || value.isEmpty) {
                               return 'Please enter job title';
                             }
@@ -256,9 +256,9 @@ class CreateNewCardState extends State<CreateNewCard> {
                                       color: _colorTemplates[index],
                                       borderRadius: BorderRadius.circular(10),
                                       border: _selectedColor ==
-                                              _colorTemplates[index]
+                                          _colorTemplates[index]
                                           ? Border.all(
-                                              color: Colors.white, width: 2)
+                                          color: Colors.white, width: 2)
                                           : null,
                                     ),
                                   ),
@@ -315,10 +315,10 @@ class CreateNewCardState extends State<CreateNewCard> {
                                   borderRadius: BorderRadius.circular(20),
                                   border: _textColor == Colors.white
                                       ? Border.all(
-                                          color: Theme.of(context).primaryColor,
-                                          width: 2)
+                                      color: Theme.of(context).primaryColor,
+                                      width: 2)
                                       : Border.all(
-                                          color: Colors.grey, width: 1),
+                                      color: Colors.grey, width: 1),
                                 ),
                               ),
                             ),
@@ -337,10 +337,10 @@ class CreateNewCardState extends State<CreateNewCard> {
                                   borderRadius: BorderRadius.circular(20),
                                   border: _textColor == Colors.black
                                       ? Border.all(
-                                          color: Theme.of(context).primaryColor,
-                                          width: 2)
+                                      color: Theme.of(context).primaryColor,
+                                      width: 2)
                                       : Border.all(
-                                          color: Colors.grey, width: 1),
+                                      color: Colors.grey, width: 1),
                                 ),
                               ),
                             ),
@@ -454,7 +454,7 @@ class CreateNewCardState extends State<CreateNewCard> {
                           "example@organization.co.tz",
                           _emailAddressController,
                           const Icon(Icons.email),
-                          (value) {
+                              (value) {
                             if (value == null || value.isEmpty) {
                               return 'Please enter email address';
                             }
@@ -474,7 +474,7 @@ class CreateNewCardState extends State<CreateNewCard> {
                           "eg: +255 716 521 848",
                           _phoneNumberController,
                           const Icon(Icons.phone),
-                          (value) {
+                              (value) {
                             if (value == null || value.isEmpty) {
                               return 'Please enter phone number';
                             }
@@ -495,7 +495,7 @@ class CreateNewCardState extends State<CreateNewCard> {
                           "eg: www.certainwebsite.com",
                           _websiteController,
                           const Icon(Icons.language),
-                          (value) {
+                              (value) {
                             if (value == null || value.isEmpty) {
                               return 'Please enter website link';
                             }
@@ -525,8 +525,8 @@ class CreateNewCardState extends State<CreateNewCard> {
                                     _locationController,
                                     Icon(CupertinoIcons.location,
                                         color:
-                                            Theme.of(context).indicatorColor),
-                                    (value) {
+                                        Theme.of(context).indicatorColor),
+                                        (value) {
                                       if (value == null || value.isEmpty) {
                                         return 'Please enter business location';
                                       }
@@ -651,7 +651,7 @@ class CreateNewCardState extends State<CreateNewCard> {
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
         decoration: BoxDecoration(
           color:
-              isSelected ? Theme.of(context).primaryColor : Colors.transparent,
+          isSelected ? Theme.of(context).primaryColor : Colors.transparent,
           borderRadius: BorderRadius.circular(20),
           border: Border.all(
             color: isSelected ? Theme.of(context).primaryColor : Colors.grey,
@@ -756,13 +756,13 @@ Widget _buildTextField(BuildContext context, String labelText) {
 }
 
 Widget _buildInputField(
-  BuildContext context,
-  String hintText,
-  TextEditingController controller,
-  Icon prefixIcon,
-  String? Function(String?)? validator, {
-  Function(String)? onChanged,
-}) {
+    BuildContext context,
+    String hintText,
+    TextEditingController controller,
+    Icon prefixIcon,
+    String? Function(String?)? validator, {
+      Function(String)? onChanged,
+    }) {
   return TextFormField(
     controller: controller,
     validator: validator,
@@ -785,12 +785,12 @@ Widget _buildInputField(
 }
 
 Widget _buildCustomizableCard(
-  BuildContext context,
-  String organizationLogoPath,
-  String organizationName,
-  String organizationAddress,
-  Color colorTemplate,
-) {
+    BuildContext context,
+    String organizationLogoPath,
+    String organizationName,
+    String organizationAddress,
+    Color colorTemplate,
+    ) {
   // Get the font style state
   String fontFamily = 'sans-serif';
   if (context is StatefulElement && context.state is CreateNewCardState) {

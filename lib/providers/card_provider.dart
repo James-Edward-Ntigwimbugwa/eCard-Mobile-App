@@ -52,16 +52,21 @@ class CardProvider with ChangeNotifier {
         return {"status": true, "message": "Success", "cards": cards};
       } else {
         _errorMessage =
-        "Failed to load cards: Server returned ${response.statusCode}";
+            "Failed to load cards: Server returned ${response.statusCode}";
         developer.log(_errorMessage!);
 
         // Try to load cards from local SQLite database as fallback
         final localCards = await CardPreferences.getCardsByUser(uuid);
         if (localCards!.isNotEmpty) {
-          developer.log("Loaded ${localCards.length} cards from local database");
+          developer
+              .log("Loaded ${localCards.length} cards from local database");
           _isLoading = false;
           notifyListeners();
-          return {"status": true, "message": "Loaded from local storage", "cards": localCards};
+          return {
+            "status": true,
+            "message": "Loaded from local storage",
+            "cards": localCards
+          };
         }
 
         _isLoading = false;
@@ -81,10 +86,15 @@ class CardProvider with ChangeNotifier {
       try {
         final localCards = await CardPreferences.getCardsByUser(uuid);
         if (localCards!.isNotEmpty) {
-          developer.log("Loaded ${localCards.length} cards from local database");
+          developer
+              .log("Loaded ${localCards.length} cards from local database");
           _isLoading = false;
           notifyListeners();
-          return {"status": true, "message": "Loaded from local storage", "cards": localCards};
+          return {
+            "status": true,
+            "message": "Loaded from local storage",
+            "cards": localCards
+          };
         }
       } catch (dbError) {
         developer.log("Error loading from local database: $dbError");

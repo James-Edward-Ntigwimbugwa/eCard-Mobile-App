@@ -21,7 +21,6 @@ enum Status {
 }
 
 class AuthProvider with ChangeNotifier {
-
   Status _loggedInStatus = Status.NotLoggedIn;
   Status _registeredInStatus = Status.NotRegistered;
 
@@ -35,16 +34,42 @@ class AuthProvider with ChangeNotifier {
   // Store form data for each screen
   Map<AuthScreen, Map<String, dynamic>> formData = {
     AuthScreen.loginScreen: {'username': '', 'password': ''},
-    AuthScreen.registerScreen: {'firstName': '', 'middleName': '', 'username': '', 'lastName': '', 'email': '', 'role': '', 'password': '', 'phoneNumber': '', 'bio': '', 'companyTitle': '', 'jobTitle': '',},
+    AuthScreen.registerScreen: {
+      'firstName': '',
+      'middleName': '',
+      'username': '',
+      'lastName': '',
+      'email': '',
+      'role': '',
+      'password': '',
+      'phoneNumber': '',
+      'bio': '',
+      'companyTitle': '',
+      'jobTitle': '',
+    },
     AuthScreen.forgotPassword: {'email': ''},
     AuthScreen.verifyWithOtp: {'otp': ''},
   };
 
+  void navigateToLoginScreen() {
+    _currentScreen = AuthScreen.loginScreen;
+    notifyListeners();
+  }
 
-  void navigateToLoginScreen() { _currentScreen = AuthScreen.loginScreen; notifyListeners(); }
-  void navigateToVerifyWithOptScreen() { _currentScreen = AuthScreen.verifyWithOtp; notifyListeners(); }
-  void navigateToRegisterScreen() { _currentScreen = AuthScreen.registerScreen; notifyListeners(); }
-  void navigateToForgotPasswordScreen() { _currentScreen = AuthScreen.forgotPassword; notifyListeners(); }
+  void navigateToVerifyWithOptScreen() {
+    _currentScreen = AuthScreen.verifyWithOtp;
+    notifyListeners();
+  }
+
+  void navigateToRegisterScreen() {
+    _currentScreen = AuthScreen.registerScreen;
+    notifyListeners();
+  }
+
+  void navigateToForgotPasswordScreen() {
+    _currentScreen = AuthScreen.forgotPassword;
+    notifyListeners();
+  }
 
   void updateFormField(String field, String value) {
     formData[_currentScreen]![field] = value;
@@ -54,8 +79,8 @@ class AuthProvider with ChangeNotifier {
     var result;
 
     final Map<String, dynamic> loginData = {
-        'username': username,
-        'password': password
+      'username': username,
+      'password': password
     };
 
     _loggedInStatus = Status.Authenticating;
@@ -67,6 +92,7 @@ class AuthProvider with ChangeNotifier {
       final Map<String, dynamic> responseData = json.decode(response.body);
 
       var userData = responseData['data'];
+      developer.log("Stored user data======> $userData");
 
       User authUser = User.fromJson(userData);
 
@@ -88,19 +114,18 @@ class AuthProvider with ChangeNotifier {
   }
 
   Future<Map<String, dynamic>> register(
-      String firstName,
-      String middleName,
-      String username,
-      String lastName,
-      String email,
-      String role,
-      String password,
-      String phoneNumber,
-      String bio,
-      String companyTitle,
-      String jobTitle,
-      ) async {
-
+    String firstName,
+    String middleName,
+    String username,
+    String lastName,
+    String email,
+    String role,
+    String password,
+    String phoneNumber,
+    String bio,
+    String companyTitle,
+    String jobTitle,
+  ) async {
     final Map<String, dynamic> registrationData = {
       'firstName': firstName,
       'middleName': middleName,
@@ -115,7 +140,6 @@ class AuthProvider with ChangeNotifier {
       'jobTitle': jobTitle,
     };
 
-
     _registeredInStatus = Status.Registering;
     notifyListeners();
 
@@ -129,7 +153,6 @@ class AuthProvider with ChangeNotifier {
     final Map<String, dynamic> responseData = json.decode(response.body);
 
     if (response.statusCode == 200) {
-
       var userData = responseData['data'];
 
       User authUser = User.fromJson(userData);
@@ -141,7 +164,6 @@ class AuthProvider with ChangeNotifier {
         'data': authUser
       };
     } else {
-
       result = {
         'status': false,
         'message': 'Registration failed',
@@ -181,5 +203,4 @@ class AuthProvider with ChangeNotifier {
       };
     }
   }
-
 }

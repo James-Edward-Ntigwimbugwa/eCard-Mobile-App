@@ -52,12 +52,15 @@ class CardDisplayWidget extends StatelessWidget {
                     // User profile photo
                     CircleAvatar(
                       radius: 24,
-                      backgroundColor: isDark ? Colors.white24 : Colors.grey.shade200,
+                      backgroundColor:
+                          isDark ? Colors.white24 : Colors.grey.shade200,
                       backgroundImage: card.profilePhoto != null
                           ? NetworkImage(card.profilePhoto!)
                           : null,
                       child: card.profilePhoto == null
-                          ? Icon(Icons.person, size: 24, color: isDark ? Colors.white : Colors.grey)
+                          ? Icon(Icons.person,
+                              size: 24,
+                              color: isDark ? Colors.white : Colors.grey)
                           : null,
                     ),
 
@@ -72,7 +75,8 @@ class CardDisplayWidget extends StatelessWidget {
                           decoration: BoxDecoration(
                             color: Colors.white,
                             shape: BoxShape.circle,
-                            border: Border.all(color: backgroundColor, width: 1.5),
+                            border:
+                                Border.all(color: backgroundColor, width: 1.5),
                           ),
                           child: ClipOval(
                             child: Image.network(
@@ -192,7 +196,8 @@ class CardDisplayWidget extends StatelessWidget {
   bool _isColorDark(Color color) {
     // Calculate perceived brightness using formula:
     // (299 * R + 587 * G + 114 * B) / 1000
-    final double brightness = (color.red * 299 + color.green * 587 + color.blue * 114) / 1000;
+    final double brightness =
+        (color.red * 299 + color.green * 587 + color.blue * 114) / 1000;
     return brightness < 128; // If less than 128, consider it dark
   }
 }

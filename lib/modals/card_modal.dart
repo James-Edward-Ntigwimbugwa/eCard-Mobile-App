@@ -49,13 +49,21 @@ class CustomCard {
     return CustomCard(
       id: json['id']?.toString(),
       uuid: json['uuid'] ?? '',
-      createdAt: json['createdAt'] != null ?
-      (json['createdAt'] is String ? DateTime.parse(json['createdAt']) : null) : null,
-      updatedAt: json['updatedAt'] != null ?
-      (json['updatedAt'] is String ? DateTime.parse(json['updatedAt']) : null) : null,
+      createdAt: json['createdAt'] != null
+          ? (json['createdAt'] is String
+              ? DateTime.parse(json['createdAt'])
+              : null)
+          : null,
+      updatedAt: json['updatedAt'] != null
+          ? (json['updatedAt'] is String
+              ? DateTime.parse(json['updatedAt'])
+              : null)
+          : null,
       createdBy: json['createdBy'],
       deleted: json['deleted'] == 1 || json['deleted'] == true,
-      active: json['active'] == null || json['active'] == 1 || json['active'] == true,
+      active: json['active'] == null ||
+          json['active'] == 1 ||
+          json['active'] == true,
       company: json['company'] ?? '',
       organization: json['organization'],
       publishCard: json['publishCard'] == 1 || json['publishCard'] == true,

@@ -1,3 +1,5 @@
+import 'dart:developer' as developer;
+
 import 'package:animated_splash_screen/animated_splash_screen.dart';
 import 'package:ecard_app/components/custom_widgets.dart';
 import 'package:ecard_app/modals/user_modal.dart';
@@ -25,17 +27,17 @@ class _SplashScreenState extends State<SplashScreen> {
     _checkUserAuthentication();
   }
 
-  // Variable to store the next screen
   Widget? _nextScreen;
 
   // Check if user is authenticated
   Future<void> _checkUserAuthentication() async {
-    // Allow for a null result
     User? user = await UserPreferences().getUser();
-
+    developer.log("User data======> $user");
     setState(() {
       // If user is non-null and has a token, go to dashboard
-      if (user != null && user.accessToken != null && user.accessToken!.isNotEmpty) {
+      if (user != null &&
+          user.accessToken != null &&
+          user.accessToken!.isNotEmpty) {
         _nextScreen = DashboardPage(user: user);
       } else {
         _nextScreen = const AuthNavigator();

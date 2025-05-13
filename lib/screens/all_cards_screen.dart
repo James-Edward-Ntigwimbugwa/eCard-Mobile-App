@@ -100,14 +100,17 @@ class _AllCardsScreenState extends State<AllCardsScreen>
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               const SizedBox(height: 20),
-              if (_showBanner && _isEmpty) 
+              if (_showBanner && _isEmpty)
                 Container(
                   padding: const EdgeInsets.all(16.0),
                   child: Column(
                     children: [
                       Lottie.asset(LottieAnimes.noContent),
                       const SizedBox(height: 16),
-                      const Text("Create your first Card" , textAlign: TextAlign.center, ),
+                      const Text(
+                        "Create your first Card",
+                        textAlign: TextAlign.center,
+                      ),
                     ],
                   ),
                 ),
