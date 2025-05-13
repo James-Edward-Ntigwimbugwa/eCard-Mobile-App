@@ -1,3 +1,3 @@
-class LottieAnimes{
-  static String noContent = "assets/anime/no-content.json";
+class LottieAnimes {
+  static const noContent = 'anime/no-content.json';
 }

@@ -7,4 +7,10 @@ class AppUrl {
   static String getAllCardsById = "$baseEndpoint/api/v1/cards/user-cards";
   static const String registerUrl = "$baseEndpoint/auth/register";
   static const String forgotPassword = "$baseEndpoint/auth/forgotPassword";
+
+  static var updateCard;
+
+  static var deleteCard;
+
+  static String createCard = '$baseEndpoint/';
 }

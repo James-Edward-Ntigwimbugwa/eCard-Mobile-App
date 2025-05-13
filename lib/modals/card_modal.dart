@@ -47,18 +47,18 @@ class CustomCard {
 
   factory CustomCard.fromJson(Map<String, dynamic> json) {
     return CustomCard(
-      id: json['id'].toString(),
+      id: json['id']?.toString(),
       uuid: json['uuid'] ?? '',
-      createdAt:
-          json['createdAt'] != null ? DateTime.parse(json['createdAt']) : null,
-      updatedAt:
-          json['updatedAt'] != null ? DateTime.parse(json['updatedAt']) : null,
+      createdAt: json['createdAt'] != null ?
+      (json['createdAt'] is String ? DateTime.parse(json['createdAt']) : null) : null,
+      updatedAt: json['updatedAt'] != null ?
+      (json['updatedAt'] is String ? DateTime.parse(json['updatedAt']) : null) : null,
       createdBy: json['createdBy'],
-      deleted: json['deleted'] ?? false,
-      active: json['active'] ?? true,
+      deleted: json['deleted'] == 1 || json['deleted'] == true,
+      active: json['active'] == null || json['active'] == 1 || json['active'] == true,
       company: json['company'] ?? '',
       organization: json['organization'],
-      publishCard: json['publishCard'] ?? false,
+      publishCard: json['publishCard'] == 1 || json['publishCard'] == true,
       cardLogo: json['cardLogo'] ?? '',
       profilePhoto: json['profilePhoto'] ?? '',
       address: json['address'] ?? '',
@@ -68,7 +68,6 @@ class CustomCard {
       email: json['email'] ?? '',
       linkedIn: json['linkedIn'] ?? '',
       websiteUrl: json['websiteUrl'] ?? '',
-      // Fixed typo in the field name (was 'backgroundUrl')
       backgroundColor: json['backgroundColor'] ?? json['backgroundUrl'],
       fontColor: json['fontColor'],
     );
@@ -99,6 +98,55 @@ class CustomCard {
       'backgroundColor': backgroundColor,
       'fontColor': fontColor,
     };
+  }
+
+  // Create a copy of the card with updated fields
+  CustomCard copyWith({
+    String? id,
+    String? uuid,
+    DateTime? createdAt,
+    DateTime? updatedAt,
+    String? createdBy,
+    bool? deleted,
+    bool? active,
+    String? company,
+    String? organization,
+    bool? publishCard,
+    String? cardLogo,
+    String? profilePhoto,
+    String? address,
+    String? cardDescription,
+    String? phoneNumber,
+    String? department,
+    String? email,
+    String? linkedIn,
+    String? websiteUrl,
+    String? backgroundColor,
+    String? fontColor,
+  }) {
+    return CustomCard(
+      id: id ?? this.id,
+      uuid: uuid ?? this.uuid,
+      createdAt: createdAt ?? this.createdAt,
+      updatedAt: updatedAt ?? this.updatedAt,
+      createdBy: createdBy ?? this.createdBy,
+      deleted: deleted ?? this.deleted,
+      active: active ?? this.active,
+      company: company ?? this.company,
+      organization: organization ?? this.organization,
+      publishCard: publishCard ?? this.publishCard,
+      cardLogo: cardLogo ?? this.cardLogo,
+      profilePhoto: profilePhoto ?? this.profilePhoto,
+      address: address ?? this.address,
+      cardDescription: cardDescription ?? this.cardDescription,
+      phoneNumber: phoneNumber ?? this.phoneNumber,
+      department: department ?? this.department,
+      email: email ?? this.email,
+      linkedIn: linkedIn ?? this.linkedIn,
+      websiteUrl: websiteUrl ?? this.websiteUrl,
+      backgroundColor: backgroundColor ?? this.backgroundColor,
+      fontColor: fontColor ?? this.fontColor,
+    );
   }
 
   @override
