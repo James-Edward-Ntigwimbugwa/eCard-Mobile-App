@@ -111,15 +111,15 @@ class AuthProvider with ChangeNotifier {
         String errorMessage;
         try {
           final Map<String, dynamic> errorData = json.decode(response.body);
-          errorMessage = errorData['error'] ?? errorData['message'] ?? 'Login failed: ${response.statusCode}';
+          errorMessage = errorData['error'] ??
+              errorData['message'] ??
+              'Login failed: ${response.statusCode}';
         } catch (e) {
-          errorMessage = 'Login failed with status code: ${response.statusCode}';
+          errorMessage =
+              'Login failed with status code: ${response.statusCode}';
         }
 
-        result = {
-          'status': false,
-          'message': errorMessage
-        };
+        result = {'status': false, 'message': errorMessage};
       }
     } catch (e) {
       _loggedInStatus = Status.NotLoggedIn;
@@ -136,18 +136,18 @@ class AuthProvider with ChangeNotifier {
   }
 
   Future<Map<String, dynamic>> register(
-      String firstName,
-      String middleName,
-      String username,
-      String lastName,
-      String email,
-      String role,
-      String password,
-      String phoneNumber,
-      String bio,
-      String companyTitle,
-      String jobTitle,
-      ) async {
+    String firstName,
+    String middleName,
+    String username,
+    String lastName,
+    String email,
+    String role,
+    String password,
+    String phoneNumber,
+    String bio,
+    String companyTitle,
+    String jobTitle,
+  ) async {
     final Map<String, dynamic> registrationData = {
       'firstName': firstName,
       'middleName': middleName,
@@ -166,7 +166,8 @@ class AuthProvider with ChangeNotifier {
     notifyListeners();
 
     try {
-      Response response = await AuthRequests.register('register', registrationData);
+      Response response =
+          await AuthRequests.register('register', registrationData);
       return onValue(response);
     } catch (error) {
       return onError(error);
@@ -198,7 +199,8 @@ class AuthProvider with ChangeNotifier {
               responseData['message'] ??
               'Registration failed with status code: ${response.statusCode}';
         } catch (e) {
-          errorMessage = 'Registration failed with status code: ${response.statusCode}';
+          errorMessage =
+              'Registration failed with status code: ${response.statusCode}';
         }
 
         result = {

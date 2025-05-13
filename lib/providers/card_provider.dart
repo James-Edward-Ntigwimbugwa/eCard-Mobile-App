@@ -11,8 +11,8 @@ class CardProvider with ChangeNotifier {
   String? _errorMessage;
   bool get isLoading => _isLoading;
   String? get errorMessage => _errorMessage;
-  Future<Map<String, dynamic>> createCard({
-      required String title,
+  Future<Map<String, dynamic>> createCard(
+      {required String title,
       required String cardDescription,
       required String organization,
       required String address,
@@ -24,12 +24,11 @@ class CardProvider with ChangeNotifier {
       String? website = '',
       String? department = '',
       required String backgroundColor,
-      required String fontColor
-  }) async {
-    final Map<String , dynamic> cardRegistrationData = {
+      required String fontColor}) async {
+    final Map<String, dynamic> cardRegistrationData = {
       'title': title,
       'cardDescription': cardDescription,
-      'publishCard' : true,
+      'publishCard': true,
       'organization': organization,
       'address': address,
       'cardLogo': cardLogo,
@@ -46,11 +45,13 @@ class CardProvider with ChangeNotifier {
     notifyListeners();
 
     return await CardRequests.createCard(cardRegistrationData)
-        .then(onValue).catchError(onError);
+        .then(onValue)
+        .catchError(onError);
   }
+
   static Future<Map<String, dynamic>> onValue(Response response) async {
     var result;
-    if(response.statusCode == 200){
+    if (response.statusCode == 200) {
       final dynamic responseData = jsonDecode(response.body);
       CardPreferences.saveCard(CustomCard.fromJson(responseData['content']));
       result = {
@@ -65,6 +66,7 @@ class CardProvider with ChangeNotifier {
     }
     return result;
   }
+
   static onError(error) {
     developer.log("the error is $error.detail");
     return {'status': false, 'message': 'Unsuccessful Request', 'data': error};
