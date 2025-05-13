@@ -41,6 +41,8 @@ class CardProvider with ChangeNotifier {
       'backgroundColor': backgroundColor,
     };
 
+    developer.log("Request data in auth Provider =======> $cardRegistrationData");
+
     _isLoading = true;
     notifyListeners();
 

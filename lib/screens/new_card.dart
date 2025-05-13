@@ -116,7 +116,8 @@ class CreateNewCardState extends State<CreateNewCard> {
                 message: "Card created successfully",
                 icon: Icon(Icons.check_circle,
                     color: Theme.of(context).indicatorColor));
-            Navigator.pop(context);
+            // Navigator.pop(context);
+            Navigator.pushReplacementNamed(context, '/dashboard');
           } else {
             Alerts.showError(
                 context: context,

@@ -12,5 +12,5 @@ class AppUrl {
 
   static var deleteCard;
 
-  static String createCard = '$baseEndpoint/';
+  static String createCard = '$baseEndpoint/api/v1/cards/create';
 }
