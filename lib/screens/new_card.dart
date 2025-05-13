@@ -1,9 +1,17 @@
+import 'dart:async';
+
+import 'package:ecard_app/components/alert_reminder.dart';
+import 'package:ecard_app/providers/card_provider.dart';
 import 'package:ecard_app/utils/resources/strings/strings.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
+import 'package:http/http.dart';
+import 'package:loading_animation_widget/loading_animation_widget.dart';
+import 'package:provider/provider.dart';
+import '../services/card_requests.dart';
 import '../utils/resources/images/images.dart';
 
 class CreateNewCard extends StatefulWidget {
@@ -73,6 +81,36 @@ class CreateNewCardState extends State<CreateNewCard> {
 
   @override
   Widget build(BuildContext context) {
+    final CardProvider provider = Provider.of<CardProvider>(context, listen: false);
+    Future<void> handleCardSubmission() async{
+      if (_formKey.currentState!.validate()) {
+        Alerts.showLoader(context: context, message: "Creating Card...", icon: LoadingAnimationWidget.stretchedDots(color: Theme.of(context).primaryColor, size: 20));
+        await provider.createCard(
+            title: _titleController.text,
+            cardDescription: _jobTitleController.text,
+            organization: _organizationNameController.text,
+            address: _locationController.text,
+            cardLogo: _organizationLogoPath,
+            phoneNumber: _phoneNumberController.text,
+            email: _emailAddressController.text,
+            backgroundColor: '#${_selectedColor.value.toRadixString(16)}',
+            fontColor: '#${_textColor.value.toRadixString(16)}'
+        ).timeout(const Duration(seconds: 60),
+            onTimeout: () {
+              Alerts.showError(context: context, message: "Request timed out. Please check your internet connection.", icon: Icon(Icons.error_outline, color: Theme.of(context).indicatorColor));
+              throw TimeoutException("Request timed out");
+            }).then((response) {
+              if (response['status'] == true) {
+                Alerts.showSuccess(context: context, message: "Card created successfully", icon: Icon(Icons.check_circle, color: Theme.of(context).indicatorColor));
+                Navigator.pop(context);
+              } else {
+                Alerts.showError(context: context, message: response['message'], icon: Icon(Icons.error_outline, color: Theme.of(context).indicatorColor));
+                Navigator.pop(context);
+              }
+        });
+      }
+    }
+
     return Scaffold(
       backgroundColor: Theme.of(context).highlightColor,
       appBar: AppBar(
@@ -86,14 +124,7 @@ class CreateNewCardState extends State<CreateNewCard> {
         automaticallyImplyLeading: true,
         actions: [
           TextButton(
-            onPressed: () {
-              if (_formKey.currentState!.validate()) {
-                // Save logic here
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Card saved successfully!')),
-                );
-              }
-            },
+            onPressed: handleCardSubmission,
             child: Text(
               Texts.save,
               style: TextStyle(

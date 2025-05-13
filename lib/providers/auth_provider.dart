@@ -86,46 +86,68 @@ class AuthProvider with ChangeNotifier {
     _loggedInStatus = Status.Authenticating;
     notifyListeners();
 
-    Response response = await AuthRequests.login('login', loginData);
+    try {
+      Response response = await AuthRequests.login('login', loginData);
 
-    if (response.statusCode == 200) {
-      final Map<String, dynamic> responseData = json.decode(response.body);
+      if (response.statusCode == 200) {
+        final Map<String, dynamic> responseData = json.decode(response.body);
 
-      var userData = responseData['data'];
-      developer.log("Stored user data======> $userData");
+        var userData = responseData['data'];
+        developer.log("Stored user data======> $userData");
 
-      User authUser = User.fromJson(userData);
+        User authUser = User.fromJson(userData);
 
-      UserPreferences.saveUser(authUser);
+        UserPreferences.saveUser(authUser);
 
-      _loggedInStatus = Status.LoggedIn;
-      notifyListeners();
+        _loggedInStatus = Status.LoggedIn;
+        notifyListeners();
 
-      result = {'status': true, 'message': 'Successful', 'user': authUser};
-    } else {
+        result = {'status': true, 'message': 'Successful', 'user': authUser};
+      } else {
+        _loggedInStatus = Status.NotLoggedIn;
+        notifyListeners();
+
+        // Improved error handling - extract message from response body safely
+        String errorMessage;
+        try {
+          final Map<String, dynamic> errorData = json.decode(response.body);
+          errorMessage = errorData['error'] ?? errorData['message'] ?? 'Login failed: ${response.statusCode}';
+        } catch (e) {
+          errorMessage = 'Login failed with status code: ${response.statusCode}';
+        }
+
+        result = {
+          'status': false,
+          'message': errorMessage
+        };
+      }
+    } catch (e) {
       _loggedInStatus = Status.NotLoggedIn;
       notifyListeners();
+
+      developer.log("Login error: $e");
       result = {
         'status': false,
-        'message': json.decode(response.body)['error']
+        'message': 'Connection error. Please check your internet connection.'
       };
     }
+
     return result;
   }
 
   Future<Map<String, dynamic>> register(
-    String firstName,
-    String middleName,
-    String username,
-    String lastName,
-    String email,
-    String role,
-    String password,
-    String phoneNumber,
-    String bio,
-    String companyTitle,
-    String jobTitle,
-  ) async {
+      String firstName,
+      String middleName,
+      String username,
+      String lastName,
+      String email,
+      String role,
+      String password,
+      String phoneNumber,
+      String bio,
+      String companyTitle,
+      String jobTitle,
+      ) async {
     final Map<String, dynamic> registrationData = {
       'firstName': firstName,
       'middleName': middleName,
@@ -143,63 +165,105 @@ class AuthProvider with ChangeNotifier {
     _registeredInStatus = Status.Registering;
     notifyListeners();
 
-    return await AuthRequests.register('register', registrationData)
-        .then(onValue)
-        .catchError(onError);
+    try {
+      Response response = await AuthRequests.register('register', registrationData);
+      return onValue(response);
+    } catch (error) {
+      return onError(error);
+    }
   }
 
   static Future<Map<String, dynamic>> onValue(Response response) async {
     var result;
-    final Map<String, dynamic> responseData = json.decode(response.body);
 
-    if (response.statusCode == 200) {
-      var userData = responseData['data'];
+    try {
+      final Map<String, dynamic> responseData = json.decode(response.body);
 
-      User authUser = User.fromJson(userData);
+      if (response.statusCode == 200) {
+        var userData = responseData['data'];
 
-      UserPreferences.saveUser(authUser);
-      result = {
-        'status': true,
-        'message': 'Successfully registered',
-        'data': authUser
-      };
-    } else {
+        User authUser = User.fromJson(userData);
+
+        UserPreferences.saveUser(authUser);
+        result = {
+          'status': true,
+          'message': 'Successfully registered',
+          'data': authUser
+        };
+      } else {
+        // Improved error handling - extract message from response body
+        String errorMessage;
+        try {
+          errorMessage = responseData['error'] ??
+              responseData['message'] ??
+              'Registration failed with status code: ${response.statusCode}';
+        } catch (e) {
+          errorMessage = 'Registration failed with status code: ${response.statusCode}';
+        }
+
+        result = {
+          'status': false,
+          'message': errorMessage,
+          'data': responseData
+        };
+      }
+    } catch (e) {
+      developer.log("Error parsing registration response: $e");
       result = {
         'status': false,
-        'message': 'Registration failed',
-        'data': responseData
+        'message': 'Error processing server response',
+        'data': null
       };
     }
 
     return result;
   }
 
-  static onError(error) {
-    print("the error is $error.detail");
-    return {'status': false, 'message': 'Unsuccessful Request', 'data': error};
+  static Map<String, dynamic> onError(error) {
+    developer.log("Registration error: $error");
+    return {
+      'status': false,
+      'message': 'Connection error. Please check your internet connection.',
+      'data': error.toString()
+    };
   }
 
   Future<Map<String, dynamic>> verifyOtp(String otp) async {
     try {
       final response = await AuthRequests.activateAccount(otp);
-      final responseData = json.decode(response.body);
 
-      if (response.statusCode == 200) {
-        notifyListeners();
-        return {
-          'status': true,
-          'message': 'Account verified successfully',
-        };
-      } else {
+      try {
+        final responseData = json.decode(response.body);
+
+        if (response.statusCode == 200) {
+          notifyListeners();
+          return {
+            'status': true,
+            'message': 'Account verified successfully',
+          };
+        } else {
+          // Extract error message from response
+          String errorMessage = responseData['message'] ??
+              responseData['error'] ??
+              'Verification failed with status code: ${response.statusCode}';
+
+          return {
+            'status': false,
+            'message': errorMessage,
+          };
+        }
+      } catch (e) {
+        developer.log("Error parsing OTP verification response: $e");
         return {
           'status': false,
-          'message': responseData['message'] ?? 'Verification failed',
+          'message': 'Error processing server response',
         };
       }
     } catch (e) {
+      developer.log("OTP verification error: $e");
       return {
         'status': false,
-        'message': 'An error occurred. Please try again.',
+        'message': 'Connection error. Please check your internet connection.',
       };
     }
   }

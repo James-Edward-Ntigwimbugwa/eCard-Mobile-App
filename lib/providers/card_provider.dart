@@ -4,12 +4,71 @@ import 'package:ecard_app/modals/card_modal.dart';
 import 'package:ecard_app/preferences/card_preference.dart';
 import 'package:ecard_app/services/card_requests.dart';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart';
 
 class CardProvider with ChangeNotifier {
   bool _isLoading = false;
   String? _errorMessage;
   bool get isLoading => _isLoading;
   String? get errorMessage => _errorMessage;
+  Future<Map<String, dynamic>> createCard({
+      required String title,
+      required String cardDescription,
+      required String organization,
+      required String address,
+      required String cardLogo,
+      required String phoneNumber,
+      required String email,
+      String? profilePhoto = '',
+      String? linkedIn = '',
+      String? website = '',
+      String? department = '',
+      required String backgroundColor,
+      required String fontColor
+  }) async {
+    final Map<String , dynamic> cardRegistrationData = {
+      'title': title,
+      'cardDescription': cardDescription,
+      'publishCard' : true,
+      'organization': organization,
+      'address': address,
+      'cardLogo': cardLogo,
+      'phoneNumber': phoneNumber,
+      'email': email,
+      'profilePhoto': profilePhoto,
+      'linkedIn': linkedIn,
+      'website': website,
+      'department': department,
+      'backgroundColor': backgroundColor,
+    };
+
+    _isLoading = true;
+    notifyListeners();
+
+    return await CardRequests.createCard(cardRegistrationData)
+        .then(onValue).catchError(onError);
+  }
+  static Future<Map<String, dynamic>> onValue(Response response) async {
+    var result;
+    if(response.statusCode == 200){
+      final dynamic responseData = jsonDecode(response.body);
+      CardPreferences.saveCard(CustomCard.fromJson(responseData['content']));
+      result = {
+        'status': true,
+        'message': 'Card data successfully registered',
+      };
+    } else {
+      result = {
+        'status': false,
+        'message': 'card Registration failed',
+      };
+    }
+    return result;
+  }
+  static onError(error) {
+    developer.log("the error is $error.detail");
+    return {'status': false, 'message': 'Unsuccessful Request', 'data': error};
+  }
 
   Future<Map<String, dynamic>> fetchCards(String uuid) async {
     Future.microtask(() {
@@ -17,7 +76,6 @@ class CardProvider with ChangeNotifier {
       _errorMessage = null;
       notifyListeners();
     });
-
     try {
       final response = await CardRequests.fetchUserCards(uuid);
 

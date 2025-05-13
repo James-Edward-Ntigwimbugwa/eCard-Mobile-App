@@ -55,16 +55,37 @@ class _LoginPageState extends State<LoginPage> {
         size: 24.0,
       ));
 
+  // Helper method to show error messages
+  void showErrorMessage(String message) {
+    Alerts.showError(
+      context: context,
+      message: message,
+      icon: Image.asset(Images.errorImage, height: 30, width: 30),
+    );
+  }
+
+  // Helper method to show network error messages
+  void showNetworkError(String message) {
+    Alerts.showError(
+      context: context,
+      message: message,
+      icon: Image.asset(
+        Images.networkErrorImage,
+        width: 40,
+        height: 40,
+      ),
+    );
+  }
+
   Future<void> handleLogin() async {
     setState(() => _formIsSubmitted = true);
+
+    // Validate form fields
     if (_usernameController.text.isEmpty || _passwordController.text.isEmpty) {
-      Alerts.showError(
-        context: context,
-        message: "Fill in all fields",
-        icon: Image.asset(Images.errorImage, height: 30, width: 30),
-      );
+      showErrorMessage("Please fill in all fields");
       return;
     }
+
     if (!_formKey.currentState!.validate()) return;
     _formKey.currentState!.save();
 
@@ -76,41 +97,55 @@ class _LoginPageState extends State<LoginPage> {
 
       final response = await auth
           .login(
-            _usernameController.text.trim(),
-            _passwordController.text.trim(),
-          )
+        _usernameController.text.trim(),
+        _passwordController.text.trim(),
+      )
           .timeout(const Duration(seconds: 60));
 
-      Navigator.pop(context);
+      // Always close the loader dialog
+      if (Navigator.canPop(context)) {
+        Navigator.pop(context);
+      }
+
       if (response['status'] == true) {
+        // Success case
         Provider.of<UserProvider>(context, listen: false)
             .setUser(response['user']);
         Navigator.pushReplacementNamed(context, '/dashboard');
       } else {
-        Alerts.showError(
-          context: context,
-          message: response['message'] ?? 'Invalid credentials',
-          icon: Image.asset(Images.errorImage, height: 30, width: 30),
-        );
+        // Display the specific error message from the backend
+        showErrorMessage(response['message'] ?? 'Login failed');
       }
     } on TimeoutException {
-      Navigator.pop(context);
-      Alerts.showError(
-          context: context,
-          message:
-              "Login request timed out. Please check your internet connection.",
-          icon: Image.asset(Images.errorImage, height: 30, width: 30));
+      // Close the loader dialog
+      if (Navigator.canPop(context)) {
+        Navigator.pop(context);
+      }
+
+      showNetworkError(
+          "Login request timed out. Please check your internet connection.");
     } catch (e, stack) {
-      Navigator.pop(context);
+      // Close the loader dialog
+      if (Navigator.canPop(context)) {
+        Navigator.pop(context);
+      }
+
       developer.log("Login screen error: $e", stackTrace: stack);
-      Alerts.showError(
-          context: context,
-          message: "An error occurred. Please try again. ${e.toString()}",
-          icon: Image.asset(
-            Images.networkErrorImage,
-            width: 40,
-            height: 40,
-          ));
+
+      // Provide a user-friendly error message
+      String errorMessage = "An error occurred while logging in";
+
+      // Add more context if available, but keep it user-friendly
+      if (e.toString().contains("SocketException") ||
+          e.toString().contains("Connection")) {
+        errorMessage = "Network connection error. Please check your internet and try again.";
+      } else if (e.toString().contains("timeout")) {
+        errorMessage = "Request timed out. Please try again later.";
+      } else if (e.toString().contains("format")) {
+        errorMessage = "Server returned an invalid response. Please try again.";
+      }
+
+      showNetworkError(errorMessage);
     }
   }
 
@@ -129,13 +164,13 @@ class _LoginPageState extends State<LoginPage> {
                   decoration: BoxDecoration(
                       color: Theme.of(context).primaryColor,
                       borderRadius:
-                          BorderRadius.only(bottomRight: Radius.circular(50))),
+                      BorderRadius.only(bottomRight: Radius.circular(50))),
                   child: SizedBox(
                     height: MediaQuery.of(context).size.height / 2.6,
                     width: double.infinity,
                     child: Padding(
                         padding:
-                            EdgeInsets.only(left: 20.0, top: 50.0, right: 20.0),
+                        EdgeInsets.only(left: 20.0, top: 50.0, right: 20.0),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           mainAxisAlignment: MainAxisAlignment.start,
@@ -198,13 +233,13 @@ class _LoginPageState extends State<LoginPage> {
                         color: Theme.of(context).highlightColor,
                         border: Border(
                           top:
-                              BorderSide(color: Theme.of(context).primaryColor),
+                          BorderSide(color: Theme.of(context).primaryColor),
                           bottom:
-                              BorderSide(color: Theme.of(context).primaryColor),
+                          BorderSide(color: Theme.of(context).primaryColor),
                           left:
-                              BorderSide(color: Theme.of(context).primaryColor),
+                          BorderSide(color: Theme.of(context).primaryColor),
                           right:
-                              BorderSide(color: Theme.of(context).primaryColor),
+                          BorderSide(color: Theme.of(context).primaryColor),
                         ),
                         borderRadius: BorderRadius.all(Radius.circular(20)),
                       ),
@@ -245,22 +280,22 @@ class _LoginPageState extends State<LoginPage> {
                                   focusedBorder: OutlineInputBorder(
                                       borderSide: BorderSide(
                                           color:
-                                              Theme.of(context).primaryColor),
+                                          Theme.of(context).primaryColor),
                                       borderRadius: BorderRadius.all(
                                           Radius.circular(30))),
                                   prefixIcon:
-                                      Icon(CupertinoIcons.padlock_solid),
+                                  Icon(CupertinoIcons.padlock_solid),
                                   labelText: "Password",
                                   labelStyle: TextStyle(
                                       color: Theme.of(context).indicatorColor),
                                   hintStyle: TextStyle(color: Colors.grey),
                                   border: OutlineInputBorder(
                                     borderRadius:
-                                        BorderRadius.all(Radius.circular(30)),
+                                    BorderRadius.all(Radius.circular(30)),
                                   ),
                                   suffixIcon: IconButton(
                                     onPressed: () => setState(() =>
-                                        _obscurePassword = !_obscurePassword),
+                                    _obscurePassword = !_obscurePassword),
                                     icon: Icon(_obscurePassword
                                         ? Icons.visibility_off
                                         : Icons.visibility),
@@ -274,7 +309,7 @@ class _LoginPageState extends State<LoginPage> {
                                 onPressed: handleLogin,
                                 style: ElevatedButton.styleFrom(
                                     backgroundColor:
-                                        Theme.of(context).primaryColor,
+                                    Theme.of(context).primaryColor,
                                     shape: RoundedRectangleBorder(
                                         borderRadius: BorderRadius.all(
                                             Radius.circular(10)))),
@@ -292,7 +327,7 @@ class _LoginPageState extends State<LoginPage> {
                                         child: Container(
                                             height: 1,
                                             color:
-                                                Theme.of(context).primaryColor),
+                                            Theme.of(context).primaryColor),
                                       ),
                                       Padding(
                                         padding: const EdgeInsets.symmetric(
@@ -308,7 +343,7 @@ class _LoginPageState extends State<LoginPage> {
                                                   .indicatorColor,
                                               size: '16.0',
                                               backgroundColor:
-                                                  Colors.transparent,
+                                              Colors.transparent,
                                             )),
                                       ),
                                       Expanded(
@@ -327,24 +362,24 @@ class _LoginPageState extends State<LoginPage> {
                                 crossAxisAlignment: CrossAxisAlignment.center,
                                 children: [
                                   for (int i = 0;
-                                      i <
-                                          LoginWidgetClickableIcons.icons(
-                                                  context)
-                                              .length;
-                                      i++) ...[
+                                  i <
+                                      LoginWidgetClickableIcons.icons(
+                                          context)
+                                          .length;
+                                  i++) ...[
                                     Padding(
                                       padding: EdgeInsets.only(right: 12.0),
                                       child: Container(
                                         decoration: BoxDecoration(
                                           color: Theme.of(context).primaryColor,
                                           borderRadius:
-                                              BorderRadius.circular(50),
+                                          BorderRadius.circular(50),
                                         ),
                                         child: Padding(
                                           padding: const EdgeInsets.all(16.0),
                                           child: Icon(
                                             LoginWidgetClickableIcons.icons(
-                                                    context)[i]
+                                                context)[i]
                                                 .icon,
                                             size: 18,
                                             color: Theme.of(context)
