@@ -38,6 +38,7 @@ class CardProvider with ChangeNotifier {
       'linkedIn': linkedIn,
       'website': website,
       'department': department,
+      'fontColor' : fontColor,
       'backgroundColor': backgroundColor,
     };
 

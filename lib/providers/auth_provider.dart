@@ -74,7 +74,7 @@ class AuthProvider with ChangeNotifier {
   void updateFormField(String field, String value) {
     formData[_currentScreen]![field] = value;
   }
-
+// Fixed login method for your auth provider
   Future<Map<String, dynamic>> login(String username, String password) async {
     var result;
 
@@ -93,11 +93,19 @@ class AuthProvider with ChangeNotifier {
         final Map<String, dynamic> responseData = json.decode(response.body);
 
         var userData = responseData['data'];
-        developer.log("Stored user data======> $userData");
+        developer.log("Received user data from API: $userData");
 
         User authUser = User.fromJson(userData);
+        developer.log("Parsed user object: ${authUser.toString()}");
 
-        UserPreferences.saveUser(authUser);
+        // Make sure to await the save operation and check result
+        bool saveResult = await UserPreferences.saveUser(authUser);
+
+        if (saveResult) {
+          developer.log("User data saved successfully to preferences");
+        } else {
+          developer.log("Failed to save user data to preferences");
+        }
 
         _loggedInStatus = Status.LoggedIn;
         notifyListeners();
@@ -116,7 +124,7 @@ class AuthProvider with ChangeNotifier {
               'Login failed: ${response.statusCode}';
         } catch (e) {
           errorMessage =
-              'Login failed with status code: ${response.statusCode}';
+          'Login failed with status code: ${response.statusCode}';
         }
 
         result = {'status': false, 'message': errorMessage};

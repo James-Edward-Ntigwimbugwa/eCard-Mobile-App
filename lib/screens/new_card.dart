@@ -1,5 +1,5 @@
 import 'dart:async';
-
+import 'dart:developer' as developer;
 import 'package:ecard_app/components/alert_reminder.dart';
 import 'package:ecard_app/providers/card_provider.dart';
 import 'package:ecard_app/utils/resources/strings/strings.dart';
@@ -80,56 +80,127 @@ class CreateNewCardState extends State<CreateNewCard> {
   }
 
   @override
-  Widget build(BuildContext context) {
-    final CardProvider provider =
-        Provider.of<CardProvider>(context, listen: false);
-    Future<void> handleCardSubmission() async {
+  void dispose() {
+    _titleController.dispose();
+    _jobTitleController.dispose();
+    _organizationNameController.dispose();
+    _locationController.dispose();
+    _phoneNumberController.dispose();
+    _emailAddressController.dispose();
+    super.dispose();
+  }
+
+  Future<void> _handleCardSubmission(BuildContext context, CardProvider provider) async {
+    try {
+      // Add a guard to check if the form key is initialized
+      if (_formKey.currentState == null) {
+        developer.log("Form key is null");
+        return;
+      }
+
       if (_formKey.currentState!.validate()) {
+        // Show loading dialog
         Alerts.showLoader(
             context: context,
             message: "Creating Card...",
             icon: LoadingAnimationWidget.stretchedDots(
-                color: Theme.of(context).primaryColor, size: 20));
-        await provider
-            .createCard(
-                title: _titleController.text,
-                cardDescription: _jobTitleController.text,
-                organization: _organizationNameController.text,
-                address: _locationController.text,
-                cardLogo: _organizationLogoPath,
-                phoneNumber: _phoneNumberController.text,
-                email: _emailAddressController.text,
-                backgroundColor: '#${_selectedColor.value.toRadixString(16)}',
-                fontColor: '#${_textColor.value.toRadixString(16)}')
-            .timeout(const Duration(seconds: 60), onTimeout: () {
-          Alerts.showError(
-              context: context,
-              message:
-                  "Request timed out. Please check your internet connection.",
-              icon: Icon(Icons.error_outline,
-                  color: Theme.of(context).indicatorColor));
-          throw TimeoutException("Request timed out");
-        }).then((response) {
+                color: Theme.of(context).primaryColor,
+                size: 20
+            )
+        );
+
+        // Log the data being sent to backend for debugging
+        developer.log("Submitting card with title: ${_titleController.text}");
+        developer.log("Organization: ${_organizationNameController.text}");
+
+        try {
+          final response = await provider.createCard(
+            title: _titleController.text,
+            cardDescription: _jobTitleController.text,
+            organization: _organizationNameController.text,
+            address: _locationController.text,
+            cardLogo: _organizationLogoPath,
+            phoneNumber: _phoneNumberController.text,
+            email: _emailAddressController.text,
+            backgroundColor: '#${_selectedColor.value.toRadixString(16)}',
+            fontColor: '#${_textColor.value.toRadixString(16)}',
+          ).timeout(
+            const Duration(seconds: 60),
+          );
+
+          // Close loading dialog
+          if (Navigator.canPop(context)) {
+            Navigator.pop(context);
+          }
+
           if (response['status'] == true) {
+            // Success case
             Alerts.showSuccess(
                 context: context,
                 message: "Card created successfully",
                 icon: Icon(Icons.check_circle,
-                    color: Theme.of(context).indicatorColor));
-            // Navigator.pop(context);
+                    color: Theme.of(context).indicatorColor)
+            );
+
+            // Navigate to dashboard
             Navigator.pushReplacementNamed(context, '/dashboard');
           } else {
+            // Error case with backend message
             Alerts.showError(
                 context: context,
-                message: response['message'],
+                message: response['message'] ?? "Failed to create card",
                 icon: Icon(Icons.error_outline,
-                    color: Theme.of(context).indicatorColor));
+                    color: Theme.of(context).indicatorColor)
+            );
+          }
+        } on TimeoutException catch (_) {
+          // Close loading dialog if open
+          if (Navigator.canPop(context)) {
             Navigator.pop(context);
           }
-        });
-      }
-    }
 
+          Alerts.showError(
+              context: context,
+              message: "Request timed out. Please check your internet connection.",
+              icon: Icon(Icons.error_outline,
+                  color: Theme.of(context).indicatorColor)
+          );
+        } catch (e) {
+          // Close loading dialog if open
+          if (Navigator.canPop(context)) {
+            Navigator.pop(context);
+          }
+
+          developer.log("Error creating card: $e");
+          Alerts.showError(
+              context: context,
+              message: "An error occurred while creating the card: ${e.toString()}",
+              icon: Icon(Icons.error_outline,
+                  color: Theme.of(context).indicatorColor)
+          );
+        }
+      } else {
+        // Form validation failed
+        Alerts.showError(
+            context: context,
+            message: "Please fill all required fields correctly",
+            icon: Icon(Icons.error_outline,
+                color: Theme.of(context).indicatorColor)
+        );
+      }
+    } catch (e) {
+      developer.log("Unexpected error in handleCardSubmission: $e");
+      Alerts.showError(
+          context: context,
+          message: "An unexpected error occurred",
+          icon: Icon(Icons.error_outline,
+              color: Theme.of(context).indicatorColor)
+      );
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Theme.of(context).highlightColor,
       appBar: AppBar(
@@ -143,7 +214,7 @@ class CreateNewCardState extends State<CreateNewCard> {
         automaticallyImplyLeading: true,
         actions: [
           TextButton(
-            onPressed: handleCardSubmission,
+            onPressed:()=> _handleCardSubmission(context, Provider.of<CardProvider>(context, listen: false)),
             child: Text(
               Texts.save,
               style: TextStyle(
@@ -515,7 +586,7 @@ class CreateNewCardState extends State<CreateNewCard> {
                             return null;
                           },
                         ),
-
+                        const SizedBox(height: 20),
                         const SizedBox(height: 20),
                         _buildTextField(context, "Phone Number"),
                         const SizedBox(height: 10),
@@ -529,9 +600,8 @@ class CreateNewCardState extends State<CreateNewCard> {
                               return 'Please enter phone number';
                             }
                             // Validate Tanzanian phone format: +255 7XX XXX XXX
-                            if (!RegExp(r'^\+255\s7\d{2}\s\d{3}\s\d{3}$')
-                                .hasMatch(value)) {
-                              return 'Please enter a valid phone number in format: +255 7XX XXX XXX';
+                            if (!RegExp(r'^255\d{9}$').hasMatch(value)) {
+                              return 'Please enter a valid phone number in format: 255XXXXXXXXX';
                             }
                             return null;
                           },
