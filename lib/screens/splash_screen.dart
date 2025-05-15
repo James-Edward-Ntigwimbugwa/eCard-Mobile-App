@@ -8,95 +8,113 @@ import 'package:ecard_app/screens/dashboard_screen.dart';
 import 'package:ecard_app/utils/resources/images/images.dart';
 import 'package:ecard_app/utils/resources/strings/strings.dart';
 import 'package:flutter/material.dart';
+import 'package:page_transition/page_transition.dart';
 import 'auth_navigator.dart';
 
-// ignore: must_be_immutable
 class SplashScreen extends StatefulWidget {
-  SplashScreen({super.key});
-  bool login = false;
+  const SplashScreen({super.key});
 
   @override
   State<SplashScreen> createState() => _SplashScreenState();
 }
 
 class _SplashScreenState extends State<SplashScreen> {
+  // Default to AuthNavigator
+  Widget _nextScreen = const AuthNavigator();
+
   @override
   void initState() {
     super.initState();
-    // Fetch user data when the splash screen initializes
+    // Check authentication status when splash screen initializes
     _checkUserAuthentication();
   }
 
-  Widget? _nextScreen;
-
   // Check if user is authenticated
   Future<void> _checkUserAuthentication() async {
-    User? user = await UserPreferences().getUser();
-    developer.log("User data======> $user");
-    setState(() {
-      // If user is non-null and has a token, go to dashboard
+    try {
+      User? user = await UserPreferences().getUser();
+      developer.log("User data from preferences: ${user?.toString()}");
+
+      // Determine which screen to navigate to
       if (user != null &&
           user.accessToken != null &&
           user.accessToken!.isNotEmpty) {
+        developer.log("Valid user found, navigating to Dashboard");
         _nextScreen = DashboardPage(user: user);
       } else {
+        developer.log("No valid user found, navigating to Auth");
         _nextScreen = const AuthNavigator();
       }
-    });
+    } catch (e) {
+      developer.log("Error checking authentication: $e");
+      _nextScreen = const AuthNavigator();
+    } finally {
+      // Update state only if widget is still mounted
+      if (mounted) {
+        setState(() {});
+      }
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return AnimatedSplashScreen(
-        splash: Container(
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-            ),
-            child: Column(
-              children: [
-                ClipOval(
-                  child: Container(
-                    width: 100,
-                    height: 100,
-                    color: Colors.grey,
-                    child: Stack(
-                      children: [
-                        Positioned(
-                            left: -10,
-                            child: Image.asset(
-                              Images.splashImage,
-                              height: 120,
-                              width: 120,
-                              fit: BoxFit.cover,
-                            ))
-                      ],
-                    ),
-                  ),
-                ),
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  mainAxisAlignment: MainAxisAlignment.center,
+      splash: Container(
+        decoration: const BoxDecoration(
+          shape: BoxShape.circle,
+        ),
+        child: Column(
+          children: [
+            ClipOval(
+              child: Container(
+                width: 100,
+                height: 100,
+                color: Colors.grey,
+                child: Stack(
                   children: [
-                    HeaderBoldWidget(
-                        text: 'e',
-                        color: Theme.of(context).canvasColor,
-                        size: "24"),
-                    HeaderBoldWidget(
-                        text: Headlines.businessApp,
-                        color: Theme.of(context).cardColor,
-                        size: "24")
+                    Positioned(
+                      left: -10,
+                      child: Image.asset(
+                        Images.splashImage,
+                        height: 120,
+                        width: 120,
+                        fit: BoxFit.cover,
+                      ),
+                    ),
                   ],
                 ),
-                NormalHeaderWidget(
-                    text: Headlines.splashMessage,
-                    color: Theme.of(context).cardColor,
-                    size: "12")
+              ),
+            ),
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                HeaderBoldWidget(
+                  text: 'e',
+                  color: Theme.of(context).canvasColor,
+                  size: "24",
+                ),
+                HeaderBoldWidget(
+                  text: Headlines.businessApp,
+                  color: Theme.of(context).cardColor,
+                  size: "24",
+                ),
               ],
-            )),
-        duration: 3000,
-        splashIconSize: 500,
-        backgroundColor: Theme.of(context).primaryColor,
-        nextScreen: _nextScreen ??
-            const AuthNavigator()); // Use the determined next screen or default to AuthNavigator
+            ),
+            NormalHeaderWidget(
+              text: Headlines.splashMessage,
+              color: Theme.of(context).cardColor,
+              size: "12",
+            ),
+          ],
+        ),
+      ),
+      duration: 3000,
+      splashIconSize: 500,
+      backgroundColor: Theme.of(context).primaryColor,
+      nextScreen: _nextScreen,
+      splashTransition: SplashTransition.fadeTransition,
+      pageTransitionType: PageTransitionType.fade,
+    );
   }
 }

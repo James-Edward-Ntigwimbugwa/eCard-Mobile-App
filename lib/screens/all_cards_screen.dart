@@ -54,34 +54,6 @@ class _AllCardsScreenState extends State<AllCardsScreen>
     });
   }
 
-  Widget _buildDismissibleBanner() {
-    return Container(
-      margin: const EdgeInsets.only(bottom: 16.0),
-      padding: const EdgeInsets.all(16.0),
-      decoration: BoxDecoration(
-        color: Theme.of(context).cardColor,
-        borderRadius: BorderRadius.circular(8.0),
-      ),
-      child: Row(
-        children: [
-          Expanded(
-            child: Text(
-                'You don\'t have any cards right now. Press the "+" icon to add cards.',
-                style: const TextStyle(fontSize: 16.0)),
-          ),
-          IconButton(
-            icon: const Icon(Icons.close),
-            onPressed: () {
-              setState(() {
-                _showBanner = false;
-              });
-            },
-          ),
-        ],
-      ),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     super.build(context);
@@ -95,14 +67,15 @@ class _AllCardsScreenState extends State<AllCardsScreen>
       body: Container(
         color: Theme.of(context).highlightColor,
         child: Padding(
-          padding: const EdgeInsets.all(16.0),
+          padding: const EdgeInsets.only(
+              left: 5.0, right: 5.0, bottom: 2.0, top: 2.0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              const SizedBox(height: 20),
+              const SizedBox(height: 4),
               if (_showBanner && _isEmpty)
                 Container(
-                  padding: const EdgeInsets.all(16.0),
+                  padding: const EdgeInsets.all(0.5),
                   child: Column(
                     children: [
                       Lottie.asset(LottieAnimes.noContent),

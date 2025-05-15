@@ -11,6 +11,7 @@ class CardProvider with ChangeNotifier {
   String? _errorMessage;
   bool get isLoading => _isLoading;
   String? get errorMessage => _errorMessage;
+
   Future<Map<String, dynamic>> createCard(
       {required String title,
       required String cardDescription,
@@ -38,40 +39,111 @@ class CardProvider with ChangeNotifier {
       'linkedIn': linkedIn,
       'website': website,
       'department': department,
+      'fontColor': fontColor,
       'backgroundColor': backgroundColor,
     };
 
-    developer.log("Request data in auth Provider =======> $cardRegistrationData");
+    developer.log("Card request data =======> $cardRegistrationData");
 
     _isLoading = true;
     notifyListeners();
 
-    return await CardRequests.createCard(cardRegistrationData)
-        .then(onValue)
-        .catchError(onError);
-  }
+    try {
+      Response response = await CardRequests.createCard(cardRegistrationData);
 
-  static Future<Map<String, dynamic>> onValue(Response response) async {
-    var result;
-    if (response.statusCode == 200) {
-      final dynamic responseData = jsonDecode(response.body);
-      CardPreferences.saveCard(CustomCard.fromJson(responseData['content']));
-      result = {
-        'status': true,
-        'message': 'Card data successfully registered',
-      };
-    } else {
-      result = {
+      var result = await _processCardResponse(response);
+
+      _isLoading = false;
+      notifyListeners();
+
+      return result;
+    } catch (e) {
+      developer.log("Card creation error: $e");
+      _isLoading = false;
+      notifyListeners();
+      return {
         'status': false,
-        'message': 'card Registration failed',
+        'message': 'Error creating card: ${e.toString()}',
       };
     }
-    return result;
   }
 
-  static onError(error) {
-    developer.log("the error is $error.detail");
-    return {'status': false, 'message': 'Unsuccessful Request', 'data': error};
+  Future<Map<String, dynamic>> _processCardResponse(Response response) async {
+    try {
+      developer.log("Card creation response status: ${response.statusCode}");
+      developer.log("Card creation response body: ${response.body}");
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        final dynamic responseData = jsonDecode(response.body);
+
+        // Check if response contains card data
+        dynamic cardData;
+        if (responseData['content'] != null) {
+          cardData = responseData['content'];
+        } else if (responseData['data'] != null) {
+          cardData = responseData['data'];
+        } else {
+          cardData =
+              responseData; // Assume the response itself might be the card
+        }
+
+        developer.log("Card data extracted: $cardData");
+
+        if (cardData != null) {
+          try {
+            CustomCard card = CustomCard.fromJson(cardData);
+            // Save card to local storage
+            await CardPreferences.saveCard(card);
+            developer.log("Card saved to local preferences successfully");
+
+            return {
+              'status': true,
+              'message': 'Card created successfully',
+              'card': card,
+            };
+          } catch (e) {
+            developer.log("Error parsing or saving card: $e");
+            return {
+              'status': true, // Still return true since server created the card
+              'message':
+                  'Card created, but could not be saved locally: ${e.toString()}',
+            };
+          }
+        } else {
+          developer.log("Card data is null or not found in response");
+          return {
+            'status': true, // Server returned success
+            'message':
+                'Card created successfully, but no data returned from server',
+          };
+        }
+      } else {
+        // Extract error message if available
+        String errorMessage;
+        try {
+          final errorData = jsonDecode(response.body);
+          errorMessage = errorData['error'] ??
+              errorData['message'] ??
+              'Card creation failed with status ${response.statusCode}';
+        } catch (e) {
+          errorMessage =
+              'Card creation failed with status ${response.statusCode}';
+        }
+
+        developer.log("Card creation error: $errorMessage");
+
+        return {
+          'status': false,
+          'message': errorMessage,
+        };
+      }
+    } catch (e) {
+      developer.log("Error processing card response: $e");
+      return {
+        'status': false,
+        'message': 'Error processing response: ${e.toString()}',
+      };
+    }
   }
 
   Future<Map<String, dynamic>> fetchCards(String uuid) async {
@@ -119,7 +191,7 @@ class CardProvider with ChangeNotifier {
 
         // Try to load cards from local SQLite database as fallback
         final localCards = await CardPreferences.getCardsByUser(uuid);
-        if (localCards!.isNotEmpty) {
+        if (localCards != null && localCards.isNotEmpty) {
           developer
               .log("Loaded ${localCards.length} cards from local database");
           _isLoading = false;
@@ -147,7 +219,7 @@ class CardProvider with ChangeNotifier {
       // Try to load cards from local SQLite database as fallback
       try {
         final localCards = await CardPreferences.getCardsByUser(uuid);
-        if (localCards!.isNotEmpty) {
+        if (localCards != null && localCards.isNotEmpty) {
           developer
               .log("Loaded ${localCards.length} cards from local database");
           _isLoading = false;
