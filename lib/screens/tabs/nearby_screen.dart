@@ -10,6 +10,8 @@ class NearbyScreen extends StatefulWidget {
 class _NearbyScreenState extends State<NearbyScreen> {
   @override
   Widget build(BuildContext context) {
-    return Scaffold();
+    return Scaffold(
+      backgroundColor: Theme.of(context).highlightColor,
+    );
   }
 }

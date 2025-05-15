@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:math' as developer;
 
 import 'package:ecard_app/providers/auth_provider.dart';
 import 'package:flutter/cupertino.dart';
@@ -34,7 +35,6 @@ class RegisterPageState extends State<RegisterPage> {
   final _formKey = GlobalKey<FormState>();
 
   bool obscure = true;
-  String? _password;
   bool _formIsSubmitted = false;
 
   void _handleRegister() {
@@ -105,7 +105,8 @@ class RegisterPageState extends State<RegisterPage> {
               message: response['message'] ?? 'Registration failed',
               icon: Image.asset(Images.errorImage));
         }
-      }).catchError((error) => print(error));
+        // ignore: invalid_return_type_for_catch_error
+      }).catchError((error) => developer.log(error));
     });
   }
 
@@ -330,9 +331,7 @@ class RegisterPageState extends State<RegisterPage> {
                                           message:
                                               'Password must be at least 8 characters long',
                                           icon: Image.asset(Images.errorImage));
-                                    } else {
-                                      _password = value;
-                                    }
+                                    } else {}
                                   }
                                 },
                                 autofocus: false,

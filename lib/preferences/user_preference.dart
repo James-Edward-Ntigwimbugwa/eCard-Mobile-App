@@ -52,7 +52,10 @@ class UserPreferences {
       final String? userId = prefs.getString("userId");
 
       // Early return if essential data is missing
-      if (accessToken == null || accessToken.isEmpty || userId == null || userId.isEmpty) {
+      if (accessToken == null ||
+          accessToken.isEmpty ||
+          userId == null ||
+          userId.isEmpty) {
         developer.log("No valid user data found in preferences");
         return null;
       }
@@ -111,7 +114,8 @@ class UserPreferences {
     try {
       final prefs = await SharedPreferences.getInstance();
       final token = prefs.getString("accessToken");
-      developer.log("Retrieved token: ${token != null ? 'Valid token' : 'Null token'}");
+      developer.log(
+          "Retrieved token: ${token != null ? 'Valid token' : 'Null token'}");
       return token;
     } catch (e, stack) {
       developer.log("Error retrieving token: $e", stackTrace: stack);

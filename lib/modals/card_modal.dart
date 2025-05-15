@@ -1,5 +1,6 @@
 class CustomCard {
   final String? id;
+  final String? title;
   final String? uuid;
   final DateTime? createdAt;
   final DateTime? updatedAt;
@@ -21,7 +22,8 @@ class CustomCard {
   final String? backgroundColor;
   final String? fontColor;
 
-  CustomCard({
+  CustomCard(
+    this.title, {
     this.id,
     this.uuid,
     this.createdAt,
@@ -47,6 +49,7 @@ class CustomCard {
 
   factory CustomCard.fromJson(Map<String, dynamic> json) {
     return CustomCard(
+      json['title'] ?? '', // Provide a default or extract 'title' from JSON
       id: json['id']?.toString(),
       uuid: json['uuid'] ?? '',
       createdAt: json['createdAt'] != null
@@ -133,6 +136,7 @@ class CustomCard {
     String? fontColor,
   }) {
     return CustomCard(
+      title,
       id: id ?? this.id,
       uuid: uuid ?? this.uuid,
       createdAt: createdAt ?? this.createdAt,

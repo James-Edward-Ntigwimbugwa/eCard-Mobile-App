@@ -112,7 +112,7 @@ class OtpVerifierState extends State<OtpVerifier> {
     final authProvider = Provider.of<AuthProvider>(context, listen: false);
 
     authProvider.login(username, password).then((response) {
-      if (response != null && response['status'] == 200) {
+      if (response['status'] == 200) {
         var userProvider = Provider.of<UserProvider>(context, listen: false);
         userProvider.setUser(response['user']);
 
@@ -122,7 +122,7 @@ class OtpVerifierState extends State<OtpVerifier> {
         Navigator.pop(context); // Close loader
         Alerts.showError(
             context: context,
-            message: response?['message'] ?? "Login failed. Please try again.",
+            message: response['message'] ?? "Login failed. Please try again.",
             icon: Image.asset(Images.errorImage, height: 30, width: 30));
         // Navigate to login screen
         authProvider.navigateToLoginScreen();

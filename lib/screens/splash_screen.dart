@@ -21,7 +21,6 @@ class SplashScreen extends StatefulWidget {
 class _SplashScreenState extends State<SplashScreen> {
   // Default to AuthNavigator
   Widget _nextScreen = const AuthNavigator();
-  bool _isLoading = true;
 
   @override
   void initState() {
@@ -52,9 +51,7 @@ class _SplashScreenState extends State<SplashScreen> {
     } finally {
       // Update state only if widget is still mounted
       if (mounted) {
-        setState(() {
-          _isLoading = false;
-        });
+        setState(() {});
       }
     }
   }

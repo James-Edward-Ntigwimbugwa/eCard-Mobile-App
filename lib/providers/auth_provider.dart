@@ -74,6 +74,7 @@ class AuthProvider with ChangeNotifier {
   void updateFormField(String field, String value) {
     formData[_currentScreen]![field] = value;
   }
+
 // Fixed login method for your auth provider
   Future<Map<String, dynamic>> login(String username, String password) async {
     var result;
@@ -124,7 +125,7 @@ class AuthProvider with ChangeNotifier {
               'Login failed: ${response.statusCode}';
         } catch (e) {
           errorMessage =
-          'Login failed with status code: ${response.statusCode}';
+              'Login failed with status code: ${response.statusCode}';
         }
 
         result = {'status': false, 'message': errorMessage};

@@ -52,8 +52,12 @@ class User {
       'uuid': uuid,
       'username': username,
       'email': email,
-      'accessToken': accessToken != null && accessToken!.isNotEmpty ? 'Token exists' : 'No token',
-      'refreshToken': refreshToken != null && refreshToken!.isNotEmpty ? 'Token exists' : 'No token',
+      'accessToken': accessToken != null && accessToken!.isNotEmpty
+          ? 'Token exists'
+          : 'No token',
+      'refreshToken': refreshToken != null && refreshToken!.isNotEmpty
+          ? 'Token exists'
+          : 'No token',
       'firstName': firstName,
       'lastName': lastName,
       'phone': phone,

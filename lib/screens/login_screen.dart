@@ -25,6 +25,7 @@ class _LoginPageState extends State<LoginPage> {
   bool _obscurePassword = true;
   bool _formIsSubmitted = false;
   final _formKey = GlobalKey<FormState>();
+  // ignore: unused_field
   String? _password;
 
   @override
