@@ -11,6 +11,7 @@ import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 import 'package:http/http.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:provider/provider.dart';
+import 'dart:developer' as developer;
 import '../services/card_requests.dart';
 import '../utils/resources/images/images.dart';
 
@@ -81,6 +82,8 @@ class CreateNewCardState extends State<CreateNewCard> {
 
   @override
   Widget build(BuildContext context) {
+
+    developer.log("method reached in new_card.dart=======>");
     final CardProvider provider =
         Provider.of<CardProvider>(context, listen: false);
     Future<void> handleCardSubmission() async {
@@ -508,7 +511,7 @@ class CreateNewCardState extends State<CreateNewCard> {
                             if (value == null || value.isEmpty) {
                               return 'Please enter email address';
                             }
-                            if (!RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$')
+                            if (!RegExp(r'^[\w-.]+@([\w-]+\.)+[\w-]{2,4}$')
                                 .hasMatch(value)) {
                               return 'Please enter a valid email address';
                             }

@@ -1,3 +1,3 @@
 class LottieAnimes {
-  static const noContent = 'anime/no-content.json';
+  static const noContent = 'assets/anime/no-content.json';
 }
