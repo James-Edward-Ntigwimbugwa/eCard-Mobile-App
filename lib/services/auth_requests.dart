@@ -7,7 +7,7 @@ class AuthRequests {
   // login method
   static Future<http.Response> login(String path, Object object) async {
     final url = Uri.parse("${AppUrl.loginUrl}/$path");
-    developer.log('Final Login URL: $url');
+    developer.log('Final Login URL=========>: $url');
     final response = await http.post(
       url,
       headers: {

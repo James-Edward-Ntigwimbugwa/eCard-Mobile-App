@@ -233,7 +233,7 @@ class OtpVerifierState extends State<OtpVerifier> {
                     onPressed: () {
                       final auth =
                           Provider.of<AuthProvider>(context, listen: false);
-                      auth.navigateToRegisterScreen();
+                      auth.navigateToLoginScreen();
                     },
                     child: Text(Texts.backToRegister)),
                 const SizedBox(height: 10),

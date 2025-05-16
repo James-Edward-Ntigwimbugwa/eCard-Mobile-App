@@ -77,7 +77,7 @@ class AuthProvider with ChangeNotifier {
 
 // Fixed login method for your auth provider
   Future<Map<String, dynamic>> login(String username, String password) async {
-    var result;
+    Map<String, Object> result;
 
     final Map<String, dynamic> loginData = {
       'username': username,
@@ -184,7 +184,7 @@ class AuthProvider with ChangeNotifier {
   }
 
   static Future<Map<String, dynamic>> onValue(Response response) async {
-    var result;
+    Map<String, Object?> result;
 
     try {
       final Map<String, dynamic> responseData = json.decode(response.body);

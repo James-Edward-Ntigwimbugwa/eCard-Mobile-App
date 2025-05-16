@@ -25,73 +25,73 @@ class CardDetailsPage extends StatelessWidget {
           return <Widget>[
             SliverAppBar(
               expandedHeight:
-                screenHeight * 0.4, // Take up 40% of screen height
+                  screenHeight * 0.4, // Take up 40% of screen height
               floating: false,
               pinned: true,
               backgroundColor: Colors.white,
               foregroundColor: Colors.black,
               elevation: 0,
               leading: IconButton(
-              icon: const Icon(Icons.arrow_back),
-              onPressed: () => Navigator.pop(context),
+                icon: const Icon(Icons.arrow_back),
+                onPressed: () => Navigator.pop(context),
               ),
               actions: [
-              IconButton(
-                icon: const Icon(Icons.more_vert),
-                onPressed: () {
-                // Show options menu
-                },
-              ),
+                IconButton(
+                  icon: const Icon(Icons.more_vert),
+                  onPressed: () {
+                    // Show options menu
+                  },
+                ),
               ],
               shape: const RoundedRectangleBorder(
-              borderRadius: BorderRadius.only(
-                bottomLeft: Radius.circular(30),
-                bottomRight: Radius.circular(30),
-              ),
-              ),
-              title: innerBoxIsScrolled
-                ? const Text(
-                  'Card Details',
-                  style: TextStyle(color: Colors.black, fontSize: 16),
-                )
-                : null,
-              flexibleSpace: FlexibleSpaceBar(
-              background: Container(
-                color: Colors.white,
-                child: Stack(
-                children: [
-                  // Card header
-                  Positioned(
-                  top: MediaQuery.of(context).padding.top + 50,
-                  left: 20,
-                  right: 20,
-                  child: Text(
-                    card.title ?? 'Card Details',
-                    style: const TextStyle(
-                    color: Colors.black,
-                    fontSize: 22,
-                    fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  ),
-                  // Custom Card
-                  Positioned(
-                  top: MediaQuery.of(context).padding.top + 90,
-                  left: 20,
-                  right: 20,
-                  bottom: 20,
-                  child: _buildBusinessCard(context, screenHeight),
-                  ),
-                ],
+                borderRadius: BorderRadius.only(
+                  bottomLeft: Radius.circular(30),
+                  bottomRight: Radius.circular(30),
                 ),
               ),
+              title: innerBoxIsScrolled
+                  ? const Text(
+                      'Card Details',
+                      style: TextStyle(color: Colors.black, fontSize: 16),
+                    )
+                  : null,
+              flexibleSpace: FlexibleSpaceBar(
+                background: Container(
+                  color: Colors.white,
+                  child: Stack(
+                    children: [
+                      // Card header
+                      Positioned(
+                        top: MediaQuery.of(context).padding.top + 50,
+                        left: 20,
+                        right: 20,
+                        child: Text(
+                          card.title ?? 'Card Details',
+                          style: const TextStyle(
+                            color: Colors.black,
+                            fontSize: 22,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                      // Custom Card
+                      Positioned(
+                        top: MediaQuery.of(context).padding.top + 90,
+                        left: 20,
+                        right: 20,
+                        bottom: 20,
+                        child: _buildBusinessCard(context, screenHeight),
+                      ),
+                    ],
+                  ),
+                ),
               ),
             ),
           ];
         },
         body: SingleChildScrollView(
           physics: const BouncingScrollPhysics(),
-          padding: const EdgeInsets.only(left: 10 , right: 10, top: 5),
+          padding: const EdgeInsets.only(left: 10, right: 10, top: 5),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -100,7 +100,8 @@ class CardDetailsPage extends StatelessWidget {
                 height: 120, // Adjust height as needed
                 child: GridView.count(
                   padding: const EdgeInsets.only(bottom: 10),
-                  crossAxisCount: 5, // Increased from 4 to 5 to add Share button
+                  crossAxisCount:
+                      5, // Increased from 4 to 5 to add Share button
                   shrinkWrap: true,
                   physics: const NeverScrollableScrollPhysics(),
                   mainAxisSpacing: 8,
@@ -160,9 +161,9 @@ class CardDetailsPage extends StatelessWidget {
                   ],
                 ),
               ),
-          
+
               const SizedBox(height: 24),
-          
+
               // Contact Information Section
               _buildSectionHeader('Contact Information'),
               const SizedBox(height: 8),
@@ -210,9 +211,9 @@ class CardDetailsPage extends StatelessWidget {
                   ),
                 ),
               ),
-          
+
               const SizedBox(height: 24),
-          
+
               // Social Media Section
               _buildSectionHeader('Social Media'),
               const SizedBox(height: 8),
@@ -238,26 +239,26 @@ class CardDetailsPage extends StatelessWidget {
                       label: 'Twitter',
                       icon: 'assets/icons/twitter.png',
                       color: Colors.blue.shade400,
-                      onTap: () => null,
+                      onTap: () {},
                     ),
                     _buildSocialButton(
                       label: 'Instagram',
                       icon: 'assets/icons/instagram.png',
                       color: Colors.pink,
-                      onTap: () => null,
+                      onTap: () {},
                     ),
                     _buildSocialButton(
                       label: 'Facebook',
                       icon: 'assets/icons/facebook.png',
                       color: Colors.blue.shade900,
-                      onTap: () => null,
+                      onTap: () {},
                     ),
                   ],
                 ),
               ),
-          
+
               const SizedBox(height: 24),
-          
+
               // Card Analytics
               _buildSectionHeader('Card Analytics', trailing: 'Last 30 days'),
               const SizedBox(height: 8),
@@ -271,15 +272,15 @@ class CardDetailsPage extends StatelessWidget {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: [
-                    _buildAnalyticItem('247', 'Views'),
-                    _buildAnalyticItem('83', 'Saves'),
-                    _buildAnalyticItem('36', 'Shares'),
+                    _buildAnalyticItem('0', 'Views'),
+                    _buildAnalyticItem('0', 'Saves'),
+                    _buildAnalyticItem('0', 'Shares'),
                   ],
                 ),
               ),
-          
+
               const SizedBox(height: 24),
-          
+
               // Ratings
               _buildSectionHeader('Ratings'),
               const SizedBox(height: 8),
@@ -300,9 +301,9 @@ class CardDetailsPage extends StatelessWidget {
                   ],
                 ),
               ),
-          
+
               const SizedBox(height: 24),
-          
+
               // Rate This Card
               _buildSectionHeader('Rate This Card'),
               const SizedBox(height: 8),
@@ -334,7 +335,7 @@ class CardDetailsPage extends StatelessWidget {
                   ],
                 ),
               ),
-          
+
               const SizedBox(height: 40),
             ],
           ),
@@ -353,205 +354,207 @@ class CardDetailsPage extends StatelessWidget {
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
       builder: (context) => Center(
-        child: Container(
-          height: MediaQuery.of(context).size.height * 0.83,
-          width: screenWidth * 0.9,
-          margin: EdgeInsets.symmetric(
-            horizontal: screenWidth * 0.05,
-            vertical: 20,
-          ),
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(30),
-            boxShadow: [
-              BoxShadow(
-                color: primaryColor.withOpacity(0.3),
-                blurRadius: 15,
-                spreadRadius: 5,
-                offset: const Offset(0, 5),
-              ),
-            ],
-          ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // Header
-              Container(
-                padding: const EdgeInsets.all(20),
-                decoration: BoxDecoration(
-                  color: primaryColor,
-                  borderRadius: const BorderRadius.only(
-                    topLeft: Radius.circular(30),
-                    topRight: Radius.circular(30),
-                  ),
+        child: SingleChildScrollView(
+          child: Container(
+            constraints: BoxConstraints(
+              maxHeight: MediaQuery.of(context).size.height * 0.93,
+            ),
+            width: screenWidth * 0.9,
+            margin: EdgeInsets.symmetric(
+              horizontal: screenWidth * 0.05,
+              vertical: 20,
+            ),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(30),
+              boxShadow: [
+                BoxShadow(
+                  color: primaryColor.withOpacity(0.3),
+                  blurRadius: 15,
+                  spreadRadius: 5,
+                  offset: const Offset(0, 5),
                 ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    const Text(
-                      'Share this Card',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
+              ],
+            ),
+            child: SingleChildScrollView(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // Header
+                  Container(
+                    padding: const EdgeInsets.all(20),
+                    decoration: BoxDecoration(
+                      color: primaryColor,
+                      borderRadius: const BorderRadius.only(
+                        topLeft: Radius.circular(30),
+                        topRight: Radius.circular(30),
                       ),
                     ),
-                    IconButton(
-                      icon: const Icon(Icons.close, color: Colors.white),
-                      onPressed: () => Navigator.pop(context),
-                    ),
-                  ],
-                ),
-              ),
-        
-              // Description
-              const Padding(
-                padding: EdgeInsets.all(20),
-                child: Text(
-                  'Share your digital business card with others via QR code or through your favorite social platforms.',
-                  style: TextStyle(
-                    fontSize: 16,
-                    color: Colors.black87,
-                  ),
-                ),
-              ),
-        
-              // QR Code Section
-              Expanded(
-                flex: 3,
-                child: Container(
-                  alignment: Alignment.center,
-                  padding: const EdgeInsets.symmetric(horizontal: 30),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Container(
-                        padding: const EdgeInsets.all(15),
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(15),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.grey.withOpacity(0.2),
-                              blurRadius: 10,
-                              spreadRadius: 2,
-                            ),
-                          ],
-                        ),
-                        child: QrImageView(
-                          data: _generateCardQrData(),
-                          version: QrVersions.auto,
-                          size: 200,
-                          backgroundColor: Colors.white,
-                          embeddedImage: card.profilePhoto != null
-                              ? NetworkImage(card.profilePhoto!) as ImageProvider
-                              : null,
-                          embeddedImageStyle: QrEmbeddedImageStyle(
-                            size: const Size(40, 40),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        const Text(
+                          'Share this Card',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
                           ),
                         ),
-                      ),
-                      const SizedBox(height: 15),
-                      Text(
-                        'Scan to view ${card.title ?? "this card"}',
-                        style: const TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w500,
+                        IconButton(
+                          icon: const Icon(Icons.close, color: Colors.white),
+                          onPressed: () => Navigator.pop(context),
                         ),
-                      ),
-                      const SizedBox(height: 5),
-                      OutlinedButton.icon(
-                        icon: const Icon(Icons.download),
-                        label: const Text('Save QR Code'),
-                        onPressed: () {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                                content: Text('QR Code saved to gallery')),
-                          );
-                        },
-                        style: OutlinedButton.styleFrom(
-                          foregroundColor: primaryColor,
-                        ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
-                ),
-              ),
-        
-              // Divider
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20),
-                child: Row(
-                  children: [
-                    const Expanded(child: Divider()),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 15),
-                      child: Text(
-                        'OR SHARE VIA',
-                        style: TextStyle(
-                          color: Colors.grey[600],
-                          fontSize: 12,
-                          fontWeight: FontWeight.w500,
-                        ),
+
+                  // Description
+                  const Padding(
+                    padding: EdgeInsets.all(20),
+                    child: Text(
+                      'Share your digital business card with others via QR code or through your favorite social platforms.',
+                      style: TextStyle(
+                        fontSize: 16,
+                        color: Colors.black87,
                       ),
                     ),
-                    const Expanded(child: Divider()),
-                  ],
-                ),
-              ),
-        
-              // Social Media Sharing Options
-              Expanded(
-                flex: 2,
-                child: Padding(
-                  padding: const EdgeInsets.all(20),
-                  child: GridView.count(
-                    crossAxisCount: 4,
-                    mainAxisSpacing: 15,
-                    crossAxisSpacing: 15,
-                    childAspectRatio: 1,
-                    physics: const NeverScrollableScrollPhysics(),
-                    children: [
-                      _buildShareOption(
-                        context,
-                        icon: Icons.message,
-                        color: Colors.green,
-                        label: 'Message',
-                        onTap: () => _shareViaSms(),
-                      ),
-                      _buildShareOption(
-                        context,
-                        icon: Icons.email,
-                        color: Colors.red.shade700,
-                        label: 'Email',
-                        onTap: () => _shareViaEmail(),
-                      ),
-                      _buildShareOption(
-                        context,
-                        icon: Icons.facebook,
-                        color: Colors.blue.shade900,
-                        label: 'Facebook',
-                        onTap: () => _shareViaSocialMedia('facebook'),
-                      ),
-                      _buildShareOption(
-                        context,
-                        icon: Icons.link,
-                        color: Colors.purple,
-                        label: 'Copy Link',
-                        onTap: () => _copyCardLink(context),
-                      ),
-                      _buildShareOption(
-                        context,
-                        icon: Icons.share,
-                        color: Colors.orange,
-                        label: 'More',
-                        onTap: () => _shareViaSystem(),
-                      ),
-                    ],
                   ),
-                ),
+
+                  // QR Code Section
+                  Container(
+                    alignment: Alignment.center,
+                    padding: const EdgeInsets.symmetric(horizontal: 30),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.all(15),
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(15),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.grey.withOpacity(0.2),
+                                blurRadius: 10,
+                                spreadRadius: 2,
+                              ),
+                            ],
+                          ),
+                          child: QrImageView(
+                            data: _generateCardQrData(),
+                            version: QrVersions.auto,
+                            size: 200,
+                            backgroundColor: Colors.white,
+                            embeddedImage: card.profilePhoto != null
+                                ? NetworkImage(card.profilePhoto!)
+                                    as ImageProvider
+                                : null,
+                            embeddedImageStyle: QrEmbeddedImageStyle(
+                              size: const Size(40, 40),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 15),
+                        Text(
+                          'Scan to view ${card.title ?? "this card"}',
+                          style: const TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                        const SizedBox(height: 5),
+                        OutlinedButton.icon(
+                          icon: const Icon(Icons.download),
+                          label: const Text('Save QR Code'),
+                          onPressed: () {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                  content: Text('QR Code saved to gallery')),
+                            );
+                          },
+                          style: OutlinedButton.styleFrom(
+                            foregroundColor: primaryColor,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+
+                  // Divider
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 20),
+                    child: Row(
+                      children: [
+                        const Expanded(child: Divider()),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 15),
+                          child: Text(
+                            'OR SHARE VIA',
+                            style: TextStyle(
+                              color: Colors.grey[600],
+                              fontSize: 12,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                        ),
+                        const Expanded(child: Divider()),
+                      ],
+                    ),
+                  ),
+
+                  // Social Media Sharing Options
+                  Padding(
+                    padding: const EdgeInsets.all(20),
+                    child: GridView.count(
+                      crossAxisCount: 4,
+                      mainAxisSpacing: 15,
+                      crossAxisSpacing: 15,
+                      childAspectRatio: 1,
+                      shrinkWrap: true,
+                      physics: const NeverScrollableScrollPhysics(),
+                      children: [
+                        _buildShareOption(
+                          context,
+                          icon: Icons.message,
+                          color: Colors.green,
+                          label: 'Message',
+                          onTap: () => _shareViaSms(),
+                        ),
+                        _buildShareOption(
+                          context,
+                          icon: Icons.email,
+                          color: Colors.red.shade700,
+                          label: 'Email',
+                          onTap: () => _shareViaEmail(),
+                        ),
+                        _buildShareOption(
+                          context,
+                          icon: Icons.facebook,
+                          color: Colors.blue.shade900,
+                          label: 'Facebook',
+                          onTap: () => _shareViaSocialMedia('facebook'),
+                        ),
+                        _buildShareOption(
+                          context,
+                          icon: Icons.link,
+                          color: Colors.purple,
+                          label: 'Copy Link',
+                          onTap: () => _copyCardLink(context),
+                        ),
+                        _buildShareOption(
+                          context,
+                          icon: Icons.share,
+                          color: Colors.orange,
+                          label: 'More',
+                          onTap: () => _shareViaSystem(),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
               ),
-            ],
+            ),
           ),
         ),
       ),
@@ -559,51 +562,51 @@ class CardDetailsPage extends StatelessWidget {
   }
 
   // Helper method to build share option buttons
-  Widget _buildShareOption(
-  BuildContext context, {
-  required IconData icon,
-  required Color color,
-  required String label,
-  required VoidCallback onTap,
-}) {
-  return SizedBox(  // ← Constrains total height
-    height: 90,    // Adjusted to accommodate all elements
-    child: InkWell(
-      onTap: onTap,
-      borderRadius: BorderRadius.circular(15),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,  // ← Prevents vertical expansion
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Container(
-            width: 50,
-            height: 50,
-            decoration: BoxDecoration(
-              color: color.withOpacity(0.1),
-              shape: BoxShape.circle,
-            ),
-            child: Icon(icon, color: color, size: 22),  // ← Slightly reduced icon size
-          ),
-          const SizedBox(height: 4),  // ← Reduced spacing
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 4),  // ← Horizontal constraints
-            child: Text(
-              label,
-              style: const TextStyle(
-                fontSize: 11,  // ← Slightly smaller font
-                fontWeight: FontWeight.w500,
+ Widget _buildShareOption(
+    BuildContext context, {
+    required IconData icon,
+    required Color color,
+    required String label,
+    required VoidCallback onTap,
+  }) {
+    return SizedBox(
+      height: 90,
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(15),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Container(
+              width: 48, // Reduced from 50
+              height: 48, // Reduced from 50
+              decoration: BoxDecoration(
+                color: color.withOpacity(0.1),
+                shape: BoxShape.circle,
               ),
-              textAlign: TextAlign.center,
-              maxLines: 2,  // ← Prevent text overflow
-              overflow: TextOverflow.ellipsis,
+              child: Icon(icon, color: color, size: 20), // Reduced from 22
             ),
-          ),
-        ],
+            const SizedBox(height: 3), // Reduced from 4
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 4),
+              child: Text(
+                label,
+                style: const TextStyle(
+                  fontSize: 10, // Reduced from 11
+                  fontWeight: FontWeight.w500,
+                ),
+                textAlign: TextAlign.center,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+          ],
+        ),
       ),
-    ),
-  );
-}
-
+    );
+  }
+  
   // Generate QR code data from card information
   String _generateCardQrData() {
     // Create a formatted string with card details
@@ -833,28 +836,31 @@ Widget _buildActionButton(BuildContext context, {
     child: InkWell(
       onTap: onTap,
       borderRadius: BorderRadius.circular(8),
-      child: Container(
-        // ← 3. Add Container with fixed padding
-        padding: const EdgeInsets.all(8),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(icon, size: 20, color: iconColor),
-            const SizedBox(height: 4),
-            Text(
-              label,
-              style: TextStyle(
-                fontSize: 10,
-                color: iconColor,
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(8),
+        child: Container(
+          // ← 3. Add Container with fixed padding
+          padding: const EdgeInsets.all(8),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(icon, size: 20, color: iconColor),
+              const SizedBox(height: 4),
+              Text(
+                label,
+                style: TextStyle(
+                  fontSize: 10,
+                  color: iconColor,
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
-    ),
-  );
-}
+    );
+  }
 
   Widget _buildContactItem({
     required IconData icon,
