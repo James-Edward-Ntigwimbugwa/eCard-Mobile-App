@@ -821,18 +821,20 @@ class CardDetailsPage extends StatelessWidget {
       ],
     );
   }
-
-  Widget _buildActionButton(
-    BuildContext context, {
-    required IconData icon,
-    required String label,
-    required Color color,
-    required Color iconColor,
-    required VoidCallback? onTap,
-  }) {
-    return Material(
-      // ← 2. Use Material instead of InkWell as root
-      color: color,
+  
+Widget _buildActionButton(BuildContext context, {
+  required IconData icon,
+  required String label,
+  required Color color,
+  required Color iconColor,
+  required VoidCallback? onTap,
+}) {
+  return Material(
+    // ← 2. Use Material instead of InkWell as root
+    color: color,
+    borderRadius: BorderRadius.circular(8),
+    child: InkWell(
+      onTap: onTap,
       borderRadius: BorderRadius.circular(8),
       child: InkWell(
         onTap: onTap,
