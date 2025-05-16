@@ -818,6 +818,7 @@ class CardDetailsPage extends StatelessWidget {
       ],
     );
   }
+  
 Widget _buildActionButton(BuildContext context, {
   required IconData icon,
   required String label,
