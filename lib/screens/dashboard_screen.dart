@@ -38,7 +38,7 @@ class _DashboardPageState extends State<DashboardPage>
 
   List<dynamic> screens = [
     MainScreenTab(),
-    NearbyScreen(),
+    QRScannerScreen(),
     ScanningScreen(),
     SettingsScreen()
   ];

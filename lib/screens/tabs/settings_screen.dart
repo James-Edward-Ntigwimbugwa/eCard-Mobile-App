@@ -1,6 +1,7 @@
 import 'package:ecard_app/components/custom_widgets.dart';
 import 'package:ecard_app/preferences/user_preference.dart';
 import 'package:ecard_app/utils/resources/images/images.dart';
+import 'package:ecard_app/modals/user_modal.dart';
 import 'dart:developer' as developer;
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -20,11 +21,64 @@ class _SettingsScreenState extends State<SettingsScreen> {
   bool cardScanAlertsEnabled = false;
   bool biometricLoginEnabled = false;
   bool darkModeEnabled = false;
+  
+  // User data fields
+  String userName = '';
+  String userJobTitle = '';
+  String userEmail = '';
+  String userDepartment = '';
+  String userEmployeeId = '';
+  String userPhone = '';
+  String userLocation = 'Mabibo, Dar es Salaam'; // Default location
 
   @override
   void initState() {
     super.initState();
-    // You may want to load saved preferences here
+    _loadUserData();
+  }
+  
+  Future<void> _loadUserData() async {
+    try {
+      final userPreferences = UserPreferences();
+      final user = await userPreferences.getUser();
+      
+      if (user != null) {
+        setState(() {
+          userName = _formatName(user.firstName, user.lastName);
+          userJobTitle = user.jobTitle ?? 'Not specified';
+          userEmail = user.email ?? 'Not specified';
+          userDepartment = 'Engineering'; // You might want to add this to your User model
+          userEmployeeId = user.id ?? 'Not specified';
+          userPhone = user.phone ?? 'Not specified';
+          // Load other user-specific settings if needed
+        });
+        developer.log("Loaded user data for settings screen: $userName");
+      } else {
+        developer.log("No user data found, using defaults");
+      }
+      
+      // Load other settings from SharedPreferences if needed
+      final prefs = await SharedPreferences.getInstance();
+      setState(() {
+        pushNotificationEnabled = prefs.getBool('pushNotifications') ?? false;
+        emailNotificationsEnabled = prefs.getBool('emailNotifications') ?? false;
+        cardScanAlertsEnabled = prefs.getBool('cardScanAlerts') ?? false;
+        biometricLoginEnabled = prefs.getBool('biometricLogin') ?? false;
+      });
+      
+    } catch (e) {
+      developer.log("Error loading user data: $e");
+    }
+  }
+  
+  String _formatName(String? firstName, String? lastName) {
+    if (firstName != null && firstName.isNotEmpty) {
+      if (lastName != null && lastName.isNotEmpty) {
+        return '$firstName $lastName';
+      }
+      return firstName;
+    }
+    return 'User';
   }
 
   void showLogoutDialog() {
@@ -234,6 +288,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 (value) {
                   setState(() {
                     biometricLoginEnabled = value;
+                    // Save the preference
+                    SharedPreferences.getInstance().then((prefs) {
+                      prefs.setBool('biometricLogin', value);
+                    });
                   });
                 },
               ),
@@ -251,6 +309,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 (value) {
                   setState(() {
                     pushNotificationEnabled = value;
+                    // Save the preference
+                    SharedPreferences.getInstance().then((prefs) {
+                      prefs.setBool('pushNotifications', value);
+                    });
                   });
                 },
               ),
@@ -265,6 +327,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 (value) {
                   setState(() {
                     emailNotificationsEnabled = value;
+                    // Save the preference
+                    SharedPreferences.getInstance().then((prefs) {
+                      prefs.setBool('emailNotifications', value);
+                    });
                   });
                 },
               ),
@@ -280,6 +346,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 (value) {
                   setState(() {
                     cardScanAlertsEnabled = value;
+                    // Save the preference
+                    SharedPreferences.getInstance().then((prefs) {
+                      prefs.setBool('cardScanAlerts', value);
+                    });
                   });
                 },
               ),
@@ -365,7 +435,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'James Edward',
+                      userName,
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
                         fontSize: 18,
@@ -374,7 +444,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       overflow: TextOverflow.ellipsis,
                     ),
                     NormalHeaderWidget(
-                      text: 'Senior developer',
+                      text: userJobTitle,
                       color: Theme.of(context).hintColor.withOpacity(0.6),
                       size: '14.0',
                     ),
@@ -442,7 +512,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     const SizedBox(height: 4),
                     // Location display with text overflow handling
                     Text(
-                      'Mabibo, Dar es Salaam',
+                      userLocation,
                       style: TextStyle(
                         fontSize: 12,
                         color:
@@ -460,10 +530,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
           Row(
             children: [
               Expanded(
-                child: _buildInfoItem('Email', 'john.smith@company.com'),
+                child: _buildInfoItem('Email', userEmail),
               ),
               Expanded(
-                child: _buildInfoItem('Department', 'Engineering'),
+                child: _buildInfoItem('Department', userDepartment),
               ),
             ],
           ),
@@ -471,10 +541,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
           Row(
             children: [
               Expanded(
-                child: _buildInfoItem('Employee ID', 'EC-4587-1234'),
+                child: _buildInfoItem('Employee ID', userEmployeeId),
               ),
               Expanded(
-                child: _buildInfoItem('Phone', '+1 (555) 123-4567'),
+                child: _buildInfoItem('Phone', userPhone),
               ),
             ],
           ),

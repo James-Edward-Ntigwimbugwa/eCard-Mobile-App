@@ -151,8 +151,9 @@ class RegisterPageState extends State<RegisterPage> {
     final authProvider = Provider.of<AuthProvider>(context);
     final formKey = GlobalKey<FormState>();
     return Scaffold(
-      body: Container(
-        color: Theme.of(context).highlightColor,
+      backgroundColor: Theme.of(context).highlightColor,
+      body: SingleChildScrollView(
+        physics: BouncingScrollPhysics(),
         child: SizedBox(
           height: double.maxFinite,
           child: Column(
