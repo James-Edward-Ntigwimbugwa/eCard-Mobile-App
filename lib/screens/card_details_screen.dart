@@ -562,7 +562,7 @@ class CardDetailsPage extends StatelessWidget {
   }
 
   // Helper method to build share option buttons
- Widget _buildShareOption(
+  Widget _buildShareOption(
     BuildContext context, {
     required IconData icon,
     required Color color,
@@ -606,7 +606,7 @@ class CardDetailsPage extends StatelessWidget {
       ),
     );
   }
-  
+
   // Generate QR code data from card information
   String _generateCardQrData() {
     // Create a formatted string with card details
@@ -821,45 +821,46 @@ class CardDetailsPage extends StatelessWidget {
       ],
     );
   }
-  
-Widget _buildActionButton(BuildContext context, {
-  required IconData icon,
-  required String label,
-  required Color color,
-  required Color iconColor,
-  required VoidCallback? onTap,
-}) {
-  return Material(
-    // ← 2. Use Material instead of InkWell as root
-    color: color,
-    borderRadius: BorderRadius.circular(8),
-    child: InkWell(
-      onTap: onTap,
-      borderRadius: BorderRadius.circular(8),
-      child: InkWell(
-        onTap: onTap,
+
+  Widget _buildActionButton(
+    BuildContext context, {
+    required IconData icon,
+    required String label,
+    required Color color,
+    required Color iconColor,
+    required VoidCallback? onTap,
+  }) {
+    return Material(
+        // ← 2. Use Material instead of InkWell as root
+        color: color,
         borderRadius: BorderRadius.circular(8),
-        child: Container(
-          // ← 3. Add Container with fixed padding
-          padding: const EdgeInsets.all(8),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Icon(icon, size: 20, color: iconColor),
-              const SizedBox(height: 4),
-              Text(
-                label,
-                style: TextStyle(
-                  fontSize: 10,
-                  color: iconColor,
-                ),
+        child: InkWell(
+          onTap: onTap,
+          borderRadius: BorderRadius.circular(8),
+          child: InkWell(
+            onTap: onTap,
+            borderRadius: BorderRadius.circular(8),
+            child: Container(
+              // ← 3. Add Container with fixed padding
+              padding: const EdgeInsets.all(8),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(icon, size: 20, color: iconColor),
+                  const SizedBox(height: 4),
+                  Text(
+                    label,
+                    style: TextStyle(
+                      fontSize: 10,
+                      color: iconColor,
+                    ),
+                  ),
+                ],
               ),
-            ],
+            ),
           ),
-        ),
-      ),
-    );
+        ));
   }
 
   Widget _buildContactItem({
