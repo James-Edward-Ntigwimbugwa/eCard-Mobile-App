@@ -1,7 +1,6 @@
 import 'package:ecard_app/components/custom_widgets.dart';
 import 'package:ecard_app/preferences/user_preference.dart';
 import 'package:ecard_app/utils/resources/images/images.dart';
-import 'package:ecard_app/modals/user_modal.dart';
 import 'dart:developer' as developer;
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -21,7 +20,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
   bool cardScanAlertsEnabled = false;
   bool biometricLoginEnabled = false;
   bool darkModeEnabled = false;
-  
+
   // User data fields
   String userName = '';
   String userJobTitle = '';
@@ -36,18 +35,19 @@ class _SettingsScreenState extends State<SettingsScreen> {
     super.initState();
     _loadUserData();
   }
-  
+
   Future<void> _loadUserData() async {
     try {
       final userPreferences = UserPreferences();
       final user = await userPreferences.getUser();
-      
+
       if (user != null) {
         setState(() {
           userName = _formatName(user.firstName, user.lastName);
           userJobTitle = user.jobTitle ?? 'Not specified';
           userEmail = user.email ?? 'Not specified';
-          userDepartment = 'Engineering'; // You might want to add this to your User model
+          userDepartment =
+              'Engineering'; // You might want to add this to your User model
           userEmployeeId = user.id ?? 'Not specified';
           userPhone = user.phone ?? 'Not specified';
           // Load other user-specific settings if needed
@@ -56,21 +56,21 @@ class _SettingsScreenState extends State<SettingsScreen> {
       } else {
         developer.log("No user data found, using defaults");
       }
-      
+
       // Load other settings from SharedPreferences if needed
       final prefs = await SharedPreferences.getInstance();
       setState(() {
         pushNotificationEnabled = prefs.getBool('pushNotifications') ?? false;
-        emailNotificationsEnabled = prefs.getBool('emailNotifications') ?? false;
+        emailNotificationsEnabled =
+            prefs.getBool('emailNotifications') ?? false;
         cardScanAlertsEnabled = prefs.getBool('cardScanAlerts') ?? false;
         biometricLoginEnabled = prefs.getBool('biometricLogin') ?? false;
       });
-      
     } catch (e) {
       developer.log("Error loading user data: $e");
     }
   }
-  
+
   String _formatName(String? firstName, String? lastName) {
     if (firstName != null && firstName.isNotEmpty) {
       if (lastName != null && lastName.isNotEmpty) {

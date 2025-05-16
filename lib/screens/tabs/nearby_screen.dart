@@ -16,7 +16,7 @@ class _QRScannerScreenState extends State<QRScannerScreen> {
   QRViewController? controller;
   bool isScanning = true;
   bool flashOn = false;
-  
+
   // This is used to prevent multiple scans of the same QR code
   String? lastScannedCode;
   DateTime? lastScanTime;
@@ -38,7 +38,7 @@ class _QRScannerScreenState extends State<QRScannerScreen> {
         children: [
           // QR Scanner View
           _buildQrView(context),
-          
+
           // Overlay UI
           SafeArea(
             child: Column(
@@ -111,7 +111,7 @@ class _QRScannerScreenState extends State<QRScannerScreen> {
   Widget _buildQrView(BuildContext context) {
     // Get the screen size for scanner area adjustments
     var scanArea = MediaQuery.of(context).size.width * 0.7;
-    
+
     return QRView(
       key: qrKey,
       onQRViewCreated: _onQRViewCreated,
@@ -234,25 +234,25 @@ class _QRScannerScreenState extends State<QRScannerScreen> {
     this.controller = controller;
     controller.scannedDataStream.listen((scanData) {
       if (!isScanning || scanData.code == null) return;
-      
+
       // Prevent multiple scans of the same code within 2 seconds
       final now = DateTime.now();
-      if (lastScannedCode == scanData.code && 
+      if (lastScannedCode == scanData.code &&
           lastScanTime != null &&
           now.difference(lastScanTime!).inSeconds < 2) {
         return;
       }
-      
+
       lastScannedCode = scanData.code;
       lastScanTime = now;
-      
+
       // Try to parse the QR code data
       if (_isValidECardQR(scanData.code!)) {
         setState(() {
           isScanning = false;
         });
         controller.pauseCamera();
-        
+
         // Parse the QR code into a Card object
         final cardData = _parseCardData(scanData.code!);
         _showCardFoundSheet(cardData);
@@ -271,15 +271,15 @@ class _QRScannerScreenState extends State<QRScannerScreen> {
   bool _isValidECardQR(String data) {
     // Check if the QR has the expected format for an eCard
     final lines = data.split('\n');
-    
+
     // Look for eCard specific data markers (ORG, TEL, EMAIL, etc.)
     bool hasOrgMarker = lines.any((line) => line.startsWith('ORG:'));
     bool hasTitleMarker = lines.any((line) => line.startsWith('TITLE:'));
-    bool hasContactInfo = lines.any((line) => 
-      line.startsWith('TEL:') || 
-      line.startsWith('EMAIL:') || 
-      line.startsWith('URL:'));
-      
+    bool hasContactInfo = lines.any((line) =>
+        line.startsWith('TEL:') ||
+        line.startsWith('EMAIL:') ||
+        line.startsWith('URL:'));
+
     return hasOrgMarker || (hasTitleMarker && hasContactInfo);
   }
 
@@ -291,7 +291,7 @@ class _QRScannerScreenState extends State<QRScannerScreen> {
     String? email;
     String? websiteUrl;
     String? address;
-    
+
     for (var line in lines) {
       if (line.startsWith('ORG:')) {
         company = line.substring(4);
@@ -308,7 +308,6 @@ class _QRScannerScreenState extends State<QRScannerScreen> {
       }
     }
 
-
     return CustomCard(
       title,
       uuid: 'scanned-card-${DateTime.now().millisecondsSinceEpoch}',
@@ -318,13 +317,12 @@ class _QRScannerScreenState extends State<QRScannerScreen> {
       websiteUrl: websiteUrl,
       address: address,
     );
-    
   }
 
   void _showCardFoundSheet(CustomCard card) {
     final primaryColor = Theme.of(context).primaryColor;
     final screenWidth = MediaQuery.of(context).size.width;
-    
+
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -360,7 +358,7 @@ class _QRScannerScreenState extends State<QRScannerScreen> {
                 borderRadius: BorderRadius.circular(50),
               ),
             ),
-            
+
             // Header
             Padding(
               padding: const EdgeInsets.all(20),
@@ -389,7 +387,7 @@ class _QRScannerScreenState extends State<QRScannerScreen> {
                 ],
               ),
             ),
-            
+
             // Success Animation
             Container(
               width: 120,
@@ -404,9 +402,9 @@ class _QRScannerScreenState extends State<QRScannerScreen> {
                 size: 80,
               ),
             ),
-            
+
             const SizedBox(height: 20),
-            
+
             // Card Information
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 30),
@@ -428,9 +426,9 @@ class _QRScannerScreenState extends State<QRScannerScreen> {
                         fontWeight: FontWeight.w500,
                       ),
                     ),
-                  
+
                   const SizedBox(height: 30),
-                  
+
                   // Contact information
                   if (card.phoneNumber != null)
                     _buildContactInfoRow(Icons.phone, card.phoneNumber!),
@@ -440,15 +438,16 @@ class _QRScannerScreenState extends State<QRScannerScreen> {
                     _buildContactInfoRow(Icons.language, card.websiteUrl!),
                   if (card.address != null)
                     _buildContactInfoRow(Icons.location_on, card.address!),
-                  
+
                   const SizedBox(height: 30),
-                  
+
                   // Save button
                   ElevatedButton.icon(
                     onPressed: () {
                       // Add logic to save the card
                       ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text('Card saved successfully')),
+                        const SnackBar(
+                            content: Text('Card saved successfully')),
                       );
                       Navigator.pop(context);
                       setState(() {
@@ -470,9 +469,9 @@ class _QRScannerScreenState extends State<QRScannerScreen> {
                       ),
                     ),
                   ),
-                  
+
                   const SizedBox(height: 15),
-                  
+
                   // New: See more button with organization name
                   OutlinedButton.icon(
                     onPressed: () {
@@ -482,12 +481,15 @@ class _QRScannerScreenState extends State<QRScannerScreen> {
                         _launchUrl(card.websiteUrl!);
                       } else {
                         ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(content: Text('No website information available')),
+                          const SnackBar(
+                              content:
+                                  Text('No website information available')),
                         );
                       }
                     },
                     icon: const Icon(Icons.info_outline),
-                    label: Text('See more about ${card.company ?? "this Organization"}'),
+                    label: Text(
+                        'See more about ${card.company ?? "this Organization"}'),
                     style: OutlinedButton.styleFrom(
                       foregroundColor: primaryColor,
                       side: BorderSide(color: primaryColor),
