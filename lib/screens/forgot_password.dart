@@ -39,51 +39,52 @@ class _ForgetPasswordPageState extends State<ForgetPasswordPage> {
   }
 
   void handleResetPassword() {
-    setState(() {
-      _formIsSubmitted = true;
-    });
+    Navigator.pushNamed(context , '/dashboard');
+    // setState(() {
+    //   _formIsSubmitted = true;
+    // });
 
-    final form = formKey.currentState;
-    if (_emailController.text.isEmpty) {
-      Alerts.showError(
-          context: context,
-          message: "Please enter your email",
-          icon: Image.asset(
-            Images.errorImage,
-            width: 40,
-            height: 40,
-          ));
-      return;
-    }
+    // final form = formKey.currentState;
+    // if (_emailController.text.isEmpty) {
+    //   Alerts.showError(
+    //       context: context,
+    //       message: "Please enter your email",
+    //       icon: Image.asset(
+    //         Images.errorImage,
+    //         width: 40,
+    //         height: 40,
+    //       ));
+    //   return;
+    // }
 
-    if (form == null || !form.validate()) {
-      print("Invalid form...==>");
-      return;
-    }
+    // if (form == null || !form.validate()) {
+    //   print("Invalid form...==>");
+    //   return;
+    // }
 
-    form.save();
-    showLoader();
+    // form.save();
+    // showLoader();
 
     // Simulate API call for password reset
-    Timer(Duration(seconds: 2), () {
-      Navigator.pop(context); // Close loader
+    // Timer(Duration(seconds: 2), () {
+    //   Navigator.pop(context); // Close loader
 
-      // Show success message
-      Alerts.showSuccess(
-        context: context,
-        message: "Password reset link sent",
-        icon: Icon(
-          Icons.check_circle_outline,
-          color: Theme.of(context).primaryColor,
-          size: 40,
-        ),
-      );
+    //   // Show success message
+    //   Alerts.showSuccess(
+    //     context: context,
+    //     message: "Password reset link sent",
+    //     icon: Icon(
+    //       Icons.check_circle_outline,
+    //       color: Theme.of(context).primaryColor,
+    //       size: 40,
+    //     ),
+    //   );
 
-      Future.delayed(Duration(seconds: 2), () {
-        Navigator.pop(context); // Close alert
-        Navigator.pushNamed(context, '/login');
-      });
-    });
+    //   Future.delayed(Duration(seconds: 2), () {
+    //     Navigator.pop(context); // Close alert
+    //     Navigator.pushNamed(context, '/login');
+    //   });
+    // });
   }
 
   @override

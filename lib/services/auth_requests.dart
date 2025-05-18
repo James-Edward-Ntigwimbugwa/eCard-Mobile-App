@@ -21,7 +21,7 @@ class AuthRequests {
 
   // register method
   static Future<http.Response> register(String path, Object object) async {
-    final url = Uri.parse("${AppUrl.baseEndpoint}/auth/$path");
+    final url = Uri.parse("${AppUrl.registerUrl}/$path");
     developer.log("Register endpoint: $url");
 
     var response = await http.post(url,
