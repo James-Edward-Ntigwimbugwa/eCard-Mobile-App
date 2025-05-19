@@ -44,7 +44,8 @@ class OtpVerifierState extends State<OtpVerifier> {
             color: Theme.of(context).primaryColor, size: 20));
 
     try {
-      final response = await AuthRequests.activateAccount(_otpCode);
+      final authRequests = AuthRequests();
+      final response = await authRequests.activateAccount(_otpCode);
 
       // Close the loading dialog
       Navigator.pop(context);
@@ -61,8 +62,9 @@ class OtpVerifierState extends State<OtpVerifier> {
           Navigator.pop(context); // Close alert
 
           // Check if username and password are available
-          final username = RegisterPageState.usernameController;
-          final password = RegisterPageState.passwordController;
+          final registerPageState =Provider.of<RegisterPageState>(context, listen: false);
+          final username = registerPageState.username;
+          final password = registerPageState.password;
 
           if (username.text.isNotEmpty && password.text.isNotEmpty) {
             // Proceed with auto-login
@@ -101,43 +103,42 @@ class OtpVerifierState extends State<OtpVerifier> {
     }
   }
 
-  void _performAutoLogin(String username, String password) {
+  Future<void> _performAutoLogin(String username, String password) async {
     Alerts.showLoader(
         context: context,
         message: "Logging in ...",
         icon: LoadingAnimationWidget.stretchedDots(
             color: Theme.of(context).primaryColor, size: 20));
 
-    // Get auth provider and mark account as verified
     final authProvider = Provider.of<AuthProvider>(context, listen: false);
 
-    authProvider.login(username, password).then((response) {
-      if (response['status'] == 200) {
-        var userProvider = Provider.of<UserProvider>(context, listen: false);
-        userProvider.setUser(response['user']);
+    try {
+      final response = await authProvider
+          .signIn(username, password)
+          .timeout(const Duration(seconds: 60));
 
+      if (response == true) {
+        var userProvider = Provider.of<UserProvider>(context, listen: false);
+        // Optionally set user if needed, e.g. userProvider.setUser(authProvider.user);
         Navigator.pop(context); // Close loader
         Navigator.pushReplacementNamed(context, '/dashboard');
       } else {
         Navigator.pop(context); // Close loader
         Alerts.showError(
             context: context,
-            message: response['message'] ?? "Login failed. Please try again.",
+            message: "Login failed. Please try again.",
             icon: Image.asset(Images.errorImage, height: 30, width: 30));
-        // Navigate to login screen
         authProvider.navigateToLoginScreen();
       }
-    }).timeout(const Duration(seconds: 60), onTimeout: () {
+    } on TimeoutException {
       Navigator.pop(context); // Close loader
       Alerts.showError(
           context: context,
           message:
               "Login request timed out. Please check your internet connection.",
           icon: Image.asset(Images.errorImage, height: 30, width: 30));
-      // Navigate to login screen
-      final authProvider = Provider.of<AuthProvider>(context, listen: false);
       authProvider.navigateToLoginScreen();
-    }).catchError((error) {
+    } catch (error) {
       developer.log("Error during auto-login: $error",
           name: 'OtpVerifierScreen',
           error: error,
@@ -148,11 +149,8 @@ class OtpVerifierState extends State<OtpVerifier> {
           context: context,
           message: "Error logging in. Please try again.",
           icon: Image.asset(Images.errorImage, height: 30, width: 30));
-
-      // Navigate to login screen
-      final authProvider = Provider.of<AuthProvider>(context, listen: false);
       authProvider.navigateToLoginScreen();
-    });
+    }
   }
 
   @override

@@ -3,7 +3,8 @@ import 'dart:convert';
 import 'package:ecard_app/modals/user_modal.dart';
 import 'package:ecard_app/services/auth_requests.dart';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:jwt_decode/jwt_decode.dart';
 import 'dart:developer' as developer;
 import '../preferences/user_preference.dart';
 
@@ -21,11 +22,23 @@ enum Status {
 }
 
 class AuthProvider with ChangeNotifier {
+  final AuthRequests _apiService = AuthRequests();
   Status _loggedInStatus = Status.NotLoggedIn;
   Status _registeredInStatus = Status.NotRegistered;
+  bool _isLoading = false;
+  bool _isAuthenticated = false;
+  String? _errorMessage;
+  String? _accessToken;
+  int? _userId;
+  String? _email;
 
   Status get loggedInStatus => _loggedInStatus;
   Status get registeredInStatus => _registeredInStatus;
+  bool get isLoading => _isLoading;
+  bool get isAuthenticated => _isAuthenticated;
+  String? get errorMessage => _errorMessage;
+  int? get userId => _userId;
+  String? get email => _email;
 
   AuthScreen _currentScreen = AuthScreen.loginScreen;
 
@@ -75,76 +88,89 @@ class AuthProvider with ChangeNotifier {
     formData[_currentScreen]![field] = value;
   }
 
-// Fixed login method for your auth provider
-  Future<Map<String, dynamic>> login(String username, String password) async {
-    Map<String, Object> result;
-
-    final Map<String, dynamic> loginData = {
-      'username': username,
-      'password': password
-    };
-
+  // Updated login method with improved error handling
+  Future<bool> signIn(String username, String password) async {
+    _isLoading = true;
     _loggedInStatus = Status.Authenticating;
+    _errorMessage = null;
     notifyListeners();
 
     try {
-      Response response = await AuthRequests.login('login', loginData);
-
+      final response = await _apiService.login(username, password);
+      
       if (response.statusCode == 200) {
-        final Map<String, dynamic> responseData = json.decode(response.body);
-
-        var userData = responseData['data'];
-        developer.log("Received user data from API: $userData");
-
-        User authUser = User.fromJson(userData);
-        developer.log("Parsed user object: ${authUser.toString()}");
-
-        // Make sure to await the save operation and check result
-        bool saveResult = await UserPreferences.saveUser(authUser);
-
-        if (saveResult) {
-          developer.log("User data saved successfully to preferences");
-        } else {
-          developer.log("Failed to save user data to preferences");
+        final data = jsonDecode(response.body);
+        _accessToken = data['access'];
+        
+        // Decode JWT to get user info if needed
+        if (_accessToken != null) {
+          Map<String, dynamic> decodedToken = Jwt.parseJwt(_accessToken!);
+          _userId = decodedToken['user_id'];
         }
-
+        
+        // Save tokens
+        SharedPreferences prefs = await SharedPreferences.getInstance();
+        await prefs.setString('accessToken', data['access']);
+        await prefs.setString('refreshToken', data['refresh']);
+        
+        // If user data is available, save it
+        if (data.containsKey('user')) {
+          User authUser = User.fromJson(data['user']);
+          bool saveResult = await UserPreferences.saveUser(authUser);
+          if (saveResult) {
+            developer.log("User data saved successfully to preferences");
+          } else {
+            developer.log("Failed to save user data to preferences");
+          }
+        }
+        
+        
+        _isAuthenticated = true;
         _loggedInStatus = Status.LoggedIn;
+        _isLoading = false;
         notifyListeners();
-
-        result = {'status': true, 'message': 'Successful', 'user': authUser};
+        return true;
       } else {
-        _loggedInStatus = Status.NotLoggedIn;
-        notifyListeners();
-
-        // Improved error handling - extract message from response body safely
+        // Handle error response
         String errorMessage;
         try {
-          final Map<String, dynamic> errorData = json.decode(response.body);
-          errorMessage = errorData['error'] ??
-              errorData['message'] ??
-              'Login failed: ${response.statusCode}';
+          final errorData = jsonDecode(response.body);
+          errorMessage = errorData['detail'] ?? 
+                        errorData['message'] ?? 
+                        errorData['error'] ?? 
+                        'Login failed: ${response.statusCode}';
         } catch (e) {
-          errorMessage =
-              'Login failed with status code: ${response.statusCode}';
+          errorMessage = 'Login failed with status code: ${response.statusCode}';
         }
-
-        result = {'status': false, 'message': errorMessage};
+        
+        _errorMessage = errorMessage;
+        _loggedInStatus = Status.NotLoggedIn;
+        _isLoading = false;
+        notifyListeners();
+        return false;
       }
     } catch (e) {
-      _loggedInStatus = Status.NotLoggedIn;
-      notifyListeners();
-
       developer.log("Login error: $e");
-      result = {
-        'status': false,
-        'message': 'Connection error. Please check your internet connection.'
-      };
+      
+      // Provide user-friendly error messages
+      if (e.toString().contains("SocketException") ||
+          e.toString().contains("Connection")) {
+        _errorMessage = "Network connection error. Please check your internet and try again.";
+      } else if (e.toString().contains("timeout")) {
+        _errorMessage = "Request timed out. Please try again later.";
+      } else {
+        _errorMessage = "Connection error. Please check your internet connection.";
+      }
+      
+      _loggedInStatus = Status.NotLoggedIn;
+      _isLoading = false;
+      notifyListeners();
+      return false;
     }
-
-    return result;
   }
 
-  Future<Map<String, dynamic>> register(
+  // Updated register method with improved error handling
+  Future<bool> register(
     String firstName,
     String middleName,
     String username,
@@ -157,125 +183,136 @@ class AuthProvider with ChangeNotifier {
     String companyTitle,
     String jobTitle,
   ) async {
-    final Map<String, dynamic> registrationData = {
-      'firstName': firstName,
-      'middleName': middleName,
-      'username': username,
-      'lastName': lastName,
-      'email': email,
-      'role': role,
-      'password': password,
-      'phoneNumber': phoneNumber,
-      'bio': bio,
-      'companyTitle': companyTitle,
-      'jobTitle': jobTitle,
-    };
-
+    _isLoading = true;
     _registeredInStatus = Status.Registering;
+    _errorMessage = null;
     notifyListeners();
 
     try {
-      Response response =
-          await AuthRequests.register('register', registrationData);
-      return onValue(response);
-    } catch (error) {
-      return onError(error);
-    }
-  }
-
-  static Future<Map<String, dynamic>> onValue(Response response) async {
-    Map<String, Object?> result;
-
-    try {
-      final Map<String, dynamic> responseData = json.decode(response.body);
-
+      final response = await _apiService.register(
+        firstName,
+        middleName,
+        username,
+        lastName,
+        email,
+        role,
+        password,
+        phoneNumber,
+        bio,
+        companyTitle,
+        jobTitle,
+      );
+      
       if (response.statusCode == 200) {
-        var userData = responseData['data'];
-
-        User authUser = User.fromJson(userData);
-
-        UserPreferences.saveUser(authUser);
-        result = {
-          'status': true,
-          'message': 'Successfully registered',
-          'data': authUser
-        };
+        final data = jsonDecode(response.body);
+        _accessToken = data['access'];
+        
+        if (_accessToken != null) {
+          Map<String, dynamic> decodedToken = Jwt.parseJwt(_accessToken!);
+          _userId = decodedToken['user_id'];
+        }
+        
+        _email = email;
+        
+        // If user data is available, save it
+        if (data.containsKey('user')) {
+          User authUser = User.fromJson(data['user']);
+          await UserPreferences.saveUser(authUser);
+        }
+        
+        _isAuthenticated = true;
+        _registeredInStatus = Status.Registered;
+        _isLoading = false;
+        notifyListeners();
+        return true;
       } else {
-        // Improved error handling - extract message from response body
         String errorMessage;
         try {
-          errorMessage = responseData['error'] ??
-              responseData['message'] ??
-              'Registration failed with status code: ${response.statusCode}';
+          final errorData = jsonDecode(response.body);
+          errorMessage = errorData['detail'] ?? 
+                        errorData['message'] ?? 
+                        'Registration failed: ${response.statusCode}';
         } catch (e) {
-          errorMessage =
-              'Registration failed with status code: ${response.statusCode}';
+          errorMessage = 'Registration failed with status code: ${response.statusCode}';
         }
-
-        result = {
-          'status': false,
-          'message': errorMessage,
-          'data': responseData
-        };
+        
+        _errorMessage = errorMessage;
+        _registeredInStatus = Status.NotRegistered;
+        _isLoading = false;
+        notifyListeners();
+        return false;
       }
     } catch (e) {
-      developer.log("Error parsing registration response: $e");
-      result = {
-        'status': false,
-        'message': 'Error processing server response',
-        'data': null
-      };
+      developer.log("Registration error: $e");
+      _errorMessage = 'Connection error. Please check your internet connection.';
+      _registeredInStatus = Status.NotRegistered;
+      _isLoading = false;
+      notifyListeners();
+      return false;
     }
-
-    return result;
   }
 
-  static Map<String, dynamic> onError(error) {
-    developer.log("Registration error: $error");
-    return {
-      'status': false,
-      'message': 'Connection error. Please check your internet connection.',
-      'data': error.toString()
-    };
-  }
-
+  // Updated OTP verification with improved error handling
   Future<Map<String, dynamic>> verifyOtp(String otp) async {
+    _isLoading = true;
+    _errorMessage = null;
+    notifyListeners();
+
     try {
-      final response = await AuthRequests.activateAccount(otp);
+      final response = await _apiService.activateAccount(otp);
 
-      try {
-        final responseData = json.decode(response.body);
-
-        if (response.statusCode == 200) {
-          notifyListeners();
-          return {
-            'status': true,
-            'message': 'Account verified successfully',
-          };
-        } else {
-          // Extract error message from response
-          String errorMessage = responseData['message'] ??
-              responseData['error'] ??
+      if (response.statusCode == 200) {
+        _isLoading = false;
+        notifyListeners();
+        return {
+          'status': true,
+          'message': 'Account verified successfully',
+        };
+      } else {
+        String errorMessage;
+        try {
+          final errorData = jsonDecode(response.body);
+          errorMessage = errorData['message'] ??
+              errorData['detail'] ??
               'Verification failed with status code: ${response.statusCode}';
-
-          return {
-            'status': false,
-            'message': errorMessage,
-          };
+        } catch (e) {
+          errorMessage = 'Verification failed with status code: ${response.statusCode}';
         }
-      } catch (e) {
-        developer.log("Error parsing OTP verification response: $e");
+
+        _errorMessage = errorMessage;
+        _isLoading = false;
+        notifyListeners();
         return {
           'status': false,
-          'message': 'Error processing server response',
+          'message': errorMessage,
         };
       }
     } catch (e) {
       developer.log("OTP verification error: $e");
+      _errorMessage = 'Connection error. Please check your internet connection.';
+      _isLoading = false;
+      notifyListeners();
       return {
         'status': false,
         'message': 'Connection error. Please check your internet connection.',
       };
     }
+  }
+
+  // Sign out method
+  Future<void>  logout() async {
+    _isAuthenticated = false;
+    _loggedInStatus = Status.LoggedOut;
+    _userId = null;
+    _accessToken = null;
+    _email = null;
+    _errorMessage = null;
+    
+    // Clear stored preferences
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.clear();
+    await UserPreferences.removeUser();
+    
+    notifyListeners();
   }
 }

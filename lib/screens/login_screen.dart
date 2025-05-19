@@ -11,6 +11,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:provider/provider.dart';
 import '../components/alert_reminder.dart';
+import '../preferences/user_preference.dart';
 import 'dart:developer' as developer;
 
 class LoginPage extends StatefulWidget {
@@ -25,21 +26,26 @@ class _LoginPageState extends State<LoginPage> {
   bool _obscurePassword = true;
   bool _formIsSubmitted = false;
   final _formKey = GlobalKey<FormState>();
-  // ignore: unused_field
   String? _password;
 
-  @override
-  void initState() {
-    super.initState();
-    Future.microtask(() {
-      final auth = Provider.of<AuthProvider>(context, listen: false);
-      final data = auth.formData[AuthScreen.loginScreen];
-      if (data != null) {
-        _usernameController.text = data['username'] ?? '';
-        _passwordController.text = data['password'] ?? '';
-      }
-    });
-  }
+  // @override
+  // void initState() {
+  //   super.initState();
+  //   _loadSavedCredentials();
+  // }
+
+  // Future<void> _loadSavedCredentials() async {
+  //   try {
+  //     final username = await UserPreferences.getUsername();
+  //     final password = await UserPreferences.getPassword();
+  //     if (username != null && password != null) {
+  //       _usernameController.text = username;
+  //       _passwordController.text = password;
+  //     }
+  //   } catch (e) {
+  //     developer.log("Error loading saved credentials: $e");
+  //   }
+  // }
 
   @override
   void dispose() {
@@ -91,40 +97,31 @@ class _LoginPageState extends State<LoginPage> {
     _formKey.currentState!.save();
 
     showLoader();
+    
     try {
       final auth = Provider.of<AuthProvider>(context, listen: false);
+      final userProvider = Provider.of<UserProvider>(context, listen: false);
+      
       auth.updateFormField('username', _usernameController.text.trim());
       auth.updateFormField('password', _passwordController.text.trim());
 
-      final response = await auth
-          .login(
-            _usernameController.text.trim(),
-            _passwordController.text.trim(),
-          )
-          .timeout(const Duration(seconds: 60));
+      bool success = await auth.signIn(
+        _usernameController.text.trim(),
+        _passwordController.text.trim(),
+      );
 
       // Always close the loader dialog
       if (Navigator.canPop(context)) {
         Navigator.pop(context);
       }
 
-      if (response['status'] == true) {
-        // Success case
-        Provider.of<UserProvider>(context, listen: false)
-            .setUser(response['user']);
+      if (success) {
+        // Success case - navigate to dashboard
         Navigator.pushReplacementNamed(context, '/dashboard');
       } else {
-        // Display the specific error message from the backend
-        showErrorMessage(response['message'] ?? 'Login failed');
+        // Display the specific error message from the auth provider
+        showErrorMessage(auth.errorMessage ?? 'Login failed');
       }
-    } on TimeoutException {
-      // Close the loader dialog
-      if (Navigator.canPop(context)) {
-        Navigator.pop(context);
-      }
-
-      showNetworkError(
-          "Login request timed out. Please check your internet connection.");
     } catch (e, stack) {
       // Close the loader dialog
       if (Navigator.canPop(context)) {
@@ -307,19 +304,23 @@ class _LoginPageState extends State<LoginPage> {
                               const SizedBox(
                                 height: 20,
                               ),
-                              ElevatedButton(
-                                onPressed: handleLogin,
-                                style: ElevatedButton.styleFrom(
-                                    backgroundColor:
-                                        Theme.of(context).primaryColor,
-                                    shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.all(
-                                            Radius.circular(10)))),
-                                child: Text(
-                                  Texts.login,
-                                  style: TextStyle(color: Colors.white),
-                                ),
-                              ),
+                              auth.isLoading
+                                  ? CircularProgressIndicator(
+                                      color: Theme.of(context).primaryColor,
+                                    )
+                                  : ElevatedButton(
+                                      onPressed: handleLogin,
+                                      style: ElevatedButton.styleFrom(
+                                          backgroundColor:
+                                              Theme.of(context).primaryColor,
+                                          shape: RoundedRectangleBorder(
+                                              borderRadius: BorderRadius.all(
+                                                  Radius.circular(10)))),
+                                      child: Text(
+                                        Texts.login,
+                                        style: TextStyle(color: Colors.white),
+                                      ),
+                                    ),
                               Center(
                                 child: SizedBox(
                                   height: 50,

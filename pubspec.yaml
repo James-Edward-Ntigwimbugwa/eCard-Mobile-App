@@ -37,6 +37,7 @@ dependencies:
   url_launcher: ^6.3.1
   qr_flutter: ^4.1.0
   qr_code_scanner: ^1.0.1
+  jwt_decode: ^0.3.1
 #  qr_flutter: ^4.1.0
 #  image_picker: ^1.1.2
 #  flashy_tab_bar2: ^0.0.10
