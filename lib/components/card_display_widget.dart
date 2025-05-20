@@ -61,7 +61,11 @@ class _CardDisplayWidgetState extends State<CardDisplayWidget> {
           Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (context) => CardDetailsPage(card: widget.card),
+              builder: (context) => CardDetailsPage(
+                card: widget.card,
+                currentUserId: _userData?.id ?? '',
+                isFromShareLink: false,
+              ),
             ),
           );
         }

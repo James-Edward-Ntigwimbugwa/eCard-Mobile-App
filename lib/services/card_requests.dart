@@ -125,4 +125,32 @@ class CardRequests {
       rethrow;
     }
   }
+
+  static Future<Response> fetchCardDetails(String cardId) async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final bearerToken = prefs.getString("accessToken");
+
+      if (bearerToken == null || bearerToken.isEmpty) {
+        throw Exception("Authentication required");
+      }
+
+      final url = Uri.parse("${AppUrl.getCardDetails}/$cardId");
+
+      final response = await get(
+        url,
+        headers: {
+          "Authorization": "Bearer $bearerToken",
+          "Content-type": "application/json",
+          "Accept": "application/json",
+        },
+      );
+
+      return response;
+    } catch (e) {
+      developer.log("Fetch card details API call failed: $e");
+      rethrow;
+    }
+  }
+
 }

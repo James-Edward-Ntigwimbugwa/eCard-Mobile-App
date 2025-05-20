@@ -73,6 +73,7 @@ flutter:
     - assets/anime/no-content.json
     - assets/images/splash-card-image-front.jpg
     - assets/images/splash-card-image-back.jpg
+    - assets/anime/
 
 #  fonts:
 #    - family: Roboto

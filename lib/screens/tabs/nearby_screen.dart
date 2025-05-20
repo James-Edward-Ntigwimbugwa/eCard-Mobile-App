@@ -310,8 +310,8 @@ class _QRScannerScreenState extends State<QRScannerScreen> {
 
     return CustomCard(
       title,
+      company ?? 'Unknown Organization',
       uuid: 'scanned-card-${DateTime.now().millisecondsSinceEpoch}',
-      company: company ?? 'Unknown Organization',
       phoneNumber: phoneNumber,
       email: email,
       websiteUrl: websiteUrl,

@@ -21,8 +21,10 @@ class CustomCard {
   final String? websiteUrl;
   final String? backgroundColor;
   final String? fontColor;
+  final String? userUuid;
 
   CustomCard(
+    this.userUuid,
     this.title, {
     this.id,
     this.uuid,
@@ -49,6 +51,7 @@ class CustomCard {
 
   factory CustomCard.fromJson(Map<String, dynamic> json) {
     return CustomCard(
+      json['userUuid'] ?? '', // Provide a default or extract 'userUuid' from JSON
       json['title'] ?? '', // Provide a default or extract 'title' from JSON
       id: json['id']?.toString(),
       uuid: json['uuid'] ?? '',
@@ -136,6 +139,7 @@ class CustomCard {
     String? fontColor,
   }) {
     return CustomCard(
+      userUuid,
       title,
       id: id ?? this.id,
       uuid: uuid ?? this.uuid,

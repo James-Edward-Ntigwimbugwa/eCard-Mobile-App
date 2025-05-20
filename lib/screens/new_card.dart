@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'dart:developer' as developer;
 import 'package:ecard_app/components/alert_reminder.dart';
-import 'package:ecard_app/providers/card_provider.dart';
+import 'package:ecard_app/services/card_request_implementation.dart';
 import 'package:ecard_app/utils/resources/strings/strings.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';

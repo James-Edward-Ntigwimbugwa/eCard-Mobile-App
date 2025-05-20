@@ -5,9 +5,11 @@ import 'package:ecard_app/components/custom_widgets.dart';
 import 'package:ecard_app/modals/user_modal.dart';
 import 'package:ecard_app/preferences/user_preference.dart';
 import 'package:ecard_app/screens/dashboard_screen.dart';
+import 'package:ecard_app/utils/resources/animes/lottie_animes.dart';
 import 'package:ecard_app/utils/resources/images/images.dart';
 import 'package:ecard_app/utils/resources/strings/strings.dart';
 import 'package:flutter/material.dart';
+import 'package:lottie/lottie.dart';
 import 'package:page_transition/page_transition.dart';
 import 'auth_navigator.dart';
 
@@ -74,11 +76,19 @@ class _SplashScreenState extends State<SplashScreen> {
                   children: [
                     Positioned(
                       left: -10,
-                      child: Image.asset(
-                        Images.splashImage,
+                      child: ClipRRect(
+                      borderRadius: BorderRadius.circular(20),
+                      child: Container(
+                        width: 120,
+                        height: 120,
+                        color: Colors.white, // Optional: background color
+                        child: Lottie.asset(
+                        LottieAnimes.cardLoader,
                         height: 120,
                         width: 120,
                         fit: BoxFit.cover,
+                        ),
+                      ),
                       ),
                     ),
                   ],
@@ -109,7 +119,7 @@ class _SplashScreenState extends State<SplashScreen> {
           ],
         ),
       ),
-      duration: 3000,
+      duration: 6000,
       splashIconSize: 500,
       backgroundColor: Theme.of(context).primaryColor,
       nextScreen: _nextScreen,

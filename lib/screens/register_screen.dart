@@ -177,7 +177,8 @@ class RegisterPageState extends State<RegisterPage> {
         if (mounted) {
           Alerts.showError(
             context: context,
-            message: auth.errorMessage ?? 'Registration failed. Please try again.',
+            message:
+                auth.errorMessage ?? 'Registration failed. Please try again.',
             icon: Image.asset(
               Images.errorImage,
               height: 30,
@@ -193,7 +194,7 @@ class RegisterPageState extends State<RegisterPage> {
       }
 
       developer.log('Registration error: $error');
-      
+
       if (mounted) {
         Alerts.showError(
           context: context,
@@ -218,7 +219,8 @@ class RegisterPageState extends State<RegisterPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Theme.of(context).highlightColor,
-      body: SafeArea(
+      body: SizedBox(
+        
         child: Column(
           children: [
             // Header Section (Fixed)
@@ -229,7 +231,8 @@ class RegisterPageState extends State<RegisterPage> {
                   bottomRight: Radius.circular(50),
                 ),
               ),
-              padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 30.0),
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 20.0, vertical: 30.0),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -276,12 +279,12 @@ class RegisterPageState extends State<RegisterPage> {
                 ],
               ),
             ),
-            
+
             // Scrollable Form Section
             Expanded(
               child: SingleChildScrollView(
                 physics: const BouncingScrollPhysics(),
-                padding: const EdgeInsets.all(20.0),
+                padding: const EdgeInsets.all(10.0),
                 child: Form(
                   key: _formKey,
                   autovalidateMode: _isSubmitting
@@ -292,23 +295,28 @@ class RegisterPageState extends State<RegisterPage> {
                       border: Border.all(color: Theme.of(context).primaryColor),
                       borderRadius: const BorderRadius.all(Radius.circular(20)),
                     ),
-                    padding: const EdgeInsets.all(20.0),
+                    padding: const EdgeInsets.all(5.0),
                     child: Column(
                       children: [
                         // First Name (Required)
                         TextFormField(
                           controller: _firstNameController,
-                          validator: (value) => _validateRequired(value, 'First name'),
+                          validator: (value) =>
+                              _validateRequired(value, 'First name'),
                           decoration: InputDecoration(
                             prefixIcon: const Icon(Icons.person),
                             labelText: "First Name *",
-                            labelStyle: TextStyle(color: Theme.of(context).indicatorColor),
+                            labelStyle: TextStyle(
+                                color: Theme.of(context).indicatorColor),
                             focusedBorder: OutlineInputBorder(
-                              borderSide: BorderSide(color: Theme.of(context).primaryColor),
-                              borderRadius: const BorderRadius.all(Radius.circular(30)),
+                              borderSide: BorderSide(
+                                  color: Theme.of(context).primaryColor),
+                              borderRadius:
+                                  const BorderRadius.all(Radius.circular(30)),
                             ),
                             border: const OutlineInputBorder(
-                              borderRadius: BorderRadius.all(Radius.circular(30)),
+                              borderRadius:
+                                  BorderRadius.all(Radius.circular(30)),
                             ),
                           ),
                         ),
@@ -320,13 +328,17 @@ class RegisterPageState extends State<RegisterPage> {
                           decoration: InputDecoration(
                             prefixIcon: const Icon(Icons.person_outline),
                             labelText: "Second Name",
-                            labelStyle: TextStyle(color: Theme.of(context).indicatorColor),
+                            labelStyle: TextStyle(
+                                color: Theme.of(context).indicatorColor),
                             focusedBorder: OutlineInputBorder(
-                              borderSide: BorderSide(color: Theme.of(context).primaryColor),
-                              borderRadius: const BorderRadius.all(Radius.circular(30)),
+                              borderSide: BorderSide(
+                                  color: Theme.of(context).primaryColor),
+                              borderRadius:
+                                  const BorderRadius.all(Radius.circular(30)),
                             ),
                             border: const OutlineInputBorder(
-                              borderRadius: BorderRadius.all(Radius.circular(30)),
+                              borderRadius:
+                                  BorderRadius.all(Radius.circular(30)),
                             ),
                           ),
                         ),
@@ -335,17 +347,22 @@ class RegisterPageState extends State<RegisterPage> {
                         // Last Name (Required)
                         TextFormField(
                           controller: _lastNameController,
-                          validator: (value) => _validateRequired(value, 'Last name'),
+                          validator: (value) =>
+                              _validateRequired(value, 'Last name'),
                           decoration: InputDecoration(
                             prefixIcon: const Icon(Icons.person),
                             labelText: "Last Name *",
-                            labelStyle: TextStyle(color: Theme.of(context).indicatorColor),
+                            labelStyle: TextStyle(
+                                color: Theme.of(context).indicatorColor),
                             focusedBorder: OutlineInputBorder(
-                              borderSide: BorderSide(color: Theme.of(context).primaryColor),
-                              borderRadius: const BorderRadius.all(Radius.circular(30)),
+                              borderSide: BorderSide(
+                                  color: Theme.of(context).primaryColor),
+                              borderRadius:
+                                  const BorderRadius.all(Radius.circular(30)),
                             ),
                             border: const OutlineInputBorder(
-                              borderRadius: BorderRadius.all(Radius.circular(30)),
+                              borderRadius:
+                                  BorderRadius.all(Radius.circular(30)),
                             ),
                           ),
                         ),
@@ -359,13 +376,17 @@ class RegisterPageState extends State<RegisterPage> {
                           decoration: InputDecoration(
                             prefixIcon: const Icon(Icons.email),
                             labelText: "Email *",
-                            labelStyle: TextStyle(color: Theme.of(context).indicatorColor),
+                            labelStyle: TextStyle(
+                                color: Theme.of(context).indicatorColor),
                             focusedBorder: OutlineInputBorder(
-                              borderSide: BorderSide(color: Theme.of(context).primaryColor),
-                              borderRadius: const BorderRadius.all(Radius.circular(30)),
+                              borderSide: BorderSide(
+                                  color: Theme.of(context).primaryColor),
+                              borderRadius:
+                                  const BorderRadius.all(Radius.circular(30)),
                             ),
                             border: const OutlineInputBorder(
-                              borderRadius: BorderRadius.all(Radius.circular(30)),
+                              borderRadius:
+                                  BorderRadius.all(Radius.circular(30)),
                             ),
                           ),
                         ),
@@ -379,13 +400,17 @@ class RegisterPageState extends State<RegisterPage> {
                           decoration: InputDecoration(
                             prefixIcon: const Icon(Icons.phone),
                             labelText: "Phone Number *",
-                            labelStyle: TextStyle(color: Theme.of(context).indicatorColor),
+                            labelStyle: TextStyle(
+                                color: Theme.of(context).indicatorColor),
                             focusedBorder: OutlineInputBorder(
-                              borderSide: BorderSide(color: Theme.of(context).primaryColor),
-                              borderRadius: const BorderRadius.all(Radius.circular(30)),
+                              borderSide: BorderSide(
+                                  color: Theme.of(context).primaryColor),
+                              borderRadius:
+                                  const BorderRadius.all(Radius.circular(30)),
                             ),
                             border: const OutlineInputBorder(
-                              borderRadius: BorderRadius.all(Radius.circular(30)),
+                              borderRadius:
+                                  BorderRadius.all(Radius.circular(30)),
                             ),
                           ),
                         ),
@@ -394,17 +419,22 @@ class RegisterPageState extends State<RegisterPage> {
                         // Company Title (Required)
                         TextFormField(
                           controller: _companyTitleController,
-                          validator: (value) => _validateRequired(value, 'Company title'),
+                          validator: (value) =>
+                              _validateRequired(value, 'Company title'),
                           decoration: InputDecoration(
                             prefixIcon: const Icon(Icons.business),
                             labelText: "Company Title *",
-                            labelStyle: TextStyle(color: Theme.of(context).indicatorColor),
+                            labelStyle: TextStyle(
+                                color: Theme.of(context).indicatorColor),
                             focusedBorder: OutlineInputBorder(
-                              borderSide: BorderSide(color: Theme.of(context).primaryColor),
-                              borderRadius: const BorderRadius.all(Radius.circular(30)),
+                              borderSide: BorderSide(
+                                  color: Theme.of(context).primaryColor),
+                              borderRadius:
+                                  const BorderRadius.all(Radius.circular(30)),
                             ),
                             border: const OutlineInputBorder(
-                              borderRadius: BorderRadius.all(Radius.circular(30)),
+                              borderRadius:
+                                  BorderRadius.all(Radius.circular(30)),
                             ),
                           ),
                         ),
@@ -413,17 +443,22 @@ class RegisterPageState extends State<RegisterPage> {
                         // Job Title (Required)
                         TextFormField(
                           controller: _jobTitleController,
-                          validator: (value) => _validateRequired(value, 'Job title'),
+                          validator: (value) =>
+                              _validateRequired(value, 'Job title'),
                           decoration: InputDecoration(
                             prefixIcon: const Icon(Icons.work),
                             labelText: "Job Title *",
-                            labelStyle: TextStyle(color: Theme.of(context).indicatorColor),
+                            labelStyle: TextStyle(
+                                color: Theme.of(context).indicatorColor),
                             focusedBorder: OutlineInputBorder(
-                              borderSide: BorderSide(color: Theme.of(context).primaryColor),
-                              borderRadius: const BorderRadius.all(Radius.circular(30)),
+                              borderSide: BorderSide(
+                                  color: Theme.of(context).primaryColor),
+                              borderRadius:
+                                  const BorderRadius.all(Radius.circular(30)),
                             ),
                             border: const OutlineInputBorder(
-                              borderRadius: BorderRadius.all(Radius.circular(30)),
+                              borderRadius:
+                                  BorderRadius.all(Radius.circular(30)),
                             ),
                           ),
                         ),
@@ -432,17 +467,22 @@ class RegisterPageState extends State<RegisterPage> {
                         // Username (Required)
                         TextFormField(
                           controller: _usernameController,
-                          validator: (value) => _validateRequired(value, 'Username'),
+                          validator: (value) =>
+                              _validateRequired(value, 'Username'),
                           decoration: InputDecoration(
                             prefixIcon: const Icon(Icons.account_circle),
                             labelText: "Username *",
-                            labelStyle: TextStyle(color: Theme.of(context).indicatorColor),
+                            labelStyle: TextStyle(
+                                color: Theme.of(context).indicatorColor),
                             focusedBorder: OutlineInputBorder(
-                              borderSide: BorderSide(color: Theme.of(context).primaryColor),
-                              borderRadius: const BorderRadius.all(Radius.circular(30)),
+                              borderSide: BorderSide(
+                                  color: Theme.of(context).primaryColor),
+                              borderRadius:
+                                  const BorderRadius.all(Radius.circular(30)),
                             ),
                             border: const OutlineInputBorder(
-                              borderRadius: BorderRadius.all(Radius.circular(30)),
+                              borderRadius:
+                                  BorderRadius.all(Radius.circular(30)),
                             ),
                           ),
                         ),
@@ -454,20 +494,26 @@ class RegisterPageState extends State<RegisterPage> {
                           validator: _validatePassword,
                           obscureText: _obscurePassword,
                           style: GoogleFonts.nunito(
-                            textStyle: TextStyle(color: Theme.of(context).primaryColor),
+                            textStyle: TextStyle(
+                                color: Theme.of(context).primaryColor),
                             fontWeight: FontWeight.w500,
                             backgroundColor: Colors.transparent,
                           ),
                           decoration: InputDecoration(
-                            prefixIcon: const Icon(CupertinoIcons.padlock_solid),
+                            prefixIcon:
+                                const Icon(CupertinoIcons.padlock_solid),
                             labelText: "Password *",
-                            labelStyle: TextStyle(color: Theme.of(context).indicatorColor),
+                            labelStyle: TextStyle(
+                                color: Theme.of(context).indicatorColor),
                             focusedBorder: OutlineInputBorder(
-                              borderSide: BorderSide(color: Theme.of(context).primaryColor),
-                              borderRadius: const BorderRadius.all(Radius.circular(30)),
+                              borderSide: BorderSide(
+                                  color: Theme.of(context).primaryColor),
+                              borderRadius:
+                                  const BorderRadius.all(Radius.circular(30)),
                             ),
                             border: const OutlineInputBorder(
-                              borderRadius: BorderRadius.all(Radius.circular(30)),
+                              borderRadius:
+                                  BorderRadius.all(Radius.circular(30)),
                             ),
                             suffixIcon: IconButton(
                               onPressed: () {
@@ -496,7 +542,8 @@ class RegisterPageState extends State<RegisterPage> {
                             ),
                             TextButton(
                               onPressed: () {
-                                final auth = Provider.of<AuthProvider>(context, listen: false);
+                                final auth = Provider.of<AuthProvider>(context,
+                                    listen: false);
                                 auth.navigateToLoginScreen();
                               },
                               child: Text(
@@ -511,7 +558,8 @@ class RegisterPageState extends State<RegisterPage> {
                         ),
                         TextButton(
                           onPressed: () {
-                            final auth = Provider.of<AuthProvider>(context, listen: false);
+                            final auth = Provider.of<AuthProvider>(context,
+                                listen: false);
                             auth.navigateToVerifyWithOptScreen();
                           },
                           child: Text(
@@ -532,7 +580,8 @@ class RegisterPageState extends State<RegisterPage> {
                             style: ElevatedButton.styleFrom(
                               backgroundColor: Theme.of(context).primaryColor,
                               shape: const RoundedRectangleBorder(
-                                borderRadius: BorderRadius.all(Radius.circular(30)),
+                                borderRadius:
+                                    BorderRadius.all(Radius.circular(30)),
                               ),
                             ),
                             child: _isSubmitting

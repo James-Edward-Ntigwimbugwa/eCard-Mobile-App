@@ -16,7 +16,7 @@ class HeaderBoldWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return Text(
       text,
-      style: GoogleFonts.aBeeZee(
+      style: GoogleFonts.nunito(
           textStyle: TextStyle(
               color: color,
               fontSize: double.parse(size),
@@ -42,7 +42,7 @@ class NormalHeaderWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return Text(
       text,
-      style: GoogleFonts.aBeeZee(
+      style: GoogleFonts.nunito(
           textStyle: TextStyle(
               color: color,
               fontSize: double.parse(size),

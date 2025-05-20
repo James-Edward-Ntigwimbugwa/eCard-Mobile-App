@@ -39,7 +39,7 @@ class _ForgetPasswordPageState extends State<ForgetPasswordPage> {
   }
 
   void handleResetPassword() {
-    Navigator.pushNamed(context , '/dashboard');
+    Navigator.pushNamed(context, '/dashboard');
     // setState(() {
     //   _formIsSubmitted = true;
     // });

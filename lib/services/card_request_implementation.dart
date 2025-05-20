@@ -245,31 +245,34 @@ class CardProvider with ChangeNotifier {
     }
   }
 
-  Future<bool> updateCard(CustomCard card) async {
+  Future<CustomCard?> getCardByUuid({required String uuid}) async {
     try {
-      bool result = await CardPreferences.updateCard(card);
-      if (result) {
-        notifyListeners();
-      }
-      return result;
-    } catch (e) {
-      _errorMessage = "Error updating card: ${e.toString()}";
-      developer.log(_errorMessage!);
-      return false;
-    }
-  }
+      final response = await CardRequests.fetchCardDetails(uuid);
+      if (response.statusCode == 200) {
+        final dynamic responseData = jsonDecode(response.body);
+        developer.log("Card data received successfully");
 
-  Future<bool> deleteCard(String id) async {
-    try {
-      bool result = await CardPreferences.deleteCard(id);
-      if (result) {
-        notifyListeners();
+        var cardData = responseData['content'];
+        CustomCard card = CustomCard.fromJson(cardData);
+
+        // Save the card to SQLite database
+        await CardPreferences.saveCard(card);
+        developer.log("Saved card to SQLite database successfully");
+
+        return card;
+      } else if (response.statusCode == 404) {
+        developer.log("Card not found");
+        return null;
+      } else if (response.statusCode == 500) {
+        developer.log("Server error: ${response.statusCode}");
+        return null;
+      } else {
+        developer.log("Failed to fetch card: ${response.statusCode}");
+        return null;
       }
-      return result;
     } catch (e) {
-      _errorMessage = "Error deleting card: ${e.toString()}";
-      developer.log(_errorMessage!);
-      return false;
+      developer.log("Error fetching card by UUID: $e");
+      return null;
     }
   }
 }

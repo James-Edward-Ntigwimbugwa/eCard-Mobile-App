@@ -97,22 +97,22 @@ class AuthProvider with ChangeNotifier {
 
     try {
       final response = await _apiService.login(username, password);
-      
+
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
         _accessToken = data['access'];
-        
+
         // Decode JWT to get user info if needed
         if (_accessToken != null) {
           Map<String, dynamic> decodedToken = Jwt.parseJwt(_accessToken!);
           _userId = decodedToken['user_id'];
         }
-        
+
         // Save tokens
         SharedPreferences prefs = await SharedPreferences.getInstance();
         await prefs.setString('accessToken', data['access']);
         await prefs.setString('refreshToken', data['refresh']);
-        
+
         // If user data is available, save it
         if (data.containsKey('user')) {
           User authUser = User.fromJson(data['user']);
@@ -123,8 +123,7 @@ class AuthProvider with ChangeNotifier {
             developer.log("Failed to save user data to preferences");
           }
         }
-        
-        
+
         _isAuthenticated = true;
         _loggedInStatus = Status.LoggedIn;
         _isLoading = false;
@@ -135,14 +134,15 @@ class AuthProvider with ChangeNotifier {
         String errorMessage;
         try {
           final errorData = jsonDecode(response.body);
-          errorMessage = errorData['detail'] ?? 
-                        errorData['message'] ?? 
-                        errorData['error'] ?? 
-                        'Login failed: ${response.statusCode}';
+          errorMessage = errorData['detail'] ??
+              errorData['message'] ??
+              errorData['error'] ??
+              'Login failed: ${response.statusCode}';
         } catch (e) {
-          errorMessage = 'Login failed with status code: ${response.statusCode}';
+          errorMessage =
+              'Login failed with status code: ${response.statusCode}';
         }
-        
+
         _errorMessage = errorMessage;
         _loggedInStatus = Status.NotLoggedIn;
         _isLoading = false;
@@ -151,17 +151,19 @@ class AuthProvider with ChangeNotifier {
       }
     } catch (e) {
       developer.log("Login error: $e");
-      
+
       // Provide user-friendly error messages
       if (e.toString().contains("SocketException") ||
           e.toString().contains("Connection")) {
-        _errorMessage = "Network connection error. Please check your internet and try again.";
+        _errorMessage =
+            "Network connection error. Please check your internet and try again.";
       } else if (e.toString().contains("timeout")) {
         _errorMessage = "Request timed out. Please try again later.";
       } else {
-        _errorMessage = "Connection error. Please check your internet connection.";
+        _errorMessage =
+            "Connection error. Please check your internet connection.";
       }
-      
+
       _loggedInStatus = Status.NotLoggedIn;
       _isLoading = false;
       notifyListeners();
@@ -202,24 +204,24 @@ class AuthProvider with ChangeNotifier {
         companyTitle,
         jobTitle,
       );
-      
+
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
         _accessToken = data['access'];
-        
+
         if (_accessToken != null) {
           Map<String, dynamic> decodedToken = Jwt.parseJwt(_accessToken!);
           _userId = decodedToken['user_id'];
         }
-        
+
         _email = email;
-        
+
         // If user data is available, save it
         if (data.containsKey('user')) {
           User authUser = User.fromJson(data['user']);
           await UserPreferences.saveUser(authUser);
         }
-        
+
         _isAuthenticated = true;
         _registeredInStatus = Status.Registered;
         _isLoading = false;
@@ -229,13 +231,14 @@ class AuthProvider with ChangeNotifier {
         String errorMessage;
         try {
           final errorData = jsonDecode(response.body);
-          errorMessage = errorData['detail'] ?? 
-                        errorData['message'] ?? 
-                        'Registration failed: ${response.statusCode}';
+          errorMessage = errorData['detail'] ??
+              errorData['message'] ??
+              'Registration failed: ${response.statusCode}';
         } catch (e) {
-          errorMessage = 'Registration failed with status code: ${response.statusCode}';
+          errorMessage =
+              'Registration failed with status code: ${response.statusCode}';
         }
-        
+
         _errorMessage = errorMessage;
         _registeredInStatus = Status.NotRegistered;
         _isLoading = false;
@@ -244,7 +247,8 @@ class AuthProvider with ChangeNotifier {
       }
     } catch (e) {
       developer.log("Registration error: $e");
-      _errorMessage = 'Connection error. Please check your internet connection.';
+      _errorMessage =
+          'Connection error. Please check your internet connection.';
       _registeredInStatus = Status.NotRegistered;
       _isLoading = false;
       notifyListeners();
@@ -276,7 +280,8 @@ class AuthProvider with ChangeNotifier {
               errorData['detail'] ??
               'Verification failed with status code: ${response.statusCode}';
         } catch (e) {
-          errorMessage = 'Verification failed with status code: ${response.statusCode}';
+          errorMessage =
+              'Verification failed with status code: ${response.statusCode}';
         }
 
         _errorMessage = errorMessage;
@@ -289,7 +294,8 @@ class AuthProvider with ChangeNotifier {
       }
     } catch (e) {
       developer.log("OTP verification error: $e");
-      _errorMessage = 'Connection error. Please check your internet connection.';
+      _errorMessage =
+          'Connection error. Please check your internet connection.';
       _isLoading = false;
       notifyListeners();
       return {
@@ -300,19 +306,19 @@ class AuthProvider with ChangeNotifier {
   }
 
   // Sign out method
-  Future<void>  logout() async {
+  Future<void> logout() async {
     _isAuthenticated = false;
     _loggedInStatus = Status.LoggedOut;
     _userId = null;
     _accessToken = null;
     _email = null;
     _errorMessage = null;
-    
+
     // Clear stored preferences
     final prefs = await SharedPreferences.getInstance();
     await prefs.clear();
     await UserPreferences.removeUser();
-    
+
     notifyListeners();
   }
 }

@@ -4,10 +4,11 @@ import 'package:ecard_app/providers/auth_provider.dart';
 import 'package:ecard_app/screens/register_screen.dart';
 import 'package:ecard_app/services/auth_requests.dart';
 import 'package:ecard_app/components/alert_reminder.dart';
+import 'package:ecard_app/utils/resources/animes/lottie_animes.dart';
 import 'package:ecard_app/utils/resources/images/images.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_otp_text_field/flutter_otp_text_field.dart';
-import 'package:loading_animation_widget/loading_animation_widget.dart';
+import 'package:lottie/lottie.dart';
 import 'package:provider/provider.dart';
 import 'dart:developer' as developer;
 import '../providers/user_provider.dart';
@@ -24,12 +25,37 @@ class OtpVerifierState extends State<OtpVerifier> {
   String _otpCode = '';
   bool _isSubmitting = false;
 
+  // Helper method to show success message
+  void showSuccessMessage(String message) {
+    Alerts.showSuccess(
+      context: context,
+      message: message,
+      icon: Lottie.asset(
+        LottieAnimes.successLoader,
+        width: 60,
+        height: 60,
+        fit: BoxFit.contain,
+      ),
+    );
+  }
+
+  // Helper method to show error messages
+  void showErrorMessage(String message) {
+    Alerts.showError(
+      context: context,
+      message: message,
+      icon: Lottie.asset(
+        LottieAnimes.errorLoader,
+        width: 60,
+        height: 60,
+        fit: BoxFit.contain,
+      ),
+    );
+  }
+
   Future<void> _verifyOtp() async {
     if (_otpCode.length < 6) {
-      Alerts.showError(
-          context: context,
-          message: "Please enter the complete 6-digit OTP code",
-          icon: Image.asset(Images.errorImage, height: 30, width: 30));
+      showErrorMessage("Please enter the complete 6-digit OTP code");
       return;
     }
 
@@ -40,8 +66,12 @@ class OtpVerifierState extends State<OtpVerifier> {
     Alerts.showLoader(
         context: context,
         message: "Verifying OTP...",
-        icon: LoadingAnimationWidget.stretchedDots(
-            color: Theme.of(context).primaryColor, size: 20));
+        icon: Lottie.asset(
+          LottieAnimes.loading,
+          width: 60,
+          height: 60,
+          fit: BoxFit.contain,
+        ));
 
     try {
       final authRequests = AuthRequests();
@@ -52,17 +82,15 @@ class OtpVerifierState extends State<OtpVerifier> {
 
       if (response.statusCode == 200) {
         // Account activated successfully
-        Alerts.showSuccess(
-            context: context,
-            message: "Account activated successfully!",
-            icon: Icon(Icons.check_circle, color: Colors.green, size: 30));
+        showSuccessMessage("Account activated successfully!");
 
-        // Wait for alert to show before navigating
+        // Wait for success animation to show for 2 seconds before navigating
         Timer(const Duration(seconds: 2), () {
-          Navigator.pop(context); // Close alert
+          Navigator.pop(context); // Close success alert
 
           // Check if username and password are available
-          final registerPageState =Provider.of<RegisterPageState>(context, listen: false);
+          final registerPageState =
+              Provider.of<RegisterPageState>(context, listen: false);
           final username = registerPageState.username;
           final password = registerPageState.password;
 
@@ -78,25 +106,15 @@ class OtpVerifierState extends State<OtpVerifier> {
         });
       } else {
         // Activation failed
-        Alerts.showError(
-            context: context,
-            message: "Invalid OTP code. Please try again.",
-            icon: Image.asset(
-              Images.errorImage,
-              height: 30,
-              width: 30,
-            ));
+        showErrorMessage("Invalid OTP code. Please try again.");
         setState(() {
           _isSubmitting = false;
         });
       }
     } catch (error) {
       Navigator.pop(context); // Close loading dialog
-      Alerts.showError(
-          context: context,
-          message:
-              "Verification failed. Please check your connection and try again.",
-          icon: Image.asset(Images.errorImage));
+      showErrorMessage(
+          "Verification failed. Please check your connection and try again.");
       setState(() {
         _isSubmitting = false;
       });
@@ -107,8 +125,12 @@ class OtpVerifierState extends State<OtpVerifier> {
     Alerts.showLoader(
         context: context,
         message: "Logging in ...",
-        icon: LoadingAnimationWidget.stretchedDots(
-            color: Theme.of(context).primaryColor, size: 20));
+        icon: Lottie.asset(
+          LottieAnimes.cardLoader,
+          width: 60,
+          height: 60,
+          fit: BoxFit.contain,
+        ));
 
     final authProvider = Provider.of<AuthProvider>(context, listen: false);
 
@@ -121,22 +143,22 @@ class OtpVerifierState extends State<OtpVerifier> {
         var userProvider = Provider.of<UserProvider>(context, listen: false);
         // Optionally set user if needed, e.g. userProvider.setUser(authProvider.user);
         Navigator.pop(context); // Close loader
-        Navigator.pushReplacementNamed(context, '/dashboard');
+        
+        // Show login success message for 2 seconds
+        showSuccessMessage("Login successful!");
+        Timer(const Duration(seconds: 2), () {
+          Navigator.pop(context); // Close success dialog
+          Navigator.pushReplacementNamed(context, '/dashboard');
+        });
       } else {
         Navigator.pop(context); // Close loader
-        Alerts.showError(
-            context: context,
-            message: "Login failed. Please try again.",
-            icon: Image.asset(Images.errorImage, height: 30, width: 30));
+        showErrorMessage("Login failed. Please try again.");
         authProvider.navigateToLoginScreen();
       }
     } on TimeoutException {
       Navigator.pop(context); // Close loader
-      Alerts.showError(
-          context: context,
-          message:
-              "Login request timed out. Please check your internet connection.",
-          icon: Image.asset(Images.errorImage, height: 30, width: 30));
+      showErrorMessage(
+          "Login request timed out. Please check your internet connection.");
       authProvider.navigateToLoginScreen();
     } catch (error) {
       developer.log("Error during auto-login: $error",
@@ -145,10 +167,7 @@ class OtpVerifierState extends State<OtpVerifier> {
           stackTrace: StackTrace.current);
 
       Navigator.pop(context); // Close loader
-      Alerts.showError(
-          context: context,
-          message: "Error logging in. Please try again.",
-          icon: Image.asset(Images.errorImage, height: 30, width: 30));
+      showErrorMessage("Error logging in. Please try again.");
       authProvider.navigateToLoginScreen();
     }
   }
@@ -156,6 +175,7 @@ class OtpVerifierState extends State<OtpVerifier> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Theme.of(context).highlightColor,
       appBar: AppBar(
         title: Text('Account Verification'),
         backgroundColor: Theme.of(context).primaryColor,
@@ -213,11 +233,7 @@ class OtpVerifierState extends State<OtpVerifier> {
                 TextButton(
                   onPressed: () {
                     // Here you would implement resend OTP functionality
-                    Alerts.showSuccess(
-                        context: context,
-                        message: "OTP code resent!",
-                        icon: Icon(Icons.email,
-                            color: Theme.of(context).primaryColor, size: 30));
+                    showSuccessMessage("OTP code resent!");
                   },
                   child: Text(
                     "Didn't receive the code? Resend",
