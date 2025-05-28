@@ -6,7 +6,6 @@ import 'package:ecard_app/modals/user_modal.dart';
 import 'package:ecard_app/preferences/user_preference.dart';
 import 'package:ecard_app/screens/dashboard_screen.dart';
 import 'package:ecard_app/utils/resources/animes/lottie_animes.dart';
-import 'package:ecard_app/utils/resources/images/images.dart';
 import 'package:ecard_app/utils/resources/strings/strings.dart';
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';

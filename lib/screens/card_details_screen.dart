@@ -4,7 +4,6 @@ import 'package:ecard_app/modals/card_modal.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:qr_flutter/qr_flutter.dart';
-import 'package:loading_animation_widget/loading_animation_widget.dart';
 
 class CardDetailsPage extends StatelessWidget {
   final CustomCard card;
