@@ -1,48 +1,57 @@
 import 'dart:convert';
 import 'dart:developer' as developer;
 import 'dart:math' as Math;
+import 'package:flutter/material.dart';
 import 'package:http/http.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:ecard_app/services/app_urls.dart';
 
 class CardRequests {
   static Future<Response> fetchUserCards([String? uuid]) async {
-    try {
-      final prefs = await SharedPreferences.getInstance();
-      final String userUuid = uuid ?? prefs.getString("userUuid") ?? '';
-      final bearerToken = prefs.getString("accessToken");
+  try {
+    final prefs = await SharedPreferences.getInstance();
+    final String userUuid = uuid ?? prefs.getString("userUuid") ?? '';
+    final String bearerToken = prefs.getString("accessToken") ?? '';
 
-      developer.log("Fetching cards for UUID: $userUuid");
+    debugPrint("Fetching cards for UUID: $userUuid");
+    debugPrint("Bearer token available: ${bearerToken.isNotEmpty}");
 
-      if (bearerToken == null || bearerToken.isEmpty) {
-        developer.log("No valid token found, redirecting to login");
-        throw Exception("Authentication required");
-      }
-
-      final url = Uri.parse("${AppUrl.getAllCardsById}?uuid=$userUuid");
-
-      developer.log(
-          "Valid token found: ${bearerToken.substring(0, Math.min(5, bearerToken.length))}..."); // Log first 5 chars for security
-
-      final response = await get(
-        url,
-        headers: {
-          "Authorization": "Bearer $bearerToken",
-          "Content-type": "application/json",
-          "Accept": "application/json",
-        },
-      );
-
-      return response;
-    } catch (e) {
-      developer.log("API call failed: $e");
-      rethrow;
+    if (bearerToken.isEmpty || userUuid.isEmpty) {
+      debugPrint("No valid token or UUID found, authentication required");
+      throw Exception("Authentication required");
     }
+
+    final url = Uri.parse("${AppUrl.getAllCardsById}?uuid=$userUuid");
+
+    debugPrint(
+        "Making API request with token: ${bearerToken.substring(0, Math.min(5, bearerToken.length))}..."); 
+
+    final response = await get(
+      url,
+      headers: {
+        "Authorization": "Bearer $bearerToken",
+        "Content-type": "application/json",
+        "Accept": "application/json",
+      },
+    );
+
+    // Handle 401 Unauthorized specifically
+    if (response.statusCode == 401) {
+      debugPrint("Authentication failed: 401 Unauthorized");
+      // Token is likely expired
+      throw Exception("Authentication token expired");
+    }
+
+    return response;
+  } catch (e) {
+    developer.log("API call failed: $e");
+    rethrow;
   }
+}
 
   // Additional request methods can be added here for creating/updating/deleting cards
 
-  static Future<Response> createCard(Map<String, dynamic> cardData) async {
+  static Future<Response> createCard(Object cardData) async {
     try {
       final prefs = await SharedPreferences.getInstance();
       final bearerToken = prefs.getString("accessToken");
@@ -130,6 +139,7 @@ class CardRequests {
     try {
       final prefs = await SharedPreferences.getInstance();
       final bearerToken = prefs.getString("accessToken");
+      debugPrint("Bearer token in cardProvider ========>: $bearerToken");
 
       if (bearerToken == null || bearerToken.isEmpty) {
         throw Exception("Authentication required");

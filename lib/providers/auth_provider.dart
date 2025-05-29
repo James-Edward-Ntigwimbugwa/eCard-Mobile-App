@@ -99,43 +99,64 @@ class AuthProvider with ChangeNotifier {
       final response = await _apiService.login(username, password);
 
       if (response.statusCode == 200) {
-        final data = jsonDecode(response.body);
-        _accessToken = data['access'];
+        final responseData = jsonDecode(response.body);
+        
+        // Check if response follows the new format with data property
+        if (responseData.containsKey('data')) {
+          final data = responseData['data'];
+          
+          // Extract token and refreshToken from the new structure
+          _accessToken = data['token'];
+          String refreshToken = data['refreshToken'];
 
-        // Decode JWT to get user info if needed
-        if (_accessToken != null) {
-          Map<String, dynamic> decodedToken = Jwt.parseJwt(_accessToken!);
-          _userId = decodedToken['user_id'];
-        }
-
-        // Save tokens
-        SharedPreferences prefs = await SharedPreferences.getInstance();
-        await prefs.setString('accessToken', data['access']);
-        await prefs.setString('refreshToken', data['refresh']);
-
-        // If user data is available, save it
-        if (data.containsKey('user')) {
-          User authUser = User.fromJson(data['user']);
-          bool saveResult = await UserPreferences.saveUser(authUser);
-          if (saveResult) {
-            developer.log("User data saved successfully to preferences");
-          } else {
-            developer.log("Failed to save user data to preferences");
+          // Save tokens
+          SharedPreferences prefs = await SharedPreferences.getInstance();
+          await prefs.setString('accessToken', _accessToken!);
+          await prefs.setString('refreshToken', refreshToken);
+          
+          // Save user data - create User model from available fields
+          try {
+            User authUser = User(
+              uuid: data['uuid'],
+              username: data['username'],
+              firstName: data['firstName'],
+              lastName: data['lastName'],
+              phone: data['phone'],
+              jobTitle: data['jobTitle'],
+              companyName: data['companyName'],
+              accessToken: _accessToken,
+              refreshToken: refreshToken,
+            );
+            bool saveResult = await UserPreferences.saveUser(authUser);
+            if (saveResult) {
+              developer.log("User data saved successfully to preferences");
+            } else {
+              developer.log("Failed to save user data to preferences");
+            }
+          } catch (e) {
+            developer.log("Error saving user data: $e");
           }
-        }
 
-        _isAuthenticated = true;
-        _loggedInStatus = Status.LoggedIn;
-        _isLoading = false;
-        notifyListeners();
-        return true;
+          _isAuthenticated = true;
+          _loggedInStatus = Status.LoggedIn;
+          _isLoading = false;
+          notifyListeners();
+          return true;
+        } else {
+          // Handle legacy response format if needed
+          _errorMessage = "Unexpected response format";
+          _loggedInStatus = Status.NotLoggedIn;
+          _isLoading = false;
+          notifyListeners();
+          return false;
+        }
       } else {
         // Handle error response
         String errorMessage;
         try {
           final errorData = jsonDecode(response.body);
-          errorMessage = errorData['detail'] ??
-              errorData['message'] ??
+          errorMessage = errorData['message'] ?? 
+              errorData['detail'] ??
               errorData['error'] ??
               'Login failed: ${response.statusCode}';
         } catch (e) {
@@ -170,7 +191,6 @@ class AuthProvider with ChangeNotifier {
       return false;
     }
   }
-
   // Updated register method with improved error handling
   Future<bool> register(
     String firstName,

@@ -74,13 +74,16 @@ class OtpVerifierState extends State<OtpVerifier> {
         ));
 
     try {
-      final authRequests = AuthRequests();
-      final response = await authRequests.activateAccount(_otpCode);
+      final authProvider = Provider.of<AuthProvider>(context, listen: false);
+      final response = await authProvider
+          .verifyOtp(_otpCode)
+          .timeout(const Duration(seconds: 60));
+      debugPrint("OTP verification response: $response");
 
       // Close the loading dialog
       Navigator.pop(context);
 
-      if (response.statusCode == 200) {
+      if (response['message'] == 'User activated successfully') {
         // Account activated successfully
         showSuccessMessage("Account activated successfully!");
 
@@ -143,7 +146,7 @@ class OtpVerifierState extends State<OtpVerifier> {
         var userProvider = Provider.of<UserProvider>(context, listen: false);
         // Optionally set user if needed, e.g. userProvider.setUser(authProvider.user);
         Navigator.pop(context); // Close loader
-        
+
         // Show login success message for 2 seconds
         showSuccessMessage("Login successful!");
         Timer(const Duration(seconds: 2), () {

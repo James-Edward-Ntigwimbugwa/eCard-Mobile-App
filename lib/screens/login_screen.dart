@@ -100,8 +100,8 @@ class _LoginPageState extends State<LoginPage> {
       message: message,
       icon: Lottie.asset(
         LottieAnimes.successLoader,
-        width: 60,
-        height: 60,
+        width: 130,
+        height: 130,
         fit: BoxFit.contain,
       ),
     );

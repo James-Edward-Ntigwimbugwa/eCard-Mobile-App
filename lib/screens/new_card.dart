@@ -89,13 +89,14 @@ class CreateNewCardState extends State<CreateNewCard> {
   }
 
   Future<void> _handleCardSubmission(
-      BuildContext context, CardProvider provider) async {
+      BuildContext context) async {
     try {
       // Add a guard to check if the form key is initialized
       if (_formKey.currentState == null) {
         developer.log("Form key is null");
         return;
       }
+
 
       if (_formKey.currentState!.validate()) {
         // Show loading dialog
@@ -106,10 +107,12 @@ class CreateNewCardState extends State<CreateNewCard> {
                 color: Theme.of(context).primaryColor, size: 20));
 
         // Log the data being sent to backend for debugging
-        developer.log("Submitting card with title: ${_titleController.text}");
-        developer.log("Organization: ${_organizationNameController.text}");
+        debugPrint("Submitting card with title: ${_titleController.text}");
+        debugPrint("Organization: ${_organizationNameController.text}");
 
         try {
+          final CardProvider provider =
+              Provider.of<CardProvider>(context, listen: false);
           final response = await provider
               .createCard(
                 title: _titleController.text,
@@ -223,8 +226,7 @@ class CreateNewCardState extends State<CreateNewCard> {
         automaticallyImplyLeading: true,
         actions: [
           TextButton(
-            onPressed: () => _handleCardSubmission(
-                context, Provider.of<CardProvider>(context, listen: false)),
+            onPressed: () => _handleCardSubmission(context),
             child: Text(
               Texts.save,
               style: TextStyle(
