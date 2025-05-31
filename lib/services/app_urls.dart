@@ -1,13 +1,14 @@
 class AppUrl {
   static const String liveUrl = "https://alltanzaniaecard.onrender.com";
 
-  static const String localhost = "http://localhost:8080";
+  static const String localhost = "http://192.168.203.45:8080";
 
   // authentication endpoints here
   static const String baseEndpoint = localhost;
   static const String loginUrl = "$baseEndpoint/auth/login";
   static const String registerUrl = "$baseEndpoint/auth/register";
   static const String forgotPassword = "$baseEndpoint/auth/forgotPassword";
+  static const String verifyWithOtp = "$baseEndpoint/auth/activate-account?otp=";
 
 
   // card endpoints here

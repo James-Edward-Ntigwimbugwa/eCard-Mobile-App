@@ -26,7 +26,7 @@ class CardProvider with ChangeNotifier {
       String? department = '',
       required String backgroundColor,
       required String fontColor}) async {
-    final Map<String, dynamic> cardRegistrationData = {
+    final Object cardRegistrationData = {
       'title': title,
       'cardDescription': cardDescription,
       'publishCard': true,
@@ -43,7 +43,7 @@ class CardProvider with ChangeNotifier {
       'backgroundColor': backgroundColor,
     };
 
-    developer.log("Card request data =======> $cardRegistrationData");
+    debugPrint("Card request data =======> $cardRegistrationData");
 
     _isLoading = true;
     notifyListeners();
