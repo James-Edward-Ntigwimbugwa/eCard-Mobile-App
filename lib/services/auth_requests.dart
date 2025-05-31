@@ -32,7 +32,7 @@ class AuthRequests {
       String bio,
       String companyTitle,
       String jobTitle) async {
-    final url = Uri.parse("${AppUrl.registerUrl}/$path");
+    final url = Uri.parse(AppUrl.registerUrl);
     developer.log("Register endpoint: $url");
 
     var response = await http.post(url,
