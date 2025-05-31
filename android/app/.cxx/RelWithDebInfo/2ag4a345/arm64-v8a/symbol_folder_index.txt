@@ -1,0 +1,1 @@
+/home/jimmy/Public/Projects/eCard-Mobile-App/build/app/intermediates/cxx/RelWithDebInfo/2ag4a345/obj/arm64-v8a

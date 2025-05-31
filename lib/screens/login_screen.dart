@@ -12,7 +12,6 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:lottie/lottie.dart';
 import 'package:provider/provider.dart';
 import '../components/alert_reminder.dart';
-import '../preferences/user_preference.dart';
 import 'dart:developer' as developer;
 
 class LoginPage extends StatefulWidget {

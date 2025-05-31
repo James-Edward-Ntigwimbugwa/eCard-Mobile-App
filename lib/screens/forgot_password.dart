@@ -1,4 +1,3 @@
-import 'dart:async';
 import 'package:ecard_app/providers/auth_provider.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -20,7 +19,7 @@ class ForgetPasswordPage extends StatefulWidget {
 
 class _ForgetPasswordPageState extends State<ForgetPasswordPage> {
   final TextEditingController _emailController = TextEditingController();
-  bool _formIsSubmitted = false;
+  final bool _formIsSubmitted = false;
 
   final formKey = GlobalKey<FormState>();
 

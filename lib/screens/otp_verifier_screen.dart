@@ -5,7 +5,6 @@ import 'package:ecard_app/screens/register_screen.dart';
 import 'package:ecard_app/services/auth_requests.dart';
 import 'package:ecard_app/components/alert_reminder.dart';
 import 'package:ecard_app/utils/resources/animes/lottie_animes.dart';
-import 'package:ecard_app/utils/resources/images/images.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_otp_text_field/flutter_otp_text_field.dart';
 import 'package:lottie/lottie.dart';
