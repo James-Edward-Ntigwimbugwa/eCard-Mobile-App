@@ -16,6 +16,12 @@ plugins {
     id "dev.flutter.flutter-gradle-plugin"
 }
 
+java {
+    toolchain {
+        languageVersion.set(JavaLanguageVersion.of(17))
+    }
+}
+
 android {
     namespace "com.example.ecard_app"
     compileSdk 35
@@ -61,9 +67,18 @@ dependencies {
 
 subprojects {
     afterEvaluate { project ->
+        if (project.hasProperty("android")) {
+            android {
+                compileOptions {
+                    sourceCompatibility JavaVersion.VERSION_17
+                    targetCompatibility JavaVersion.VERSION_17
+                }
+            }
+        }
         project.tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).configureEach {
-            kotlinOptions.jvmTarget = '17'
-            freeCompilerArgs += '-Xjvm-default=all'
+            kotlinOptions {
+                jvmTarget = '17'
+            }
         }
     }
 }
