@@ -118,7 +118,7 @@ class RegisterPageState extends State<RegisterPage> {
     // Validate form
     if (!_formKey.currentState!.validate()) {
       setState(() {
-        _isSubmitting = true;
+        _isSubmitting = false; // Set to false if validation fails
       });
       return;
     }
@@ -219,7 +219,6 @@ class RegisterPageState extends State<RegisterPage> {
     return Scaffold(
       backgroundColor: Theme.of(context).highlightColor,
       body: SizedBox(
-        
         child: Column(
           children: [
             // Header Section (Fixed)
@@ -374,7 +373,7 @@ class RegisterPageState extends State<RegisterPage> {
                           keyboardType: TextInputType.emailAddress,
                           decoration: InputDecoration(
                             prefixIcon: const Icon(Icons.email),
-                            labelText: "Email *",
+                            labelText: "Email ",
                             labelStyle: TextStyle(
                                 color: Theme.of(context).indicatorColor),
                             focusedBorder: OutlineInputBorder(
@@ -398,7 +397,7 @@ class RegisterPageState extends State<RegisterPage> {
                           keyboardType: TextInputType.phone,
                           decoration: InputDecoration(
                             prefixIcon: const Icon(Icons.phone),
-                            labelText: "Phone Number *",
+                            labelText: "Phone Number ",
                             labelStyle: TextStyle(
                                 color: Theme.of(context).indicatorColor),
                             focusedBorder: OutlineInputBorder(
@@ -422,7 +421,7 @@ class RegisterPageState extends State<RegisterPage> {
                               _validateRequired(value, 'Company title'),
                           decoration: InputDecoration(
                             prefixIcon: const Icon(Icons.business),
-                            labelText: "Company Title *",
+                            labelText: "Company Title ",
                             labelStyle: TextStyle(
                                 color: Theme.of(context).indicatorColor),
                             focusedBorder: OutlineInputBorder(
@@ -446,7 +445,7 @@ class RegisterPageState extends State<RegisterPage> {
                               _validateRequired(value, 'Job title'),
                           decoration: InputDecoration(
                             prefixIcon: const Icon(Icons.work),
-                            labelText: "Job Title *",
+                            labelText: "Job Title ",
                             labelStyle: TextStyle(
                                 color: Theme.of(context).indicatorColor),
                             focusedBorder: OutlineInputBorder(
@@ -470,7 +469,7 @@ class RegisterPageState extends State<RegisterPage> {
                               _validateRequired(value, 'Username'),
                           decoration: InputDecoration(
                             prefixIcon: const Icon(Icons.account_circle),
-                            labelText: "Username *",
+                            labelText: "Username ",
                             labelStyle: TextStyle(
                                 color: Theme.of(context).indicatorColor),
                             focusedBorder: OutlineInputBorder(
@@ -501,7 +500,7 @@ class RegisterPageState extends State<RegisterPage> {
                           decoration: InputDecoration(
                             prefixIcon:
                                 const Icon(CupertinoIcons.padlock_solid),
-                            labelText: "Password *",
+                            labelText: "Password ",
                             labelStyle: TextStyle(
                                 color: Theme.of(context).indicatorColor),
                             focusedBorder: OutlineInputBorder(

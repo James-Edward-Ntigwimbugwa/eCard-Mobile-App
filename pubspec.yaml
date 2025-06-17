@@ -58,6 +58,7 @@ dependencies:
 
   page_transition: any
   path: any
+  geocoding: ^4.0.0
 dev_dependencies:
   flutter_test:
     sdk: flutter

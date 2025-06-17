@@ -100,11 +100,11 @@ class AuthProvider with ChangeNotifier {
 
       if (response.statusCode == 200) {
         final responseData = jsonDecode(response.body);
-        
+
         // Check if response follows the new format with data property
         if (responseData.containsKey('data')) {
           final data = responseData['data'];
-          
+
           // Extract token and refreshToken from the new structure
           _accessToken = data['token'];
           String refreshToken = data['refreshToken'];
@@ -113,7 +113,7 @@ class AuthProvider with ChangeNotifier {
           SharedPreferences prefs = await SharedPreferences.getInstance();
           await prefs.setString('accessToken', _accessToken!);
           await prefs.setString('refreshToken', refreshToken);
-          
+
           // Save user data - create User model from available fields
           try {
             User authUser = User(
@@ -155,7 +155,7 @@ class AuthProvider with ChangeNotifier {
         String errorMessage;
         try {
           final errorData = jsonDecode(response.body);
-          errorMessage = errorData['message'] ?? 
+          errorMessage = errorData['message'] ??
               errorData['detail'] ??
               errorData['error'] ??
               'Login failed: ${response.statusCode}';
@@ -191,6 +191,7 @@ class AuthProvider with ChangeNotifier {
       return false;
     }
   }
+
   // Updated register method with improved error handling
   Future<bool> register(
     String firstName,

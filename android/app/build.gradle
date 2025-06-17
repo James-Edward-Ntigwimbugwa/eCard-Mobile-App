@@ -43,6 +43,7 @@ android {
 
     defaultConfig {
         applicationId "com.example.ecard_app"
+
         minSdk flutter.minSdkVersion
         targetSdk flutter.targetSdkVersion
         versionCode flutter.versionCode

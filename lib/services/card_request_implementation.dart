@@ -9,7 +9,9 @@ import 'package:http/http.dart';
 class CardProvider with ChangeNotifier {
   bool _isLoading = false;
   String? _errorMessage;
+
   bool get isLoading => _isLoading;
+
   String? get errorMessage => _errorMessage;
 
   Future<Map<String, dynamic>> createCard(
@@ -273,6 +275,24 @@ class CardProvider with ChangeNotifier {
     } catch (e) {
       developer.log("Error fetching card by UUID: $e");
       return null;
+    }
+  }
+
+  Future<bool> saveOrganizationCard(
+      {required String userId, required String cardId}) async {
+
+    debugPrint("Sace Card organization in card-request-implementation executed ====>");
+    final Object savingBody = {"userId": userId, "cardId": cardId};
+    try {
+      final response = await CardRequests.saveCard(savingBody: savingBody);
+
+      if (response.statusCode == 200) {
+        return true;
+      }
+      return false;
+    } catch (e) {
+      debugPrint(e as String);
+      throw Exception("Caught an exception");
     }
   }
 }

@@ -76,18 +76,18 @@ class _SplashScreenState extends State<SplashScreen> {
                     Positioned(
                       left: -10,
                       child: ClipRRect(
-                      borderRadius: BorderRadius.circular(20),
-                      child: Container(
-                        width: 120,
-                        height: 120,
-                        color: Colors.white, // Optional: background color
-                        child: Lottie.asset(
-                        LottieAnimes.cardLoader,
-                        height: 120,
-                        width: 120,
-                        fit: BoxFit.cover,
+                        borderRadius: BorderRadius.circular(20),
+                        child: Container(
+                          width: 120,
+                          height: 120,
+                          color: Colors.white, // Optional: background color
+                          child: Lottie.asset(
+                            LottieAnimes.cardLoader,
+                            height: 120,
+                            width: 120,
+                            fit: BoxFit.cover,
+                          ),
                         ),
-                      ),
                       ),
                     ),
                   ],

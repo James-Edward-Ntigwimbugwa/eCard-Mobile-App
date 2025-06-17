@@ -30,55 +30,57 @@ class _AllCardsScreenState extends State<AllCardsScreen>
   }
 
   void _initializeData() async {
-  final provider = Provider.of<CardProvider>(context, listen: false);
-  final prefs = await SharedPreferences.getInstance();
+    final provider = Provider.of<CardProvider>(context, listen: false);
+    final prefs = await SharedPreferences.getInstance();
 
-  // Get both tokens
-  final String userUuid = prefs.getString("userUuid") ?? "";
-  final String accessToken = prefs.getString("accessToken") ?? "";
-  
-  if (userUuid.isEmpty || accessToken.isEmpty) {
-    // Handle missing authentication
-    setState(() {
-      _isEmpty = true;
-      _showBanner = true;
-      _isInitialized = true;
-      _cardsFuture = Future.value({
-        'status': false,
-        'message': 'Authentication required. Please login again.',
-        'cards': <CustomCard>[]
+    // Get both tokens
+    final String userUuid = prefs.getString("userUuid") ?? "";
+    final String accessToken = prefs.getString("accessToken") ?? "";
+
+    if (userUuid.isEmpty || accessToken.isEmpty) {
+      // Handle missing authentication
+      setState(() {
+        _isEmpty = true;
+        _showBanner = true;
+        _isInitialized = true;
+        _cardsFuture = Future.value({
+          'status': false,
+          'message': 'Authentication required. Please login again.',
+          'cards': <CustomCard>[]
+        });
       });
-    });
-    
-    // Optional: Redirect to login
-    // Navigator.of(context).pushReplacementNamed('/login');
-    return;
-  }
-  
-  debugPrint("User UUID in allCards Screen =======> $userUuid");
-  debugPrint("Access token available: ${accessToken.isNotEmpty}");
-  
-  setState(() {
-    _cardsFuture = provider.fetchCards(userUuid).then((data) {
-      if (data['status'] == true) {
-        List<CustomCard> cards = data['cards'];
-        if (mounted) {
-          setState(() {
-            _isEmpty = cards.isEmpty;
-            _showBanner = _isEmpty;
-          });
+
+      // Optional: Redirect to login
+      // Navigator.of(context).pushReplacementNamed('/login');
+      return;
+    }
+
+    debugPrint("User UUID in allCards Screen =======> $userUuid");
+    debugPrint("Access token available: ${accessToken.isNotEmpty}");
+
+    setState(() {
+      _cardsFuture = provider.fetchCards(userUuid).then((data) {
+        if (data['status'] == true) {
+          List<CustomCard> cards = data['cards'];
+          if (mounted) {
+            setState(() {
+              _isEmpty = cards.isEmpty;
+              _showBanner = _isEmpty;
+            });
+          }
+        } else if (data['message']?.contains('Authentication required') ==
+            true) {
+          // Handle authentication error specifically
+          // Navigator.of(context).pushReplacementNamed('/login');
         }
-      } else if (data['message']?.contains('Authentication required') == true) {
-        // Handle authentication error specifically
-        // Navigator.of(context).pushReplacementNamed('/login');
-      }
-      return data;
-    }).catchError((error) {
-      return {'status': false, 'message': error.toString()};
+        return data;
+      }).catchError((error) {
+        return {'status': false, 'message': error.toString()};
+      });
+      _isInitialized = true;
     });
-    _isInitialized = true;
-  });
-}
+  }
+
   @override
   Widget build(BuildContext context) {
     super.build(context);

@@ -9,6 +9,7 @@ import 'package:ecard_app/utils/resources/strings/strings.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:lottie/lottie.dart';
 import 'package:provider/provider.dart';
 import '../components/alert_reminder.dart';
@@ -112,10 +113,14 @@ class _LoginPageState extends State<LoginPage> {
     // Validate form fields
     if (_usernameController.text.isEmpty || _passwordController.text.isEmpty) {
       showErrorMessage("Please fill in all fields");
+      setState(() => _formIsSubmitted = false); // Reset form submission state
       return;
     }
 
-    if (!_formKey.currentState!.validate()) return;
+    if (!_formKey.currentState!.validate()) {
+      setState(() => _formIsSubmitted = false); // Reset form submission state
+      return;
+    }
     _formKey.currentState!.save();
 
     showLoader();
@@ -140,8 +145,7 @@ class _LoginPageState extends State<LoginPage> {
       if (success) {
         // Show success message with Lottie animation for 2 seconds
         showSuccessMessage('Login successful!');
-        
-        // Wait for 2 seconds before navigating
+
         Timer(const Duration(seconds: 2), () {
           if (Navigator.canPop(context)) {
             Navigator.pop(context); // Close success dialog
@@ -151,6 +155,7 @@ class _LoginPageState extends State<LoginPage> {
       } else {
         // Display the specific error message from the auth provider
         showErrorMessage(auth.errorMessage ?? 'Login failed');
+        setState(() => _formIsSubmitted = false); // Reset form submission state
       }
     } catch (e, stack) {
       // Close the loader dialog
@@ -167,7 +172,7 @@ class _LoginPageState extends State<LoginPage> {
       if (e.toString().contains("SocketException") ||
           e.toString().contains("Connection")) {
         errorMessage =
-            "Network connection error. Please check your internet and try again.";
+        "Network connection error. Please check your internet and try again.";
       } else if (e.toString().contains("timeout")) {
         errorMessage = "Request timed out. Please try again later.";
       } else if (e.toString().contains("format")) {
@@ -175,6 +180,7 @@ class _LoginPageState extends State<LoginPage> {
       }
 
       showNetworkError(errorMessage);
+      setState(() => _formIsSubmitted = false); // Reset form submission state
     }
   }
 
@@ -341,17 +347,28 @@ class _LoginPageState extends State<LoginPage> {
                                       height: 50,
                                       fit: BoxFit.contain,
                                     )
-                                  : ElevatedButton(
-                                      onPressed: handleLogin,
-                                      style: ElevatedButton.styleFrom(
+                                  : Container(
+                                      width: MediaQuery.of(context).size.width,
+                                      child: ElevatedButton(
+                                        onPressed: _formIsSubmitted
+                                            ? null
+                                            : handleLogin,
+                                        style: ElevatedButton.styleFrom(
                                           backgroundColor:
                                               Theme.of(context).primaryColor,
-                                          shape: RoundedRectangleBorder(
-                                              borderRadius: BorderRadius.all(
-                                                  Radius.circular(10)))),
-                                      child: Text(
-                                        Texts.login,
-                                        style: TextStyle(color: Colors.white),
+                                          shape: const RoundedRectangleBorder(
+                                            borderRadius: BorderRadius.all(
+                                                Radius.circular(30)),
+                                          ),
+                                        ),
+                                        child: Text(
+                                                Texts.login,
+                                                style: const TextStyle(
+                                                  color: Colors.white,
+                                                  fontSize: 16,
+                                                  fontWeight: FontWeight.bold,
+                                                ),
+                                              ),
                                       ),
                                     ),
                               Center(

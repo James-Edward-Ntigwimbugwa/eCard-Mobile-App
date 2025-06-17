@@ -1,9 +1,9 @@
 import 'dart:async';
-
 import 'package:ecard_app/components/custom_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:geocoding/geocoding.dart'; // Added for geocoding and reverse geocoding
 
 class GoogleMapLocationPicker extends StatefulWidget {
   const GoogleMapLocationPicker({super.key});
@@ -20,6 +20,10 @@ class GoogleMapLocationPickerState extends State<GoogleMapLocationPicker> {
   LatLng _selectedPosition = _initialCenter;
   bool _isLoading = true;
   Set<Marker> _markers = {};
+  String? _selectedAddress; // To store the fetched address
+  bool _isFetchingAddress = false; // To track address fetching state
+  final TextEditingController _searchController =
+      TextEditingController(); // For search input
 
   @override
   void initState() {
@@ -27,28 +31,30 @@ class GoogleMapLocationPickerState extends State<GoogleMapLocationPicker> {
     _getCurrentLocation();
   }
 
+  @override
+  void dispose() {
+    _searchController.dispose(); // Clean up the controller
+    super.dispose();
+  }
+
   Future<void> _getCurrentLocation() async {
     setState(() => _isLoading = true);
 
     try {
-      // Check location permissions
       LocationPermission permission = await Geolocator.checkPermission();
       if (permission == LocationPermission.denied) {
         permission = await Geolocator.requestPermission();
         if (permission == LocationPermission.denied) {
-          // Permissions denied, use default location
           _updateSelectedPosition(_initialCenter);
           return;
         }
       }
 
       if (permission == LocationPermission.deniedForever) {
-        // Permissions permanently denied
         _updateSelectedPosition(_initialCenter);
         return;
       }
 
-      // Get current position
       final Position position = await Geolocator.getCurrentPosition(
         desiredAccuracy: LocationAccuracy.high,
       );
@@ -58,7 +64,6 @@ class GoogleMapLocationPickerState extends State<GoogleMapLocationPicker> {
       _updateSelectedPosition(latLng);
       _animateToPosition(latLng);
     } catch (e) {
-      // Handle error
       _updateSelectedPosition(_initialCenter);
     } finally {
       setState(() => _isLoading = false);
@@ -79,6 +84,64 @@ class GoogleMapLocationPickerState extends State<GoogleMapLocationPicker> {
         ),
       };
     });
+    _fetchAddress(position); // Fetch the address for the selected position
+  }
+
+  Future<void> _fetchAddress(LatLng position) async {
+    setState(() {
+      _isFetchingAddress = true;
+      _selectedAddress = null;
+    });
+
+    try {
+      List<Placemark> placemarks = await placemarkFromCoordinates(
+        position.latitude,
+        position.longitude,
+      );
+      if (placemarks.isNotEmpty) {
+        Placemark place = placemarks.first;
+        String address = [place.street, place.locality, place.country]
+            .where((e) => e != null && e.isNotEmpty)
+            .join(', ');
+        setState(() {
+          _selectedAddress = address.isNotEmpty ? address : "Address not found";
+        });
+      } else {
+        setState(() {
+          _selectedAddress = "Address not found";
+        });
+      }
+    } catch (e) {
+      setState(() {
+        _selectedAddress = "Error fetching address";
+      });
+    } finally {
+      setState(() {
+        _isFetchingAddress = false;
+      });
+    }
+  }
+
+  Future<void> _searchLocation(String query) async {
+    if (query.isEmpty) return;
+
+    try {
+      List<Location> locations = await locationFromAddress(query);
+      if (locations.isNotEmpty) {
+        Location location = locations.first;
+        LatLng newPosition = LatLng(location.latitude, location.longitude);
+        _updateSelectedPosition(newPosition);
+        _animateToPosition(newPosition);
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text("Location not found")),
+        );
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Error searching location")),
+      );
+    }
   }
 
   Future<void> _animateToPosition(LatLng position) async {
@@ -100,7 +163,6 @@ class GoogleMapLocationPickerState extends State<GoogleMapLocationPicker> {
   }
 
   void _confirmLocation() {
-    // Return the selected location to the previous screen
     Navigator.pop(context, _selectedPosition);
   }
 
@@ -109,10 +171,27 @@ class GoogleMapLocationPickerState extends State<GoogleMapLocationPicker> {
     return Scaffold(
       backgroundColor: Theme.of(context).highlightColor,
       appBar: AppBar(
-        title: HeaderBoldWidget(
-          text: "Pick Your Location",
-          color: Theme.of(context).indicatorColor,
-          size: '20.0',
+        title: Row(
+          children: [
+            Icon(Icons.location_on, color: Theme.of(context).indicatorColor),
+            const SizedBox(width: 8),
+            Expanded(
+              child: TextField(
+                controller: _searchController,
+                decoration: InputDecoration(
+                  hintText: "Search for a location",
+                  border: InputBorder.none,
+                  hintStyle: TextStyle(
+                      color: Theme.of(context).indicatorColor.withOpacity(0.5)),
+                ),
+                style: TextStyle(color: Theme.of(context).indicatorColor),
+                textInputAction: TextInputAction.search,
+                onSubmitted: (value) {
+                  _searchLocation(value);
+                },
+              ),
+            ),
+          ],
         ),
         centerTitle: true,
         backgroundColor: Theme.of(context).highlightColor,
@@ -128,7 +207,6 @@ class GoogleMapLocationPickerState extends State<GoogleMapLocationPicker> {
       ),
       body: Stack(
         children: [
-          // Map
           GoogleMap(
             mapType: MapType.normal,
             onMapCreated: _onMapCreated,
@@ -143,8 +221,6 @@ class GoogleMapLocationPickerState extends State<GoogleMapLocationPicker> {
             zoomControlsEnabled: false,
             compassEnabled: true,
           ),
-
-          // Loading indicator
           if (_isLoading)
             Container(
               color: Colors.black.withOpacity(0.3),
@@ -152,8 +228,6 @@ class GoogleMapLocationPickerState extends State<GoogleMapLocationPicker> {
                 child: CircularProgressIndicator(),
               ),
             ),
-
-          // Location info card
           Positioned(
             bottom: 80,
             left: 16,
@@ -185,21 +259,26 @@ class GoogleMapLocationPickerState extends State<GoogleMapLocationPicker> {
                       ],
                     ),
                     const SizedBox(height: 10),
-                    Text(
-                      "Lat: ${_selectedPosition.latitude.toStringAsFixed(6)}",
-                      style: TextStyle(
-                        color:
-                            Theme.of(context).indicatorColor.withOpacity(0.7),
+                    if (_isFetchingAddress)
+                      const Center(child: CircularProgressIndicator())
+                    else if (_selectedAddress != null)
+                      Text(
+                        _selectedAddress!,
+                        style: TextStyle(
+                          color: Theme.of(context).indicatorColor,
+                          fontSize: 16,
+                        ),
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                      )
+                    else
+                      Text(
+                        "Select a location",
+                        style: TextStyle(
+                          color:
+                              Theme.of(context).indicatorColor.withOpacity(0.7),
+                        ),
                       ),
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      "Lng: ${_selectedPosition.longitude.toStringAsFixed(6)}",
-                      style: TextStyle(
-                        color:
-                            Theme.of(context).indicatorColor.withOpacity(0.7),
-                      ),
-                    ),
                     const SizedBox(height: 12),
                     SizedBox(
                       width: double.infinity,
