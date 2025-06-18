@@ -12,6 +12,8 @@ class User {
   final String? refreshToken;
   final String? jobTitle;
   final String? companyName;
+  final String? tokenType;
+  final String? lastLogin;
 
   User({
     this.id,
@@ -26,22 +28,26 @@ class User {
     this.phone,
     this.jobTitle,
     this.companyName,
+    this.tokenType,
+    this.lastLogin,
   });
 
   factory User.fromJson(Map<String, dynamic> json) {
     return User(
-      id: json['id']?.toString() ?? json['_id']?.toString() ?? '',
-      uuid: json['uuid'] ?? '',
-      username: json['username'] ?? '',
-      email: json['email'] ?? '', // Ensure email is never null
-      accessToken: json['token'] ?? json['accessToken'] ?? '',
-      refreshToken: json['refreshToken'] ?? '',
-      firstName: json['firstName'] ?? '',
-      lastName: json['lastName'] ?? '',
-      phone: json['phone'] ?? '',
-      userType: json['type'] ?? json['userType'] ?? '',
-      jobTitle: json['jobTitle'] ?? '',
-      companyName: json['companyName'] ?? '',
+      id: json['id']?.toString() ?? json['_id']?.toString(),
+      uuid: json['uuid'],
+      username: json['username'],
+      email: json['email'],
+      accessToken: json['token'] ?? json['accessToken'],
+      refreshToken: json['refreshToken'],
+      firstName: json['firstName'],
+      lastName: json['lastName'],
+      phone: json['phone'],
+      userType: json['userType'] ?? json['type'],
+      jobTitle: json['jobTitle'],
+      companyName: json['companyName'],
+      tokenType: json['tokenType'],
+      lastLogin: json['lastLogin'],
     );
   }
 
@@ -64,6 +70,8 @@ class User {
       'userType': userType,
       'jobTitle': jobTitle,
       'companyName': companyName,
+      'tokenType': tokenType,
+      'lastLogin': lastLogin,
     };
   }
 
@@ -81,6 +89,8 @@ class User {
         'phone: $phone, '
         'userType: $userType, '
         'jobTitle: $jobTitle, '
-        'companyName: $companyName}';
+        'companyName: $companyName, '
+        'tokenType: $tokenType, '
+        'lastLogin: $lastLogin}';
   }
 }

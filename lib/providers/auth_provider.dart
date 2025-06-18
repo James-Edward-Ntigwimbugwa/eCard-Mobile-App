@@ -33,11 +33,17 @@ class AuthProvider with ChangeNotifier {
   String? _email;
 
   Status get loggedInStatus => _loggedInStatus;
+
   Status get registeredInStatus => _registeredInStatus;
+
   bool get isLoading => _isLoading;
+
   bool get isAuthenticated => _isAuthenticated;
+
   String? get errorMessage => _errorMessage;
+
   int? get userId => _userId;
+
   String? get email => _email;
 
   AuthScreen _currentScreen = AuthScreen.loginScreen;
@@ -109,29 +115,33 @@ class AuthProvider with ChangeNotifier {
           _accessToken = data['token'];
           String refreshToken = data['refreshToken'];
 
-          // Save tokens
-          SharedPreferences prefs = await SharedPreferences.getInstance();
-          await prefs.setString('accessToken', _accessToken!);
-          await prefs.setString('userId', _accessToken!);
-          await prefs.setString('refreshToken', refreshToken);
-
-          // Save user data - create User model from available fields
+          // Create User model from all available fields in the JSON response
           try {
-            User authUser = User(
-              id: data['id'],
-              uuid: data['uuid'],
-              username: data['username'],
-              firstName: data['firstName'],
-              lastName: data['lastName'],
-              phone: data['phone'],
-              jobTitle: data['jobTitle'],
-              companyName: data['companyName'],
-              accessToken: _accessToken,
-              refreshToken: refreshToken,
-            );
+            User authUser =
+                User.fromJson(data); // Use the fromJson factory method
+
+            // Alternative manual creation if you prefer:
+            // User authUser = User(
+            //   id: data['id']?.toString(), // Convert to string as your model expects
+            //   uuid: data['uuid'],
+            //   username: data['username'],
+            //   email: data['email'], // Now properly included
+            //   firstName: data['firstName'],
+            //   lastName: data['lastName'],
+            //   phone: data['phone'],
+            //   jobTitle: data['jobTitle'],
+            //   companyName: data['companyName'],
+            //   userType: data['userType'], // Fixed field name
+            //   accessToken: data['token'], // Use 'token' from response
+            //   refreshToken: data['refreshToken'],
+            //   tokenType: data['tokenType'],
+            //   lastLogin: data['lastLogin'],
+            // );
+
             bool saveResult = await UserPreferences.saveUser(authUser);
             if (saveResult) {
-              developer.log("User data saved successfully to preferences======>");
+              developer
+                  .log("User data saved successfully to preferences======>");
             } else {
               developer.log("Failed to save user data to preferences=======>");
             }
