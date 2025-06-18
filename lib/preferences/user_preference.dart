@@ -42,8 +42,8 @@ class UserPreferences {
     }
   }
 
-  // Fixed getUser method to properly retrieve and validate user
-  Future<User?> getUser() async {
+  Future<User> getUser() async {
+    User user = User();
     try {
       final prefs = await SharedPreferences.getInstance();
 
@@ -56,12 +56,11 @@ class UserPreferences {
           accessToken.isEmpty ||
           userId == null ||
           userId.isEmpty) {
-        developer.log("No valid user data found in preferences");
-        return null;
+        developer.log("No valid user data found in preferences   ======> user_preferences");
       }
 
       // Build user object from preferences
-      final user = User(
+      user = User(
         id: userId,
         uuid: prefs.getString("userUuid") ?? '',
         username: prefs.getString("username") ?? '',
@@ -80,8 +79,8 @@ class UserPreferences {
       return user;
     } catch (e, stack) {
       developer.log("Error retrieving user: $e", stackTrace: stack);
-      return null;
     }
+    return user;
   }
 
   static Future<bool> removeUser() async {

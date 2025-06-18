@@ -33,12 +33,11 @@ class _SplashScreenState extends State<SplashScreen> {
   // Check if user is authenticated
   Future<void> _checkUserAuthentication() async {
     try {
-      User? user = await UserPreferences().getUser();
-      developer.log("User data from preferences: ${user?.toString()}");
+      User user = await UserPreferences().getUser();
+      developer.log("User data from preferences: ${user.toString()}");
 
       // Determine which screen to navigate to
-      if (user != null &&
-          user.accessToken != null &&
+      if (user.accessToken != null &&
           user.accessToken!.isNotEmpty) {
         developer.log("Valid user found, navigating to Dashboard");
         _nextScreen = DashboardPage(user: user);

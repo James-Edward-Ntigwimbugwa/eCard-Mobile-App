@@ -281,7 +281,7 @@ class CardProvider with ChangeNotifier {
   Future<bool> saveOrganizationCard(
       {required String userId, required String cardId}) async {
 
-    debugPrint("Sace Card organization in card-request-implementation executed ====>");
+    debugPrint("Save Card organization in card-request-implementation executed ====>");
     final Object savingBody = {"userId": userId, "cardId": cardId};
     try {
       final response = await CardRequests.saveCard(savingBody: savingBody);

@@ -48,7 +48,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
           userEmail = user.email ?? 'Not specified';
           userDepartment =
               'Engineering'; // You might want to add this to your User model
-          userEmployeeId = user.id ?? 'Not specified';
+          userEmployeeId = user.email ?? 'Not specified';
           userPhone = user.phone ?? 'Not specified';
           // Load other user-specific settings if needed
         });

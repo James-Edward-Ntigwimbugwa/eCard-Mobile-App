@@ -112,11 +112,13 @@ class AuthProvider with ChangeNotifier {
           // Save tokens
           SharedPreferences prefs = await SharedPreferences.getInstance();
           await prefs.setString('accessToken', _accessToken!);
+          await prefs.setString('userId', _accessToken!);
           await prefs.setString('refreshToken', refreshToken);
 
           // Save user data - create User model from available fields
           try {
             User authUser = User(
+              id: data['id'],
               uuid: data['uuid'],
               username: data['username'],
               firstName: data['firstName'],
@@ -129,9 +131,9 @@ class AuthProvider with ChangeNotifier {
             );
             bool saveResult = await UserPreferences.saveUser(authUser);
             if (saveResult) {
-              developer.log("User data saved successfully to preferences");
+              developer.log("User data saved successfully to preferences======>");
             } else {
-              developer.log("Failed to save user data to preferences");
+              developer.log("Failed to save user data to preferences=======>");
             }
           } catch (e) {
             developer.log("Error saving user data: $e");
