@@ -22,13 +22,19 @@ class DatabaseHelper {
     return await openDatabase(
       path,
       onCreate: _createDB,
-      version: 1,
+      version: 2,
+      onUpgrade: _onUpgrade,
     );
   }
 
-  // create database
+  Future _onUpgrade(Database db, int oldVersion, int newVersion) async {
+    if (oldVersion < 2) {
+      await db.execute('ALTER TABLE cards ADD COLUMN title TEXT');
+    }
+  }
+
   Future _createDB(Database db, int version) async {
-    const idType = "TEXT PRIMARY KEY";
+    const idType = "INTEGER PRIMARY KEY";
     const textType = "TEXT";
     const boolType = "INTEGER";
 
@@ -36,6 +42,7 @@ class DatabaseHelper {
     CREATE TABLE cards (
       id $idType,
       uuid $textType,
+      title $textType,
       createdAt $textType,
       updatedAt $textType,
       createdBy $textType,
@@ -59,7 +66,6 @@ class DatabaseHelper {
     ''');
   }
 
-  // insert card
   Future<int?> insertCard(CustomCard card) async {
     final db = await instance.database;
 
@@ -75,7 +81,6 @@ class DatabaseHelper {
     }
   }
 
-  // insert multiple cards
   Future<int> insertCards(List<CustomCard> cards) async {
     final db = await instance.database;
     int result = 0;
@@ -94,12 +99,11 @@ class DatabaseHelper {
     }
   }
 
-  // method to get all cards
   Future<List<CustomCard>?> getAllCards() async {
     final db = await instance.database;
     try {
       final result =
-          await db?.query('cards', where: 'deleted = ?', whereArgs: [0]);
+      await db?.query('cards', where: 'deleted = ?', whereArgs: [0]);
       return result?.map((json) => CustomCard.fromJson(json)).toList();
     } catch (error) {
       developer.log("Error fetching cards: ======>$error");
@@ -107,13 +111,13 @@ class DatabaseHelper {
     return [];
   }
 
-  // fetch cards by user uuid
   Future<List<CustomCard>?> getCardsByUser(String userUuid) async {
     final db = await instance.database;
 
     try {
       final result = await db?.query('cards',
-          where: 'created = ? AND deleted = ?', whereArgs: [userUuid, 0]);
+          where: 'createdBy = ? AND deleted = ?',
+          whereArgs: [userUuid, 0]);
       return result?.map((json) => CustomCard.fromJson(json)).toList();
     } catch (error) {
       developer.log("Error fetching cards=======>: $error");
@@ -164,11 +168,11 @@ class DatabaseHelper {
     }
   }
 
-  // Helper method to convert CustomCard to Map for database operations
   Map<String, dynamic> _cardToMap(CustomCard card) {
     return {
-      'id': card.id,
+      'id': card.id != null ? int.tryParse(card.id!) : null,
       'uuid': card.uuid,
+      'title': card.title,
       'createdAt': card.createdAt?.toIso8601String(),
       'updatedAt': card.updatedAt?.toIso8601String(),
       'createdBy': card.createdBy,

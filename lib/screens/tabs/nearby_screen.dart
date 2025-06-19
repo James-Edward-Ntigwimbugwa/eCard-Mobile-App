@@ -1,10 +1,9 @@
 import 'dart:async';
+import 'dart:convert';
 import 'dart:io';
-
 import 'package:ecard_app/components/alert_reminder.dart';
 import 'package:ecard_app/services/card_request_implementation.dart';
 import 'package:ecard_app/utils/resources/animes/lottie_animes.dart';
-import 'package:ecard_app/utils/resources/images/images.dart';
 import 'package:flutter/material.dart';
 import 'package:ecard_app/components/custom_widgets.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
@@ -14,7 +13,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:ecard_app/modals/card_modal.dart';
 
-import '../../providers/user_provider.dart';
+import '../../modals/found_card.dart';
 
 class QRScannerScreen extends StatefulWidget {
   const QRScannerScreen({super.key});
@@ -30,7 +29,6 @@ class _QRScannerScreenState extends State<QRScannerScreen> {
   bool flashOn = false;
   bool isSaving = false;
 
-  // This is used to prevent multiple scans of the same QR code
   String? lastScannedCode;
   DateTime? lastScanTime;
 
@@ -38,9 +36,12 @@ class _QRScannerScreenState extends State<QRScannerScreen> {
   void reassemble() {
     super.reassemble();
     if (controller != null) {
-      // Need to handle platform differences for camera
       controller!.resumeCamera();
     }
+  }
+
+  bool isNumeric(String s) {
+    return int.tryParse(s) != null;
   }
 
   void _saveCardLogic(String userId, String cardId) async {
@@ -141,10 +142,7 @@ class _QRScannerScreenState extends State<QRScannerScreen> {
       backgroundColor: Theme.of(context).highlightColor,
       body: Stack(
         children: [
-          // QR Scanner View
           _buildQrView(context),
-
-          // Overlay UI
           SafeArea(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -168,21 +166,6 @@ class _QRScannerScreenState extends State<QRScannerScreen> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          // GestureDetector(
-          //   onTap: () => Navigator.pop(context),
-          //   child: Container(
-          //     padding: const EdgeInsets.all(8.0),
-          //     decoration: BoxDecoration(
-          //       color: Colors.black.withOpacity(0.4),
-          //       borderRadius: BorderRadius.circular(8),
-          //     ),
-          //     child: const Icon(
-          //       Icons.arrow_back,
-          //       color: Colors.white,
-          //       size: 24,
-          //     ),
-          //   ),
-          // ),
           HeaderBoldWidget(
             text: "Scan eCard",
             color: Colors.white,
@@ -214,9 +197,7 @@ class _QRScannerScreenState extends State<QRScannerScreen> {
   }
 
   Widget _buildQrView(BuildContext context) {
-    // Get the screen size for scanner area adjustments
     var scanArea = MediaQuery.of(context).size.width * 0.7;
-
     return QRView(
       key: qrKey,
       onQRViewCreated: _onQRViewCreated,
@@ -335,290 +316,296 @@ class _QRScannerScreenState extends State<QRScannerScreen> {
     );
   }
 
-  void _onQRViewCreated(QRViewController controller) {
-    this.controller = controller;
-    controller.scannedDataStream.listen((scanData) {
-      if (!isScanning || scanData.code == null) return;
+  void _onQRViewCreated(QRViewController ctrl) {
+    controller = ctrl;
+    controller!.scannedDataStream.listen((scanData) {
+      if (!isScanning) return;
+      isScanning = false;
 
-      // Prevent multiple scans of the same code within 2 seconds
-      final now = DateTime.now();
-      if (lastScannedCode == scanData.code &&
-          lastScanTime != null &&
-          now.difference(lastScanTime!).inSeconds < 2) {
-        return;
+      String qrData = scanData.code ?? '';
+      String? id;
+      String? uuid;
+      String? title;
+      String? company;
+      String? organization;
+      String? phoneNumber;
+      String? email;
+      String? websiteUrl;
+      String? backgroundColor;
+      String? fontColor;
+
+      // Try JSON parsing first
+      try {
+        final jsonData = jsonDecode(qrData);
+        if (jsonData is Map<String, dynamic>) {
+          // Include uuid as a fallback for id
+          id = jsonData['id']?.toString()
+              ?? jsonData['ID']?.toString()
+              ?? jsonData['cardId']?.toString()
+              ?? jsonData['card_id']?.toString()
+              ?? jsonData['uuid']?.toString();
+
+          uuid = jsonData['uuid']?.toString();
+          title = jsonData['title']?.toString();
+          company = jsonData['company']?.toString();
+          organization = jsonData['organization']?.toString();
+          phoneNumber = jsonData['phoneNumber']?.toString();
+          email = jsonData['email']?.toString();
+          websiteUrl = jsonData['websiteUrl']?.toString();
+          backgroundColor = jsonData['backgroundColor']?.toString();
+          fontColor = jsonData['fontColor']?.toString();
+
+          if (id == null) {
+            debugPrint("WARNING: JSON found but no 'id' or 'uuid' field. Falling back to line-by-line parsing.");
+          }
+        }
+      } catch (e) {
+        debugPrint('Not JSON format, parsing as line-by-line');
       }
 
-      lastScannedCode = scanData.code;
-      lastScanTime = now;
+      // Fallback: line-by-line parsing
+      if (id == null) {
+        final lines = qrData.split('\n');
+        for (var line in lines) {
+          line = line.trim();
+          String upperLine = line.toUpperCase();
 
-      // Try to parse the QR code data
-      if (_isValidECardQR(scanData.code!)) {
-        setState(() {
-          isScanning = false;
-        });
-        controller.pauseCamera();
+          if (upperLine.startsWith('ID:')) {
+            id = line.substring(3).trim();
+          } else if (upperLine.startsWith('CARDID:')) {
+            id = line.substring(7).trim();
+          } else if (upperLine.startsWith('CARD_ID:')) {
+            id = line.substring(8).trim();
+          } else if (upperLine.startsWith('CARD-ID:')) {
+            id = line.substring(7).trim();
+          } else if (upperLine.startsWith('UUID:')) {
+            uuid = line.substring(5).trim();
+            if (id == null) id = uuid;
+          } else if (upperLine.startsWith('TITLE:')) {
+            title = line.substring(6).trim();
+          } else if (upperLine.startsWith('ORG:')) {
+            organization = line.substring(4).trim();
+          } else if (upperLine.startsWith('COMPANY:')) {
+            company = line.substring(8).trim();
+          } else if (upperLine.startsWith('TEL:')) {
+            phoneNumber = line.substring(4).trim();
+          } else if (upperLine.startsWith('EMAIL:')) {
+            email = line.substring(6).trim();
+          } else if (upperLine.startsWith('URL:')) {
+            websiteUrl = line.substring(4).trim();
+          } else if (upperLine.startsWith('BGCOLOR:')) {
+            backgroundColor = line.substring(8).trim();
+          } else if (upperLine.startsWith('FONTCOLOR:')) {
+            fontColor = line.substring(10).trim();
+          }
 
-        // Parse the QR code into a Card object
-        final cardData = _parseCardData(scanData.code!);
-        _showCardFoundSheet(cardData);
-      } else {
-        // Show invalid QR code message
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Not a valid eCard QR code'),
-            duration: Duration(seconds: 2),
-          ),
-        );
+          if (id != null && title != null && company != null) break;
+        }
       }
+
+      debugPrint("Final parsed ID: '$id'");
+
+      final card = CustomCard(
+        null,
+        title ?? 'Scanned Card',
+        id: id ?? 'unknown-card-id',
+        uuid: uuid ?? 'scanned-card-${DateTime.now().millisecondsSinceEpoch}',
+        company: company,
+        organization: organization ?? company ?? 'Unknown Organization',
+        phoneNumber: phoneNumber,
+        email: email,
+        websiteUrl: websiteUrl,
+        backgroundColor: backgroundColor,
+        fontColor: fontColor,
+      );
+
+      _showCardFoundSheet(card);
     });
   }
 
   bool _isValidECardQR(String data) {
-    // Check if the QR has the expected format for an eCard
     final lines = data.split('\n');
-
-    // Look for eCard specific data markers (ORG, TEL, EMAIL, etc.)
     bool hasOrgMarker = lines.any((line) => line.startsWith('ORG:'));
     bool hasTitleMarker = lines.any((line) => line.startsWith('TITLE:'));
     bool hasContactInfo = lines.any((line) =>
-        line.startsWith('TEL:') ||
+    line.startsWith('TEL:') ||
         line.startsWith('EMAIL:') ||
         line.startsWith('URL:'));
-
     return hasOrgMarker || (hasTitleMarker && hasContactInfo);
   }
 
+  // Updated _parseCardData method - replace the existing one in your nearby_screen.dart
+
   CustomCard _parseCardData(String qrData) {
     final lines = qrData.split('\n');
+
+    // Debug the raw QR data
+    debugPrint("=== QR Code Raw Data ===");
+    debugPrint(qrData);
+    debugPrint("========================");
+
     String? company;
     String? title;
     String? phoneNumber;
     String? email;
     String? websiteUrl;
     String? address;
-    String? id ;
+    String? id;
+    String? uuid;
+    String? organization;
+    String? cardDescription;
+    String? profilePhoto;
+    String? department;
+    String? linkedIn;
+    String? backgroundColor;
+    String? fontColor;
 
-    for (var line in lines) {
-      if (line.startsWith('ORG:')) {
-        company = line.substring(4);
-      } else if (line.startsWith('TITLE:')) {
-        title = line.substring(6);
-      } else if (line.startsWith('TEL:')) {
-        phoneNumber = line.substring(4);
-      } else if (line.startsWith('EMAIL:')) {
-        email = line.substring(6);
-      } else if (line.startsWith('URL:')) {
-        websiteUrl = line.substring(4);
-      } else if (line.startsWith('ADR:')) {
-        address = line.substring(4);
+    // Try to parse as JSON first (in case QR contains JSON)
+    try {
+      final jsonData = jsonDecode(qrData);
+      if (jsonData is Map<String, dynamic>) {
+        id = jsonData['id']?.toString() ??
+            jsonData['ID']?.toString() ??
+            jsonData['cardId']?.toString() ??
+            jsonData['card_id']?.toString();
+
+        if (id != null) {
+          debugPrint("Found ID from JSON: '$id'");
+          // Parse other fields from JSON if needed
+          title = jsonData['title']?.toString();
+          company = jsonData['company']?.toString() ?? jsonData['org']?.toString();
+          email = jsonData['email']?.toString();
+          phoneNumber = jsonData['phone']?.toString() ?? jsonData['tel']?.toString();
+          websiteUrl = jsonData['websiteUrl']?.toString() ?? jsonData['url']?.toString();
+          address = jsonData['address']?.toString() ?? jsonData['adr']?.toString();
+          uuid = jsonData['uuid']?.toString();
+          organization = jsonData['organization']?.toString();
+          cardDescription = jsonData['cardDescription']?.toString() ?? jsonData['desc']?.toString();
+          profilePhoto = jsonData['profilePhoto']?.toString() ?? jsonData['photo']?.toString();
+          department = jsonData['department']?.toString() ?? jsonData['dept']?.toString();
+          linkedIn = jsonData['linkedin']?.toString() ?? jsonData['linkedIn']?.toString();
+          backgroundColor = jsonData['backgroundColor']?.toString() ?? jsonData['bgColor']?.toString();
+          fontColor = jsonData['fontColor']?.toString();
+        } else {
+          debugPrint("JSON found, but no 'id' field present. Falling back to line-by-line parsing.");
+        }
+      }
+    } catch (e) {
+      debugPrint("Not JSON format, parsing as line-by-line");
+    }
+
+    // If not found in JSON, try line-by-line parsing
+    if (id == null) {
+      for (var line in lines) {
+        line = line.trim();
+        String upperLine = line.toUpperCase();
+
+        // Try multiple possible ID field formats
+        if (upperLine.startsWith('ID:')) {
+          id = line.substring(3).trim();
+          debugPrint("Found ID: '$id'");
+          break;
+        } else if (upperLine.startsWith('CARDID:')) {
+          id = line.substring(7).trim();
+          debugPrint("Found CARDID: '$id'");
+          break;
+        } else if (upperLine.startsWith('CARD_ID:')) {
+          id = line.substring(8).trim();
+          debugPrint("Found CARD_ID: '$id'");
+          break;
+        } else if (upperLine.startsWith('CARD-ID:')) {
+          id = line.substring(8).trim();
+          debugPrint("Found CARD-ID: '$id'");
+          break;
+        }
+      }
+
+      // Parse other fields
+      for (var line in lines) {
+        line = line.trim();
+
+        if (line.startsWith('UUID:')) {
+          uuid = line.substring(5).trim();
+          debugPrint("======== card uuid ========= $uuid =====");
+        } else if (line.startsWith('TITLE:')) {
+          title = line.substring(6).trim();
+        } else if (line.startsWith('ORG:')) {
+          company = line.substring(4).trim();
+        } else if (line.startsWith('ORGANIZATION:')) {
+          organization = line.substring(13).trim();
+        } else if (line.startsWith('TEL:')) {
+          phoneNumber = line.substring(4).trim();
+        } else if (line.startsWith('EMAIL:')) {
+          email = line.substring(6).trim();
+        } else if (line.startsWith('URL:')) {
+          websiteUrl = line.substring(4).trim();
+        } else if (line.startsWith('ADR:')) {
+          address = line.substring(4).trim();
+        } else if (line.startsWith('DESC:')) {
+          cardDescription = line.substring(5).trim();
+        } else if (line.startsWith('PHOTO:')) {
+          profilePhoto = line.substring(6).trim();
+        } else if (line.startsWith('DEPT:')) {
+          department = line.substring(5).trim();
+        } else if (line.startsWith('LINKEDIN:')) {
+          linkedIn = line.substring(9).trim();
+        } else if (line.startsWith('BGCOLOR:')) {
+          backgroundColor = line.substring(8).trim();
+        } else if (line.startsWith('FONTCOLOR:')) {
+          fontColor = line.substring(10).trim();
+        }
       }
     }
 
+    debugPrint("Final parsed ID: '$id'");
+
+    // **IMPORTANT**: If no ID found, provide a default or handle appropriately
+    // You should modify your QR generation to include ID:1 or handle this case
+    if (id == null) {
+      debugPrint("WARNING: No ID found in QR code. You need to add 'ID:1' to your QR generation.");
+      // You can either:
+      // 1. Use a default ID (not recommended for production)
+      // id = "1"; // This is just for testing
+
+      // 2. Or show an error to the user
+      debugPrint("ERROR: QR code must contain an ID field");
+    }
+
+    // Validate that we have a proper numeric ID
+    if (id != null && !isNumeric(id)) {
+      debugPrint("Warning: ID '$id' is not numeric");
+    }
+
     return CustomCard(
-      title,
-      company ?? 'Unknown Organization',
-      uuid: 'scanned-card-${DateTime.now().millisecondsSinceEpoch}',
+      null, // userUuid - will be set when saving
+      title ?? 'Scanned Card',
+      id: id ?? 'unknown-card-id', // Keep this as fallback
+      uuid: uuid ?? 'scanned-card-${DateTime.now().millisecondsSinceEpoch}',
+      company: company,
+      organization: organization ?? company ?? 'Unknown Organization',
       phoneNumber: phoneNumber,
       email: email,
       websiteUrl: websiteUrl,
       address: address,
-      id: id
+      cardDescription: cardDescription,
+      profilePhoto: profilePhoto,
+      department: department,
+      linkedIn: linkedIn,
+      backgroundColor: backgroundColor,
+      fontColor: fontColor,
+      active: true,
+      publishCard: false,
     );
   }
 
   void _showCardFoundSheet(CustomCard card) {
-    final primaryColor = Theme.of(context).primaryColor;
-    final screenWidth = MediaQuery.of(context).size.width;
-
     showModalBottomSheet(
       context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.transparent,
-      builder: (context) => Container(
-        height: MediaQuery.of(context).size.height * 0.7,
-        width: screenWidth,
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: const BorderRadius.only(
-            topLeft: Radius.circular(30),
-            topRight: Radius.circular(30),
-          ),
-          boxShadow: [
-            BoxShadow(
-              color: primaryColor.withOpacity(0.3),
-              blurRadius: 15,
-              spreadRadius: 5,
-              offset: const Offset(0, -5),
-            ),
-          ],
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            // Sheet Handle
-            Container(
-              margin: const EdgeInsets.only(top: 10),
-              width: 50,
-              height: 5,
-              decoration: BoxDecoration(
-                color: Colors.grey.shade300,
-                borderRadius: BorderRadius.circular(50),
-              ),
-            ),
-
-            // Header
-            Padding(
-              padding: const EdgeInsets.all(20),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  const SizedBox(width: 40), // For balance
-                  Text(
-                    'eCard Found!',
-                    style: TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                      color: primaryColor,
-                    ),
-                  ),
-                  IconButton(
-                    icon: const Icon(Icons.close),
-                    onPressed: () {
-                      Navigator.pop(context);
-                      setState(() {
-                        isScanning = true;
-                      });
-                      controller?.resumeCamera();
-                    },
-                  ),
-                ],
-              ),
-            ),
-
-            // Success Animation
-            Container(
-              width: 120,
-              height: 120,
-              decoration: BoxDecoration(
-                color: primaryColor.withOpacity(0.1),
-                shape: BoxShape.circle,
-              ),
-              child: Icon(
-                Icons.check_circle,
-                color: primaryColor,
-                size: 80,
-              ),
-            ),
-
-            const SizedBox(height: 20),
-
-            // Card Information
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 30),
-              child: Column(
-                children: [
-                  Text(
-                    card.company ?? 'Organization',
-                    style: TextStyle(
-                      fontSize: 24,
-                      fontWeight: FontWeight.bold,
-                      color: primaryColor,
-                    ),
-                  ),
-                  if (card.title != null)
-                    Text(
-                      card.title!,
-                      style: const TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-
-                  const SizedBox(height: 30),
-
-                  // Contact information
-                  if (card.phoneNumber != null)
-                    _buildContactInfoRow(Icons.phone, card.phoneNumber!),
-                  if (card.email != null)
-                    _buildContactInfoRow(Icons.email, card.email!),
-                  if (card.websiteUrl != null)
-                    _buildContactInfoRow(Icons.language, card.websiteUrl!),
-                  if (card.address != null)
-                    _buildContactInfoRow(Icons.location_on, card.address!),
-
-                  const SizedBox(height: 30),
-
-                  // Save button
-                  ElevatedButton.icon(
-                    onPressed: () async {
-                      final prefs = await SharedPreferences.getInstance();
-                      final userId = prefs.getString("userId");
-                      final cardId = card.id;
-
-                      debugPrint("Credentials in card save \n cardId : $cardId ,\n userId : $userId======>");
-                      _saveCardLogic(userId!, cardId!);
-                    },
-                    icon: const Icon(Icons.save_alt),
-                    label: const Text('Save to My Cards'),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: primaryColor,
-                      foregroundColor: Colors.white,
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 30,
-                        vertical: 12,
-                      ),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                    ),
-                  ),
-
-                  const SizedBox(height: 15),
-
-                  // New: See more button with organization name
-                  OutlinedButton.icon(
-                    onPressed: () {
-                      Navigator.pop(context);
-                      // Navigate to more details about the organization
-                      if (card.websiteUrl != null) {
-                        _launchUrl(card.websiteUrl!);
-                      } else {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                              content:
-                                  Text('No website information available')),
-                        );
-                      }
-                    },
-                    icon: const Icon(Icons.info_outline),
-                    label: Text(
-                        'See more about ${card.company ?? "this Organization"}'),
-                    style: OutlinedButton.styleFrom(
-                      foregroundColor: primaryColor,
-                      side: BorderSide(color: primaryColor),
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 20,
-                        vertical: 12,
-                      ),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ],
-        ),
-      ),
-    ).then((_) {
-      // Resume camera when sheet is closed
-      if (mounted) {
-        setState(() {
-          isScanning = true;
-        });
-        controller?.resumeCamera();
-      }
+      builder: (_) => CardModal(card: card),
+    ).whenComplete(() {
+      setState(() {
+        isScanning = true;
+      });
     });
   }
 
@@ -649,8 +636,6 @@ class _QRScannerScreenState extends State<QRScannerScreen> {
   }
 
   void _scanFromGallery() async {
-    // This would need a separate package like image_picker
-    // For simplicity, we'll just show a message
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(
         content: Text('Gallery scan would be implemented here'),

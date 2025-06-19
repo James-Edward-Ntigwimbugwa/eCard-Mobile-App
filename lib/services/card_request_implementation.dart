@@ -16,18 +16,18 @@ class CardProvider with ChangeNotifier {
 
   Future<Map<String, dynamic>> createCard(
       {required String title,
-      required String cardDescription,
-      required String organization,
-      required String address,
-      required String cardLogo,
-      required String phoneNumber,
-      required String email,
-      String? profilePhoto = '',
-      String? linkedIn = '',
-      String? website = '',
-      String? department = '',
-      required String backgroundColor,
-      required String fontColor}) async {
+        required String cardDescription,
+        required String organization,
+        required String address,
+        required String cardLogo,
+        required String phoneNumber,
+        required String email,
+        String? profilePhoto = '',
+        String? linkedIn = '',
+        String? website = '',
+        String? department = '',
+        required String backgroundColor,
+        required String fontColor}) async {
     final Object cardRegistrationData = {
       'title': title,
       'cardDescription': cardDescription,
@@ -77,24 +77,12 @@ class CardProvider with ChangeNotifier {
 
       if (response.statusCode == 200 || response.statusCode == 201) {
         final dynamic responseData = jsonDecode(response.body);
+        final List<dynamic>? content = responseData['content'];
 
-        // Check if response contains card data
-        dynamic cardData;
-        if (responseData['content'] != null) {
-          cardData = responseData['content'];
-        } else if (responseData['data'] != null) {
-          cardData = responseData['data'];
-        } else {
-          cardData =
-              responseData; // Assume the response itself might be the card
-        }
-
-        developer.log("Card data extracted: $cardData");
-
-        if (cardData != null) {
+        if (content != null && content.isNotEmpty) {
           try {
+            final cardData = content[0]; // Single card for creation
             CustomCard card = CustomCard.fromJson(cardData);
-            // Save card to local storage
             await CardPreferences.saveCard(card);
             developer.log("Card saved to local preferences successfully");
 
@@ -106,21 +94,20 @@ class CardProvider with ChangeNotifier {
           } catch (e) {
             developer.log("Error parsing or saving card: $e");
             return {
-              'status': true, // Still return true since server created the card
+              'status': true,
               'message':
-                  'Card created, but could not be saved locally: ${e.toString()}',
+              'Card created, but could not be saved locally: ${e.toString()}',
             };
           }
         } else {
           developer.log("Card data is null or not found in response");
           return {
-            'status': true, // Server returned success
+            'status': true,
             'message':
-                'Card created successfully, but no data returned from server',
+            'Card created successfully, but no data returned from server',
           };
         }
       } else {
-        // Extract error message if available
         String errorMessage;
         try {
           final errorData = jsonDecode(response.body);
@@ -129,7 +116,7 @@ class CardProvider with ChangeNotifier {
               'Card creation failed with status ${response.statusCode}';
         } catch (e) {
           errorMessage =
-              'Card creation failed with status ${response.statusCode}';
+          'Card creation failed with status ${response.statusCode}';
         }
 
         developer.log("Card creation error: $errorMessage");
@@ -159,22 +146,14 @@ class CardProvider with ChangeNotifier {
 
       if (response.statusCode == 200) {
         final dynamic responseData = jsonDecode(response.body);
+        final List<dynamic>? content = responseData['content'];
         developer.log("Card data received successfully");
 
-        var cardsData = responseData['content'];
         List<CustomCard> cards = [];
-
-        if (cardsData is List) {
-          for (var cardJson in cardsData) {
-            CustomCard card = CustomCard.fromJson(cardJson);
-            cards.add(card);
-          }
-        } else if (cardsData is Map<String, dynamic>) {
-          CustomCard card = CustomCard.fromJson(cardsData);
-          cards.add(card);
+        if (content != null) {
+          cards = content.map((cardJson) => CustomCard.fromJson(cardJson)).toList();
         }
 
-        // Save all cards to SQLite database
         if (cards.isNotEmpty) {
           await CardPreferences.saveCards(cards);
           developer.log("Saved ${cards.length} cards to SQLite database");
@@ -188,10 +167,9 @@ class CardProvider with ChangeNotifier {
         return {"status": true, "message": "Success", "cards": cards};
       } else {
         _errorMessage =
-            "Failed to load cards: Server returned ${response.statusCode}";
+        "Failed to load cards: Server returned ${response.statusCode}";
         developer.log(_errorMessage!);
 
-        // Try to load cards from local SQLite database as fallback
         final localCards = await CardPreferences.getCardsByUser(uuid);
         if (localCards != null && localCards.isNotEmpty) {
           developer
@@ -218,7 +196,6 @@ class CardProvider with ChangeNotifier {
       _errorMessage = "Error fetching cards: ${e.toString()}";
       developer.log(_errorMessage!);
 
-      // Try to load cards from local SQLite database as fallback
       try {
         final localCards = await CardPreferences.getCardsByUser(uuid);
         if (localCards != null && localCards.isNotEmpty) {
@@ -252,16 +229,16 @@ class CardProvider with ChangeNotifier {
       final response = await CardRequests.fetchCardDetails(uuid);
       if (response.statusCode == 200) {
         final dynamic responseData = jsonDecode(response.body);
+        final List<dynamic>? content = responseData['content'];
         developer.log("Card data received successfully");
 
-        var cardData = responseData['content'];
-        CustomCard card = CustomCard.fromJson(cardData);
-
-        // Save the card to SQLite database
-        await CardPreferences.saveCard(card);
-        developer.log("Saved card to SQLite database successfully");
-
-        return card;
+        if (content != null && content.isNotEmpty) {
+          CustomCard card = CustomCard.fromJson(content[0]);
+          await CardPreferences.saveCard(card);
+          developer.log("Saved card to SQLite database successfully");
+          return card;
+        }
+        return null;
       } else if (response.statusCode == 404) {
         developer.log("Card not found");
         return null;
@@ -280,8 +257,8 @@ class CardProvider with ChangeNotifier {
 
   Future<bool> saveOrganizationCard(
       {required String userId, required String cardId}) async {
-
-    debugPrint("Save Card organization in card-request-implementation executed ====>");
+    debugPrint(
+        "Save Card organization in card-request-implementation executed ====>");
     final Object savingBody = {"userId": userId, "cardId": cardId};
     try {
       final response = await CardRequests.saveCard(savingBody: savingBody);

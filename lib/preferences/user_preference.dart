@@ -23,17 +23,21 @@ class UserPreferences {
       await prefs.setString("userId", user.id ?? '');
       await prefs.setString("userUuid", user.uuid ?? '');
       await prefs.setString("username", user.username ?? '');
-      await prefs.setString("userEmail", user.email ?? ''); // Fixed: now saves email
+      await prefs.setString(
+          "userEmail", user.email ?? ''); // Fixed: now saves email
       await prefs.setString("phone", user.phone ?? '');
-      await prefs.setString("userType", user.userType ?? ''); // Fixed: changed from "type" to "userType"
+      await prefs.setString("userType",
+          user.userType ?? ''); // Fixed: changed from "type" to "userType"
       await prefs.setString("accessToken", user.accessToken ?? '');
       await prefs.setString("refreshToken", user.refreshToken ?? '');
       await prefs.setString("firstName", user.firstName ?? '');
       await prefs.setString("lastName", user.lastName ?? '');
       await prefs.setString("jobTitle", user.jobTitle ?? '');
       await prefs.setString("companyName", user.companyName ?? '');
-      await prefs.setString("tokenType", user.tokenType ?? ''); // Added tokenType
-      await prefs.setString("lastLogin", user.lastLogin ?? ''); // Added lastLogin
+      await prefs.setString(
+          "tokenType", user.tokenType ?? ''); // Added tokenType
+      await prefs.setString(
+          "lastLogin", user.lastLogin ?? ''); // Added lastLogin
 
       developer.log("User data saved successfully");
       return true;
@@ -57,7 +61,8 @@ class UserPreferences {
           accessToken.isEmpty ||
           userId == null ||
           userId.isEmpty) {
-        developer.log("No valid user data found in preferences ======> user_preferences");
+        developer.log(
+            "No valid user data found in preferences ======> user_preferences");
         return user; // Return empty user object instead of continuing
       }
 
@@ -68,7 +73,8 @@ class UserPreferences {
         username: prefs.getString("username"),
         email: prefs.getString("userEmail"), // Fixed: retrieves email properly
         phone: prefs.getString("phone"),
-        userType: prefs.getString("userType"), // Fixed: changed from "type" to "userType"
+        userType: prefs
+            .getString("userType"), // Fixed: changed from "type" to "userType"
         accessToken: accessToken,
         refreshToken: prefs.getString("refreshToken"),
         firstName: prefs.getString("firstName"),
@@ -97,7 +103,8 @@ class UserPreferences {
       await prefs.remove("username");
       await prefs.remove("userEmail");
       await prefs.remove("phone");
-      await prefs.remove("userType"); // Fixed: changed from "type" to "userType"
+      await prefs
+          .remove("userType"); // Fixed: changed from "type" to "userType"
       await prefs.remove("accessToken");
       await prefs.remove("refreshToken");
       await prefs.remove("firstName");

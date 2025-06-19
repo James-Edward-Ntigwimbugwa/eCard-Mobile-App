@@ -35,10 +35,8 @@ class CardRequests {
         },
       );
 
-      // Handle 401 Unauthorized specifically
       if (response.statusCode == 401) {
         debugPrint("Authentication failed: 401 Unauthorized");
-        // Token is likely expired
         throw Exception("Authentication token expired");
       }
 
@@ -48,8 +46,6 @@ class CardRequests {
       rethrow;
     }
   }
-
-  // Additional request methods can be added here for creating/updating/deleting cards
 
   static Future<Response> createCard(Object cardData) async {
     try {
@@ -164,12 +160,12 @@ class CardRequests {
   }
 
   static Future<Response> saveCard({required Object savingBody}) async {
-    try{
+    try {
       final prefs = await SharedPreferences.getInstance();
       final bearerToken = prefs.getString("accessToken");
       debugPrint("Bearer token in cardProvider ========>: $bearerToken");
 
-      if(bearerToken==null || bearerToken.isEmpty){
+      if (bearerToken == null || bearerToken.isEmpty) {
         throw Exception("Authentication is required");
       }
 
@@ -177,17 +173,17 @@ class CardRequests {
       debugPrint("final url in card-request ========>: $url");
 
       final response = await post(
-        url,
-        headers: {
-          "Authorization" : "Bearer $bearerToken",
-          "Content-type" : "application/json",
-          "Accept" : "application/json"
-        },
+          url,
+          headers: {
+            "Authorization": "Bearer $bearerToken",
+            "Content-type": "application/json",
+            "Accept": "application/json"
+          },
+          body: jsonEncode(savingBody)
       );
 
       return response;
-      
-    }catch(e){
+    } catch (e) {
       debugPrint(e as String?);
       throw Exception("An exception caught");
     }

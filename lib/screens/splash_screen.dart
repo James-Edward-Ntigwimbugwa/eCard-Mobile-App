@@ -37,8 +37,7 @@ class _SplashScreenState extends State<SplashScreen> {
       developer.log("User data from preferences: ${user.toString()}");
 
       // Determine which screen to navigate to
-      if (user.accessToken != null &&
-          user.accessToken!.isNotEmpty) {
+      if (user.accessToken != null && user.accessToken!.isNotEmpty) {
         developer.log("Valid user found, navigating to Dashboard");
         _nextScreen = DashboardPage(user: user);
       } else {

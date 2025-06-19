@@ -368,7 +368,8 @@ class CardDetailsPage extends StatelessWidget {
             child: BackdropFilter(
               filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
               child: Container(
-                color: Colors.black.withOpacity(0.5), // Dark overlay for contrast
+                color:
+                    Colors.black.withOpacity(0.5), // Dark overlay for contrast
               ),
             ),
           ),
@@ -443,7 +444,8 @@ class CardDetailsPage extends StatelessWidget {
                                   ),
                                 ),
                                 IconButton(
-                                  icon: const Icon(Icons.close, color: Colors.white),
+                                  icon: const Icon(Icons.close,
+                                      color: Colors.white),
                                   onPressed: () => Navigator.pop(context),
                                 ),
                               ],
@@ -486,7 +488,8 @@ class CardDetailsPage extends StatelessWidget {
                                     size: 200,
                                     backgroundColor: Colors.white,
                                     embeddedImage: card.profilePhoto != null
-                                        ? NetworkImage(card.profilePhoto!) as ImageProvider
+                                        ? NetworkImage(card.profilePhoto!)
+                                            as ImageProvider
                                         : null,
                                     embeddedImageStyle: QrEmbeddedImageStyle(
                                       size: const Size(40, 40),
@@ -507,7 +510,9 @@ class CardDetailsPage extends StatelessWidget {
                                   label: const Text('Save QR Code'),
                                   onPressed: () {
                                     ScaffoldMessenger.of(context).showSnackBar(
-                                      const SnackBar(content: Text('QR Code saved to gallery')),
+                                      const SnackBar(
+                                          content:
+                                              Text('QR Code saved to gallery')),
                                     );
                                   },
                                   style: OutlinedButton.styleFrom(
@@ -524,7 +529,8 @@ class CardDetailsPage extends StatelessWidget {
                               children: [
                                 const Expanded(child: Divider()),
                                 Padding(
-                                  padding: const EdgeInsets.symmetric(horizontal: 15),
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 15),
                                   child: Text(
                                     'OR SHARE VIA',
                                     style: TextStyle(
@@ -646,20 +652,38 @@ class CardDetailsPage extends StatelessWidget {
     );
   }
 
-  // Generate QR code data from card information
   String _generateCardQrData() {
-    // Create a formatted string with card details
-    // This could also be a JSON or a URL to the card in your system
+    // Create a formatted string with all card details
     String qrData = '';
 
+    // Essential identification fields
+    if (card.id != null && card.id!.isNotEmpty) {
+      qrData += 'ID:${card.id}\n';
+    }
+
+    if (card.uuid != null && card.uuid!.isNotEmpty) {
+      qrData += 'UUID:${card.uuid}\n';
+    }
+
+    // Organization information
     if (card.company != null && card.company!.isNotEmpty) {
       qrData += 'ORG:${card.company}\n';
     }
 
+    if (card.organization != null && card.organization!.isNotEmpty) {
+      qrData += 'ORGANIZATION:${card.organization}\n';
+    }
+
+    // Personal information
     if (card.title != null && card.title!.isNotEmpty) {
       qrData += 'TITLE:${card.title}\n';
     }
 
+    if (card.department != null && card.department!.isNotEmpty) {
+      qrData += 'DEPT:${card.department}\n';
+    }
+
+    // Contact information
     if (card.phoneNumber != null && card.phoneNumber!.isNotEmpty) {
       qrData += 'TEL:${card.phoneNumber}\n';
     }
@@ -676,8 +700,35 @@ class CardDetailsPage extends StatelessWidget {
       qrData += 'ADR:${card.address}\n';
     }
 
+    if (card.linkedIn != null && card.linkedIn!.isNotEmpty) {
+      qrData += 'LINKEDIN:${card.linkedIn}\n';
+    }
+
+    // Additional information
+    if (card.cardDescription != null && card.cardDescription!.isNotEmpty) {
+      qrData += 'DESC:${card.cardDescription}\n';
+    }
+
+    if (card.profilePhoto != null && card.profilePhoto!.isNotEmpty) {
+      qrData += 'PHOTO:${card.profilePhoto}\n';
+    }
+
+    // Styling information
+    if (card.backgroundColor != null && card.backgroundColor!.isNotEmpty) {
+      qrData += 'BGCOLOR:${card.backgroundColor}\n';
+    }
+
+    if (card.fontColor != null && card.fontColor!.isNotEmpty) {
+      qrData += 'FONTCOLOR:${card.fontColor}\n';
+    }
+
+    // Status information
+    qrData += 'ACTIVE:${card.active}\n';
+    qrData += 'PUBLISHED:${card.publishCard}\n';
+
     return qrData.isEmpty ? 'No card data available' : qrData;
   }
+
 
   // Share methods
   void _shareViaSms() {

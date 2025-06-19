@@ -3,7 +3,6 @@ class AppUrl {
   static const String localhost = "http://192.168.1.150:8080";
   // static const String localhost = "http://localhost:8080";
 
-
   // authentication endpoints here
   static const String baseEndpoint = localhost;
   static const String loginUrl = "$baseEndpoint/auth/login";

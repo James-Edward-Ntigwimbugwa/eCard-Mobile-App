@@ -172,7 +172,7 @@ class _LoginPageState extends State<LoginPage> {
       if (e.toString().contains("SocketException") ||
           e.toString().contains("Connection")) {
         errorMessage =
-        "Network connection error. Please check your internet and try again.";
+            "Network connection error. Please check your internet and try again.";
       } else if (e.toString().contains("timeout")) {
         errorMessage = "Request timed out. Please try again later.";
       } else if (e.toString().contains("format")) {
@@ -362,13 +362,13 @@ class _LoginPageState extends State<LoginPage> {
                                           ),
                                         ),
                                         child: Text(
-                                                Texts.login,
-                                                style: const TextStyle(
-                                                  color: Colors.white,
-                                                  fontSize: 16,
-                                                  fontWeight: FontWeight.bold,
-                                                ),
-                                              ),
+                                          Texts.login,
+                                          style: const TextStyle(
+                                            color: Colors.white,
+                                            fontSize: 16,
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                        ),
                                       ),
                                     ),
                               Center(
