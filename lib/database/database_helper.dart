@@ -103,7 +103,7 @@ class DatabaseHelper {
     final db = await instance.database;
     try {
       final result =
-      await db?.query('cards', where: 'deleted = ?', whereArgs: [0]);
+          await db?.query('cards', where: 'deleted = ?', whereArgs: [0]);
       return result?.map((json) => CustomCard.fromJson(json)).toList();
     } catch (error) {
       developer.log("Error fetching cards: ======>$error");
@@ -116,8 +116,7 @@ class DatabaseHelper {
 
     try {
       final result = await db?.query('cards',
-          where: 'createdBy = ? AND deleted = ?',
-          whereArgs: [userUuid, 0]);
+          where: 'createdBy = ? AND deleted = ?', whereArgs: [userUuid, 0]);
       return result?.map((json) => CustomCard.fromJson(json)).toList();
     } catch (error) {
       developer.log("Error fetching cards=======>: $error");

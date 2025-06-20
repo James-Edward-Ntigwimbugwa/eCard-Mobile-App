@@ -28,6 +28,8 @@ class CardProvider with ChangeNotifier {
         String? department = '',
         required String backgroundColor,
         required String fontColor}) async {
+
+    // Fixed: Use the correct field names expected by the server
     final Object cardRegistrationData = {
       'title': title,
       'cardDescription': cardDescription,
@@ -38,14 +40,15 @@ class CardProvider with ChangeNotifier {
       'phoneNumber': phoneNumber,
       'email': email,
       'profilePhoto': profilePhoto,
-      'linkedIn': linkedIn,
-      'website': website,
+      'linkedin': linkedIn,
+      'websiteUrl': website,
       'department': department,
       'fontColor': fontColor,
       'backgroundColor': backgroundColor,
     };
 
-    debugPrint("Card request data =======> $cardRegistrationData");
+    debugPrint("= \n \n================= Card request data ============= \n \n ${cardRegistrationData.toString()}"
+        "\n \n =============================\n \n");
 
     _isLoading = true;
     notifyListeners();
@@ -151,7 +154,8 @@ class CardProvider with ChangeNotifier {
 
         List<CustomCard> cards = [];
         if (content != null) {
-          cards = content.map((cardJson) => CustomCard.fromJson(cardJson)).toList();
+          cards =
+              content.map((cardJson) => CustomCard.fromJson(cardJson)).toList();
         }
 
         if (cards.isNotEmpty) {

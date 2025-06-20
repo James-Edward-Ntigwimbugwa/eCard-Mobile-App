@@ -55,7 +55,8 @@ class _AllCardsScreenState extends State<AllCardsScreen>
       return;
     }
 
-    debugPrint("User UUID in allCards Screen =======> $userUuid");
+    debugPrint(
+        "User UUID in allCards Screen ======= \n $userUuid \n ================");
     debugPrint("Access token available: ${accessToken.isNotEmpty}");
 
     setState(() {

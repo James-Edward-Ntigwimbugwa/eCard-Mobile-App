@@ -172,15 +172,13 @@ class CardRequests {
       final url = Uri.parse("${AppUrl.saveCard}");
       debugPrint("final url in card-request ========>: $url");
 
-      final response = await post(
-          url,
+      final response = await post(url,
           headers: {
             "Authorization": "Bearer $bearerToken",
             "Content-type": "application/json",
             "Accept": "application/json"
           },
-          body: jsonEncode(savingBody)
-      );
+          body: jsonEncode(savingBody));
 
       return response;
     } catch (e) {

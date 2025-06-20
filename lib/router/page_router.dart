@@ -10,6 +10,7 @@ import 'package:provider/provider.dart';
 import '../screens/change_password.dart';
 import '../screens/location_picker.dart';
 import '../screens/otp_verifier_screen.dart';
+import '../screens/people_card_saves.dart';
 
 class PageRouter {
   static Route<dynamic>? switchRoute(RouteSettings settings) {
@@ -35,6 +36,9 @@ class PageRouter {
 
       case RouterPath.otpVerifier:
         return MaterialPageRoute(builder: (context) => const OtpVerifier());
+
+      case RouterPath.cardSaves:
+        return MaterialPageRoute(builder: (context) => const PeopleCardSaves());
       default:
         return null;
     }

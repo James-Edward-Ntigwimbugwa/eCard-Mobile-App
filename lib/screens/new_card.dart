@@ -26,7 +26,7 @@ class CreateNewCardState extends State<CreateNewCard> {
   // Controllers for input fields
   final TextEditingController _titleController = TextEditingController();
   final TextEditingController _organizationNameController =
-      TextEditingController();
+  TextEditingController();
   final TextEditingController _jobTitleController = TextEditingController();
   final TextEditingController _locationController = TextEditingController();
   final TextEditingController _emailAddressController = TextEditingController();
@@ -45,8 +45,6 @@ class CreateNewCardState extends State<CreateNewCard> {
   String _selectedFontStyle = 'Sans-Serif';
 
   /// Layout and positioning configuration for card elements
-  /// Users can reorder elements and set position (left or right) of logo and text elements
-  /// Using enum and map structure for flexibility and clarity
   LayoutPosition _logoPosition = LayoutPosition.left;
   LayoutPosition _textPosition = LayoutPosition.right;
 
@@ -58,6 +56,9 @@ class CreateNewCardState extends State<CreateNewCard> {
     CardElement.phone,
     CardElement.website,
   ];
+
+  // Track keyboard visibility
+  bool _isKeyboardVisible = false;
 
   @override
   void initState() {
@@ -89,6 +90,7 @@ class CreateNewCardState extends State<CreateNewCard> {
     _locationController.dispose();
     _phoneNumberController.dispose();
     _emailAddressController.dispose();
+    _websiteController.dispose();
     _linkedinController.dispose();
     _twitterController.dispose();
     _instagramController.dispose();
@@ -176,7 +178,7 @@ class CreateNewCardState extends State<CreateNewCard> {
     }
 
     TextStyle valueStyle = TextStyle(
-      fontSize: 16,
+      fontSize: _isKeyboardVisible ? 12 : 16,
       color: textColor,
       fontFamily: fontFamily,
       fontWeight: FontWeight.bold,
@@ -191,7 +193,7 @@ class CreateNewCardState extends State<CreateNewCard> {
           _buildLabel(label, textColor),
           Row(
             children: [
-              Icon(iconData, color: textColor, size: 18),
+              Icon(iconData, color: textColor, size: _isKeyboardVisible ? 14 : 18),
               const SizedBox(width: 6),
               Flexible(
                 child: Text(
@@ -202,7 +204,7 @@ class CreateNewCardState extends State<CreateNewCard> {
               ),
             ],
           ),
-          const SizedBox(height: 10),
+          SizedBox(height: _isKeyboardVisible ? 5 : 10),
         ],
       ),
     );
@@ -214,20 +216,22 @@ class CreateNewCardState extends State<CreateNewCard> {
     Color textColor = _textColor;
     String fontFamily = _getFontFamily(_selectedFontStyle);
 
+    double logoRadius = _isKeyboardVisible ? 25 : 40;
+    double logoSize = _isKeyboardVisible ? 45 : 70;
+
     Widget logoWidget = CircleAvatar(
-      radius: 40,
+      radius: logoRadius,
       backgroundColor: textColor.withOpacity(0.15),
       child: ClipOval(
         child: Image.asset(
           _organizationLogoPath,
           fit: BoxFit.cover,
-          width: 70,
-          height: 70,
+          width: logoSize,
+          height: logoSize,
         ),
       ),
     );
 
-    // Build reordered elements as draggable list (for preview only)
     List<Widget> textElements = _orderedElements
         .map((e) => _buildCardElement(e, textColor, fontFamily))
         .toList();
@@ -237,15 +241,16 @@ class CreateNewCardState extends State<CreateNewCard> {
       children: textElements,
     );
 
-    // Compose card content with flexible positions of logo and text
     Widget cardContent;
+    double spacing = _isKeyboardVisible ? 8 : 16;
+
     if (_logoPosition == LayoutPosition.left &&
         _textPosition == LayoutPosition.right) {
       cardContent = Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           logoWidget,
-          const SizedBox(width: 16),
+          SizedBox(width: spacing),
           Expanded(child: elementsColumn),
         ],
       );
@@ -255,7 +260,7 @@ class CreateNewCardState extends State<CreateNewCard> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Expanded(child: elementsColumn),
-          const SizedBox(width: 16),
+          SizedBox(width: spacing),
           logoWidget,
         ],
       );
@@ -265,7 +270,7 @@ class CreateNewCardState extends State<CreateNewCard> {
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           logoWidget,
-          const SizedBox(height: 16),
+          SizedBox(height: spacing),
           elementsColumn,
         ],
       );
@@ -275,108 +280,177 @@ class CreateNewCardState extends State<CreateNewCard> {
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           elementsColumn,
-          const SizedBox(height: 16),
+          SizedBox(height: spacing),
           logoWidget,
         ],
       );
     } else {
-      // Default fallback as row with left logo and right text
       cardContent = Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           logoWidget,
-          const SizedBox(width: 16),
+          SizedBox(width: spacing),
           Expanded(child: elementsColumn),
         ],
       );
     }
 
-    return Card(
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-      color: cardColor,
-      elevation: 6,
-      child: Padding(
-        padding: const EdgeInsets.all(20.0),
-        child: Stack(
-          children: [
-            cardContent,
-          ],
+    return Container(
+      width: _isKeyboardVisible ? MediaQuery.of(context).size.width * 0.8 : null,
+      child: Card(
+        shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(_isKeyboardVisible ? 12 : 20)),
+        color: cardColor,
+        elevation: _isKeyboardVisible ? 3 : 6,
+        child: Padding(
+          padding: EdgeInsets.all(_isKeyboardVisible ? 12.0 : 20.0),
+          child: cardContent,
         ),
       ),
     );
   }
 
-  // Handler for submission (unchanged)
-  Future<void> _handleCardSubmission(BuildContext context) async {
-    try {
-      if (_formKey.currentState == null) {
-        developer.log("Form key is null");
-        return;
-      }
-
-      if (_formKey.currentState!.validate()) {
-        Alerts.showLoader(
-            context: context,
-            message: "Creating Card...",
-            icon: LoadingAnimationWidget.stretchedDots(
-                color: Theme.of(context).primaryColor, size: 20));
-
-        final CardProvider provider =
-            Provider.of<CardProvider>(context, listen: false);
-        final response = await provider
-            .createCard(
-              title: _titleController.text,
-              cardDescription: _jobTitleController.text,
-              organization: _organizationNameController.text,
-              address: _locationController.text,
-              cardLogo: _organizationLogoPath,
-              phoneNumber: _phoneNumberController.text,
-              email: _emailAddressController.text,
-              backgroundColor: '#${_selectedColor.value.toRadixString(16)}',
-              fontColor: '#${_textColor.value.toRadixString(16)}',
-            )
-            .timeout(const Duration(seconds: 60));
-
-        while (Navigator.canPop(context)) {
-          Navigator.pop(context);
+  /// Handle position change with conflict resolution
+  void _handlePositionChange(LayoutPosition newPosition, bool isLogo) {
+    setState(() {
+      if (isLogo) {
+        if (_textPosition == newPosition) {
+          _textPosition = _getOppositePosition(newPosition);
         }
+        _logoPosition = newPosition;
+      } else {
+        if (_logoPosition == newPosition) {
+          _logoPosition = _getOppositePosition(newPosition);
+        }
+        _textPosition = newPosition;
+      }
+    });
+  }
 
-        if (response['status'] == true) {
-          Alerts.showSuccess(
-              context: context,
-              message: "Card created successfully",
-              icon: const Icon(Icons.check_circle, color: Colors.white));
+  /// Get opposite position for conflict resolution
+  LayoutPosition _getOppositePosition(LayoutPosition position) {
+    switch (position) {
+      case LayoutPosition.left:
+        return LayoutPosition.right;
+      case LayoutPosition.right:
+        return LayoutPosition.left;
+      case LayoutPosition.top:
+        return LayoutPosition.bottom;
+      case LayoutPosition.bottom:
+        return LayoutPosition.top;
+    }
+  }
 
-          await Future.delayed(const Duration(seconds: 1));
-          if (context.mounted) {
-            Navigator.pushNamedAndRemoveUntil(
-                context, '/dashboard', (route) => false);
-          }
-        } else {
-          Alerts.showError(
-              context: context,
-              message: response['message'] ?? "Failed to create card",
-              icon: const Icon(Icons.error_outline, color: Colors.white));
+  /// Helper function to format color for backend
+  String _formatColorForBackend(Color color) {
+    final opaqueColor = Color.fromARGB(255, color.red, color.green, color.blue);
+    final r = opaqueColor.red.toRadixString(16).padLeft(2, '0');
+    final g = opaqueColor.green.toRadixString(16).padLeft(2, '0');
+    final b = opaqueColor.blue.toRadixString(16).padLeft(2, '0');
+    return '#$r$g$b'.toUpperCase();
+  }
+
+  /// Refactored submission handler
+  Future<void> _submitCard(BuildContext context) async {
+    if (_validateForm()) {
+      await _createCard(context);
+    } else {
+      _showValidationError(context);
+    }
+  }
+
+  bool _validateForm() {
+    return _formKey.currentState?.validate() ?? false;
+  }
+
+  Future<void> _createCard(BuildContext context) async {
+    try {
+      Alerts.showLoader(
+        context: context,
+        message: "Creating Card...",
+        icon: LoadingAnimationWidget.stretchedDots(
+          color: Theme.of(context).primaryColor,
+          size: 20,
+        ),
+      );
+
+      final CardProvider provider = Provider.of<CardProvider>(context, listen: false);
+      final backgroundColor = _formatColorForBackend(_selectedColor);
+      final fontColor = _formatColorForBackend(_textColor);
+
+      // Log parameters for debugging
+      debugPrint("\n \n ========================\n \n "
+          "Creating card with params: "
+          "title: ${_titleController.text}, "
+          "cardDescription: ${_jobTitleController.text}, "
+          "organization: ${_organizationNameController.text}, "
+          "address: ${_locationController.text}, "
+          "cardLogo: $_organizationLogoPath, "
+          "phoneNumber: ${_phoneNumberController.text}, "
+          "email: ${_emailAddressController.text}, "
+          "backgroundColor: $backgroundColor, "
+          "fontColor: $fontColor"
+          " \n \n ==================================\n \n"
+      );
+
+
+
+
+      final response = await provider.createCard(
+        title: _titleController.text,
+        cardDescription: _jobTitleController.text,
+        organization: _organizationNameController.text,
+        address: _locationController.text,
+        cardLogo: _organizationLogoPath,
+        phoneNumber: _phoneNumberController.text,
+        email: _emailAddressController.text,
+        backgroundColor: backgroundColor,
+        fontColor: fontColor,
+      ).timeout(const Duration(seconds: 60));
+
+      Navigator.pop(context); // Close loader
+
+      if (response['status'] == true) {
+        Alerts.showSuccess(
+          context: context,
+          message: "Card created successfully",
+          icon: const Icon(Icons.check_circle, color: Colors.white),
+        );
+        await Future.delayed(const Duration(seconds: 1));
+        if (context.mounted) {
+          Navigator.pushNamedAndRemoveUntil(context, '/dashboard', (route) => false);
         }
       } else {
         Alerts.showError(
-            context: context,
-            message: "Please fill all required fields correctly",
-            icon: const Icon(Icons.error_outline, color: Colors.white));
+          context: context,
+          message: response['message'] ?? "Failed to create card",
+          icon: const Icon(Icons.error_outline, color: Colors.white),
+        );
       }
     } catch (e) {
-      if (Navigator.canPop(context)) {
-        Navigator.pop(context);
-      }
+      Navigator.pop(context); // Close loader if open
       Alerts.showError(
-          context: context,
-          message: "An unexpected error occurred",
-          icon: const Icon(Icons.error_outline, color: Colors.white));
+        context: context,
+        message: "An unexpected error occurred",
+        icon: const Icon(Icons.error_outline, color: Colors.white),
+      );
+      debugPrint("Error: $e");
     }
+  }
+
+  void _showValidationError(BuildContext context) {
+    Alerts.showError(
+      context: context,
+      message: "Please fill all required fields correctly",
+      icon: const Icon(Icons.error_outline, color: Colors.white),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
+    final bottomInset = MediaQuery.of(context).viewInsets.bottom;
+    _isKeyboardVisible = bottomInset > 0;
+
     return Scaffold(
       backgroundColor: Theme.of(context).highlightColor,
       appBar: AppBar(
@@ -389,7 +463,7 @@ class CreateNewCardState extends State<CreateNewCard> {
         centerTitle: true,
         actions: [
           TextButton(
-            onPressed: () => _handleCardSubmission(context),
+            onPressed: () => _submitCard(context),
             child: Text(
               "Save",
               style: TextStyle(
@@ -403,23 +477,24 @@ class CreateNewCardState extends State<CreateNewCard> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              "Card Preview",
-              style: TextStyle(
-                  color: Theme.of(context).indicatorColor,
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 12),
+            if (!_isKeyboardVisible) ...[
+              Text(
+                "Card Preview",
+                style: TextStyle(
+                    color: Theme.of(context).indicatorColor,
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold),
+              ),
+              const SizedBox(height: 12),
+            ],
             _buildCustomizableCard(context),
-            const SizedBox(height: 12),
+            SizedBox(height: _isKeyboardVisible ? 8 : 12),
             Expanded(
               child: SingleChildScrollView(
                 child: Form(
                   key: _formKey,
                   child: Column(
                     children: [
-                      // Basic information input fields
                       _buildTextField(context, "Title"),
                       _buildInputField(
                         context,
@@ -427,7 +502,7 @@ class CreateNewCardState extends State<CreateNewCard> {
                         _titleController,
                         Icon(CupertinoIcons.doc_text,
                             color: Theme.of(context).indicatorColor),
-                        (value) {
+                            (value) {
                           if (value == null || value.isEmpty) {
                             return 'Please enter a title';
                           }
@@ -442,7 +517,7 @@ class CreateNewCardState extends State<CreateNewCard> {
                         _organizationNameController,
                         Icon(CupertinoIcons.building_2_fill,
                             color: Theme.of(context).indicatorColor),
-                        (value) {
+                            (value) {
                           if (value == null || value.isEmpty) {
                             return 'Please enter organization name';
                           }
@@ -458,12 +533,13 @@ class CreateNewCardState extends State<CreateNewCard> {
                         _jobTitleController,
                         Icon(CupertinoIcons.person,
                             color: Theme.of(context).indicatorColor),
-                        (value) {
+                            (value) {
                           if (value == null || value.isEmpty) {
                             return 'Please enter job title';
                           }
                           return null;
                         },
+                        onChanged: (value) => setState(() {}),
                       ),
                       const SizedBox(height: 12),
                       _buildTextField(context, "Business location"),
@@ -473,7 +549,7 @@ class CreateNewCardState extends State<CreateNewCard> {
                         _locationController,
                         Icon(CupertinoIcons.location,
                             color: Theme.of(context).indicatorColor),
-                        (value) {
+                            (value) {
                           if (value == null || value.isEmpty) {
                             return 'Please enter business location';
                           }
@@ -482,41 +558,41 @@ class CreateNewCardState extends State<CreateNewCard> {
                         onChanged: (value) => setState(() {}),
                       ),
                       const SizedBox(height: 12),
-
-                      // Contact info fields
                       _buildTextField(context, "Email Address"),
                       _buildInputField(
                         context,
                         "example@organization.co.tz",
                         _emailAddressController,
                         const Icon(Icons.email),
-                        (value) {
+                            (value) {
                           if (value == null || value.isEmpty) {
                             return 'Please enter email address';
                           }
-                          if (!RegExp(r'^[\\w-.]+@([\\w-]+\\.)+[\\w-]{2,4}\$')
+                          if (!RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$')
                               .hasMatch(value)) {
                             return 'Please enter a valid email address';
                           }
                           return null;
                         },
+                        onChanged: (value) => setState(() {}),
                       ),
                       const SizedBox(height: 12),
                       _buildTextField(context, "Phone Number"),
                       _buildInputField(
                         context,
-                        "eg: +255 716 521 848",
+                        "eg: 255 716 521 848",
                         _phoneNumberController,
                         const Icon(Icons.phone),
-                        (value) {
+                            (value) {
                           if (value == null || value.isEmpty) {
                             return 'Please enter phone number';
                           }
-                          if (!RegExp(r'^(255)\\d{9}\$').hasMatch(value)) {
+                          if (!RegExp(r'^(255)\d{9}$').hasMatch(value)) {
                             return 'Please enter a valid phone number in format: 255XXXXXXXXX';
                           }
                           return null;
                         },
+                        onChanged: (value) => setState(() {}),
                       ),
                       const SizedBox(height: 12),
                       _buildTextField(context, "Website link"),
@@ -525,18 +601,35 @@ class CreateNewCardState extends State<CreateNewCard> {
                         "eg: www.certainwebsite.com",
                         _websiteController,
                         const Icon(Icons.language),
-                        (value) {
+                            (value) {
                           if (value == null || value.isEmpty) {
                             return 'Please enter website link';
                           }
-                          if (!RegExp(r'^(www\\.)?.+\\..+').hasMatch(value)) {
+                          if (!RegExp(r'^(www\.)?.+\..+').hasMatch(value)) {
                             return 'Please enter a valid website URL';
                           }
                           return null;
                         },
+                        onChanged: (value) => setState(() {}),
                       ),
-
-                      // Card appearance selectors
+                      const SizedBox(height: 12),
+                      _buildTextField(context, "LinkedIn Profile"),
+                      _buildInputField(
+                        context,
+                        "eg: linkedin.com/in/yourprofile",
+                        _linkedinController,
+                        Icon(FontAwesomeIcons.linkedin,
+                            color: Theme.of(context).indicatorColor),
+                            (value) {
+                          if (value != null && value.isNotEmpty) {
+                            if (!value.contains('linkedin.com')) {
+                              return 'Please enter a valid LinkedIn URL';
+                            }
+                          }
+                          return null;
+                        },
+                        onChanged: (value) => setState(() {}),
+                      ),
                       const SizedBox(height: 20),
                       _buildTextField(context, "Card Color"),
                       SizedBox(
@@ -574,38 +667,28 @@ class CreateNewCardState extends State<CreateNewCard> {
                         ],
                       ),
                       const SizedBox(height: 20),
-
-                      // Position controls for logo and text with labels
                       _buildTextField(context, "Logo Position"),
-                      Row(
+                      Wrap(
+                        spacing: 10,
                         children: [
                           _positionSelector(LayoutPosition.left),
-                          const SizedBox(width: 10),
                           _positionSelector(LayoutPosition.right),
-                          const SizedBox(width: 10),
                           _positionSelector(LayoutPosition.top),
-                          const SizedBox(width: 10),
                           _positionSelector(LayoutPosition.bottom),
                         ],
                       ),
                       const SizedBox(height: 20),
                       _buildTextField(context, "Text Position"),
-                      Row(
+                      Wrap(
+                        spacing: 10,
                         children: [
                           _positionSelector(LayoutPosition.left, isLogo: false),
-                          const SizedBox(width: 10),
-                          _positionSelector(LayoutPosition.right,
-                              isLogo: false),
-                          const SizedBox(width: 10),
+                          _positionSelector(LayoutPosition.right, isLogo: false),
                           _positionSelector(LayoutPosition.top, isLogo: false),
-                          const SizedBox(width: 10),
-                          _positionSelector(LayoutPosition.bottom,
-                              isLogo: false),
+                          _positionSelector(LayoutPosition.bottom, isLogo: false),
                         ],
                       ),
                       const SizedBox(height: 20),
-
-                      // Reorder card elements by drag & drop (instructions and preview)
                       _buildTextField(context,
                           "Order Card Elements (drag to reorder in actual app UI)"),
                       Text(
@@ -613,7 +696,7 @@ class CreateNewCardState extends State<CreateNewCard> {
                         style: TextStyle(
                           fontSize: 12,
                           color:
-                              Theme.of(context).indicatorColor.withOpacity(0.5),
+                          Theme.of(context).indicatorColor.withOpacity(0.5),
                           fontStyle: FontStyle.italic,
                         ),
                       ),
@@ -624,7 +707,6 @@ class CreateNewCardState extends State<CreateNewCard> {
                           return Chip(label: Text(e.label));
                         }).toList(),
                       ),
-
                       const SizedBox(height: 32),
                     ],
                   ),
@@ -637,7 +719,6 @@ class CreateNewCardState extends State<CreateNewCard> {
     );
   }
 
-  // UI building helper methods
   Widget _buildTextField(BuildContext context, String labelText) {
     return Align(
       alignment: Alignment.centerLeft,
@@ -750,7 +831,7 @@ class CreateNewCardState extends State<CreateNewCard> {
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
         decoration: BoxDecoration(
           color:
-              isSelected ? Theme.of(context).primaryColor : Colors.transparent,
+          isSelected ? Theme.of(context).primaryColor : Colors.transparent,
           border: Border.all(
               color: isSelected ? Theme.of(context).primaryColor : Colors.grey),
           borderRadius: BorderRadius.circular(20),
@@ -771,20 +852,12 @@ class CreateNewCardState extends State<CreateNewCard> {
     bool isSelected = isLogo ? (_logoPosition == pos) : (_textPosition == pos);
     String label = pos.label;
     return GestureDetector(
-      onTap: () {
-        setState(() {
-          if (isLogo) {
-            _logoPosition = pos;
-          } else {
-            _textPosition = pos;
-          }
-        });
-      },
+      onTap: () => _handlePositionChange(pos, isLogo),
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
         decoration: BoxDecoration(
           color:
-              isSelected ? Theme.of(context).primaryColor : Colors.transparent,
+          isSelected ? Theme.of(context).primaryColor : Colors.transparent,
           borderRadius: BorderRadius.circular(30),
           border: Border.all(
             color: isSelected ? Theme.of(context).primaryColor : Colors.grey,

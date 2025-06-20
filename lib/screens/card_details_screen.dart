@@ -729,7 +729,6 @@ class CardDetailsPage extends StatelessWidget {
     return qrData.isEmpty ? 'No card data available' : qrData;
   }
 
-
   // Share methods
   void _shareViaSms() {
     if (card.phoneNumber != null) {

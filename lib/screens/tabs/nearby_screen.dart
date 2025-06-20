@@ -13,7 +13,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:ecard_app/modals/card_modal.dart';
 
-import '../../modals/found_card.dart';
+import '../../components/found_card.dart';
 
 class QRScannerScreen extends StatefulWidget {
   const QRScannerScreen({super.key});
@@ -339,11 +339,11 @@ class _QRScannerScreenState extends State<QRScannerScreen> {
         final jsonData = jsonDecode(qrData);
         if (jsonData is Map<String, dynamic>) {
           // Include uuid as a fallback for id
-          id = jsonData['id']?.toString()
-              ?? jsonData['ID']?.toString()
-              ?? jsonData['cardId']?.toString()
-              ?? jsonData['card_id']?.toString()
-              ?? jsonData['uuid']?.toString();
+          id = jsonData['id']?.toString() ??
+              jsonData['ID']?.toString() ??
+              jsonData['cardId']?.toString() ??
+              jsonData['card_id']?.toString() ??
+              jsonData['uuid']?.toString();
 
           uuid = jsonData['uuid']?.toString();
           title = jsonData['title']?.toString();
@@ -356,7 +356,8 @@ class _QRScannerScreenState extends State<QRScannerScreen> {
           fontColor = jsonData['fontColor']?.toString();
 
           if (id == null) {
-            debugPrint("WARNING: JSON found but no 'id' or 'uuid' field. Falling back to line-by-line parsing.");
+            debugPrint(
+                "WARNING: JSON found but no 'id' or 'uuid' field. Falling back to line-by-line parsing.");
           }
         }
       } catch (e) {
@@ -428,7 +429,7 @@ class _QRScannerScreenState extends State<QRScannerScreen> {
     bool hasOrgMarker = lines.any((line) => line.startsWith('ORG:'));
     bool hasTitleMarker = lines.any((line) => line.startsWith('TITLE:'));
     bool hasContactInfo = lines.any((line) =>
-    line.startsWith('TEL:') ||
+        line.startsWith('TEL:') ||
         line.startsWith('EMAIL:') ||
         line.startsWith('URL:'));
     return hasOrgMarker || (hasTitleMarker && hasContactInfo);
@@ -473,21 +474,31 @@ class _QRScannerScreenState extends State<QRScannerScreen> {
           debugPrint("Found ID from JSON: '$id'");
           // Parse other fields from JSON if needed
           title = jsonData['title']?.toString();
-          company = jsonData['company']?.toString() ?? jsonData['org']?.toString();
+          company =
+              jsonData['company']?.toString() ?? jsonData['org']?.toString();
           email = jsonData['email']?.toString();
-          phoneNumber = jsonData['phone']?.toString() ?? jsonData['tel']?.toString();
-          websiteUrl = jsonData['websiteUrl']?.toString() ?? jsonData['url']?.toString();
-          address = jsonData['address']?.toString() ?? jsonData['adr']?.toString();
+          phoneNumber =
+              jsonData['phone']?.toString() ?? jsonData['tel']?.toString();
+          websiteUrl =
+              jsonData['websiteUrl']?.toString() ?? jsonData['url']?.toString();
+          address =
+              jsonData['address']?.toString() ?? jsonData['adr']?.toString();
           uuid = jsonData['uuid']?.toString();
           organization = jsonData['organization']?.toString();
-          cardDescription = jsonData['cardDescription']?.toString() ?? jsonData['desc']?.toString();
-          profilePhoto = jsonData['profilePhoto']?.toString() ?? jsonData['photo']?.toString();
-          department = jsonData['department']?.toString() ?? jsonData['dept']?.toString();
-          linkedIn = jsonData['linkedin']?.toString() ?? jsonData['linkedIn']?.toString();
-          backgroundColor = jsonData['backgroundColor']?.toString() ?? jsonData['bgColor']?.toString();
+          cardDescription = jsonData['cardDescription']?.toString() ??
+              jsonData['desc']?.toString();
+          profilePhoto = jsonData['profilePhoto']?.toString() ??
+              jsonData['photo']?.toString();
+          department = jsonData['department']?.toString() ??
+              jsonData['dept']?.toString();
+          linkedIn = jsonData['linkedin']?.toString() ??
+              jsonData['linkedIn']?.toString();
+          backgroundColor = jsonData['backgroundColor']?.toString() ??
+              jsonData['bgColor']?.toString();
           fontColor = jsonData['fontColor']?.toString();
         } else {
-          debugPrint("JSON found, but no 'id' field present. Falling back to line-by-line parsing.");
+          debugPrint(
+              "JSON found, but no 'id' field present. Falling back to line-by-line parsing.");
         }
       }
     } catch (e) {
@@ -562,7 +573,8 @@ class _QRScannerScreenState extends State<QRScannerScreen> {
     // **IMPORTANT**: If no ID found, provide a default or handle appropriately
     // You should modify your QR generation to include ID:1 or handle this case
     if (id == null) {
-      debugPrint("WARNING: No ID found in QR code. You need to add 'ID:1' to your QR generation.");
+      debugPrint(
+          "WARNING: No ID found in QR code. You need to add 'ID:1' to your QR generation.");
       // You can either:
       // 1. Use a default ID (not recommended for production)
       // id = "1"; // This is just for testing
@@ -601,7 +613,7 @@ class _QRScannerScreenState extends State<QRScannerScreen> {
   void _showCardFoundSheet(CustomCard card) {
     showModalBottomSheet(
       context: context,
-      builder: (_) => CardModal(card: card),
+      builder: (_) => FoundCard(card: card),
     ).whenComplete(() {
       setState(() {
         isScanning = true;

@@ -24,30 +24,30 @@ class CustomCard {
   final String? userUuid;
 
   CustomCard(
-      this.userUuid,
-      this.title, {
-        this.id,
-        this.uuid,
-        this.createdAt,
-        this.updatedAt,
-        this.createdBy,
-        this.deleted = false,
-        this.active = true,
-        this.company,
-        this.organization,
-        this.publishCard = false,
-        this.cardLogo,
-        this.profilePhoto,
-        this.address,
-        this.cardDescription,
-        this.phoneNumber,
-        this.department,
-        this.email,
-        this.linkedIn,
-        this.websiteUrl,
-        this.backgroundColor,
-        this.fontColor,
-      });
+    this.userUuid,
+    this.title, {
+    this.id,
+    this.uuid,
+    this.createdAt,
+    this.updatedAt,
+    this.createdBy,
+    this.deleted = false,
+    this.active = true,
+    this.company,
+    this.organization,
+    this.publishCard = false,
+    this.cardLogo,
+    this.profilePhoto,
+    this.address,
+    this.cardDescription,
+    this.phoneNumber,
+    this.department,
+    this.email,
+    this.linkedIn,
+    this.websiteUrl,
+    this.backgroundColor,
+    this.fontColor,
+  });
 
   factory CustomCard.fromJson(Map<String, dynamic> json) {
     return CustomCard(
@@ -55,12 +55,10 @@ class CustomCard {
       json['title'] ?? '',
       id: json['id']?.toString(),
       uuid: json['uuid'],
-      createdAt: json['createdAt'] != null
-          ? DateTime.parse(json['createdAt'])
-          : null,
-      updatedAt: json['updatedAt'] != null
-          ? DateTime.parse(json['updatedAt'])
-          : null,
+      createdAt:
+          json['createdAt'] != null ? DateTime.parse(json['createdAt']) : null,
+      updatedAt:
+          json['updatedAt'] != null ? DateTime.parse(json['updatedAt']) : null,
       createdBy: json['createdBy'],
       deleted: json['deleted'] ?? false,
       active: json['active'] ?? true,
