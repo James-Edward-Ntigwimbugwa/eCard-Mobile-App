@@ -1,15 +1,7 @@
-import 'dart:async';
 import 'dart:convert';
-import 'dart:io';
-import 'package:ecard_app/components/alert_reminder.dart';
-import 'package:ecard_app/services/card_request_implementation.dart';
-import 'package:ecard_app/utils/resources/animes/lottie_animes.dart';
 import 'package:flutter/material.dart';
 import 'package:ecard_app/components/custom_widgets.dart';
-import 'package:loading_animation_widget/loading_animation_widget.dart';
-import 'package:provider/provider.dart';
 import 'package:qr_code_scanner/qr_code_scanner.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:ecard_app/modals/card_modal.dart';
 
@@ -42,98 +34,6 @@ class _QRScannerScreenState extends State<QRScannerScreen> {
 
   bool isNumeric(String s) {
     return int.tryParse(s) != null;
-  }
-
-  void _saveCardLogic(String userId, String cardId) async {
-    debugPrint("method savecardLogic in nearbyscreen executed ====>");
-    if (isSaving && mounted) {
-      Alerts.showLoader(
-        context: context,
-        message: "Saving Card ...",
-        icon: LoadingAnimationWidget.stretchedDots(
-          color: Theme.of(context).primaryColor,
-          size: 20,
-        ),
-      );
-    }
-
-    final cardProvider = Provider.of<CardProvider>(context, listen: false);
-
-    try {
-      bool success = await cardProvider
-          .saveOrganizationCard(userId: userId, cardId: cardId)
-          .timeout(Duration(seconds: 20), onTimeout: () {
-        throw TimeoutException("The operation timed out");
-      });
-
-      if (success) {
-        Alerts.showSuccess(
-          context: context,
-          message: "Card Saved Successfully",
-          icon: Text(LottieAnimes.successLoader),
-        );
-
-        Timer(const Duration(seconds: 2), () {
-          if (Navigator.canPop(context)) {
-            Navigator.pop(context); // Close success dialog
-          }
-          Navigator.pop(context);
-        });
-      } else {
-        Alerts.showError(
-          context: context,
-          message: "Failed to save card. Please try again",
-          icon: Text(LottieAnimes.errorLoader),
-        );
-
-        Timer(const Duration(seconds: 2), () {
-          if (Navigator.canPop(context)) {
-            Navigator.pop(context); // Close error dialog
-          }
-          Navigator.pop(context);
-        });
-      }
-    } on TimeoutException catch (e) {
-      Alerts.showError(
-        context: context,
-        message: "Operation timed out. Please try again later.",
-        icon: Text(LottieAnimes.errorLoader),
-      );
-      Timer(const Duration(seconds: 2), () {
-        if (Navigator.canPop(context)) {
-          Navigator.pop(context); // Close error dialog
-        }
-        Navigator.pop(context);
-      });
-    } on SocketException catch (e) {
-      Alerts.showError(
-        context: context,
-        message: "Network error. Please check your connection.",
-        icon: Text(LottieAnimes.errorLoader),
-      );
-      Timer(const Duration(seconds: 2), () {
-        if (Navigator.canPop(context)) {
-          Navigator.pop(context); // Close error dialog
-        }
-        Navigator.pop(context);
-      });
-    } catch (e) {
-      Alerts.showError(
-        context: context,
-        message: "An unexpected error occurred: ${e.toString()}",
-        icon: Text(LottieAnimes.errorLoader),
-      );
-      Timer(const Duration(seconds: 2), () {
-        if (Navigator.canPop(context)) {
-          Navigator.pop(context); // Close error dialog
-        }
-        Navigator.pop(context);
-      });
-    } finally {
-      if (isSaving && mounted) {
-        Navigator.pop(context); // Dismiss the loader
-      }
-    }
   }
 
   @override

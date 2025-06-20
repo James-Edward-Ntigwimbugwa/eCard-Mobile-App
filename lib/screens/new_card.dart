@@ -393,9 +393,6 @@ class CreateNewCardState extends State<CreateNewCard> {
           " \n \n ==================================\n \n"
       );
 
-
-
-
       final response = await provider.createCard(
         title: _titleController.text,
         cardDescription: _jobTitleController.text,
