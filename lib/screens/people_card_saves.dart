@@ -1,40 +1,80 @@
+import 'package:ecard_app/services/card_request_implementation.dart';
+import 'package:ecard_app/services/card_requests.dart';
 import 'package:flutter/material.dart';
+import '../modals/saved_card_response.dart';
 
 class PeopleCardSaves extends StatefulWidget {
-  const PeopleCardSaves({super.key});
+  final int cardId; // The card ID to fetch saved cards for
+
+  const PeopleCardSaves({
+    super.key,
+    this.cardId = 1, // Default to card ID 1, can be passed from parent widget
+  });
 
   @override
   State<StatefulWidget> createState() => _PeopleCardSavesState();
 }
 
 class _PeopleCardSavesState extends State<PeopleCardSaves> {
-  // Sample data - replace with your actual data source
-  final List<PersonSave> savedPeople = [
-    PersonSave(
-      name: "Loni Bowsher",
-      role: "Senior Consultant",
-      cardName: "Business Card",
-      imageUrl: "assets/images/person1.jpg",
-    ),
-    PersonSave(
-      name: "Charles Davies",
-      role: "App Engineer",
-      cardName: "Developer Card",
-      imageUrl: "assets/images/person2.jpg",
-    ),
-    PersonSave(
-      name: "Beatriz Brito",
-      role: "Sales Associate",
-      cardName: "Sales Card",
-      imageUrl: "assets/images/person3.jpg",
-    ),
-    PersonSave(
-      name: "Jonghang Jun Seo",
-      role: "Sales Representative",
-      cardName: "Corporate Card",
-      imageUrl: "assets/images/person4.jpg",
-    ),
-  ];
+  List<PersonSave> savedPeople = [];
+  bool isLoading = true;
+  String? errorMessage;
+  List<PersonSave> filteredPeople = [];
+  final TextEditingController _searchController = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    _loadSavedCards();
+    _searchController.addListener(_filterPeople);
+  }
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
+  }
+
+  Future<void> _loadSavedCards() async {
+    try {
+      setState(() {
+        isLoading = true;
+        errorMessage = null;
+      });
+
+      final savedCards = await CardProvider.getSavedCardsWithAuth(widget.cardId);
+
+      setState(() {
+        savedPeople = savedCards.map((savedCard) => PersonSave.fromSavedCardResponse(savedCard)).toList();
+        filteredPeople = List.from(savedPeople);
+        isLoading = false;
+      });
+    } catch (e) {
+      setState(() {
+        errorMessage = e.toString();
+        isLoading = false;
+      });
+    }
+  }
+
+  void _filterPeople() {
+    final query = _searchController.text.toLowerCase();
+    setState(() {
+      if (query.isEmpty) {
+        filteredPeople = List.from(savedPeople);
+      } else {
+        filteredPeople = savedPeople.where((person) {
+          return person.name.toLowerCase().contains(query) ||
+              person.role.toLowerCase().contains(query) ||
+              person.cardName.toLowerCase().contains(query);
+        }).toList();
+      }
+    });
+  }
+
+  Future<void> _refreshData() async {
+    await _loadSavedCards();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -84,8 +124,22 @@ class _PeopleCardSavesState extends State<PeopleCardSaves> {
                               ),
                             ),
                           ),
-                          // Spacer to balance the back button
-                          const SizedBox(width: 44),
+                          // Refresh button
+                          GestureDetector(
+                            onTap: _refreshData,
+                            child: Container(
+                              padding: const EdgeInsets.all(8),
+                              decoration: BoxDecoration(
+                                color: Theme.of(context).highlightColor.withOpacity(0.2),
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              child: Icon(
+                                Icons.refresh,
+                                color: Theme.of(context).indicatorColor,
+                                size: 20,
+                              ),
+                            ),
+                          ),
                         ],
                       ),
                     ),
@@ -97,6 +151,7 @@ class _PeopleCardSavesState extends State<PeopleCardSaves> {
                         borderRadius: BorderRadius.circular(12),
                       ),
                       child: TextField(
+                        controller: _searchController,
                         style: TextStyle(color: Theme.of(context).hintColor),
                         decoration: InputDecoration(
                           hintText: 'Search for Team members',
@@ -131,18 +186,103 @@ class _PeopleCardSavesState extends State<PeopleCardSaves> {
                     topRight: Radius.circular(20),
                   ),
                 ),
-                child: ListView.builder(
-                  padding: const EdgeInsets.symmetric(vertical: 20),
-                  itemCount: savedPeople.length,
-                  itemBuilder: (context, index) {
-                    final person = savedPeople[index];
-                    return PersonCard(person: person);
-                  },
-                ),
+                child: _buildContent(),
               ),
             ),
           ],
         ),
+      ),
+    );
+  }
+
+  Widget _buildContent() {
+    if (isLoading) {
+      return const Center(
+        child: CircularProgressIndicator(),
+      );
+    }
+
+    if (errorMessage != null) {
+      return Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(
+              Icons.error_outline,
+              size: 64,
+              color: Theme.of(context).hintColor.withOpacity(0.5),
+            ),
+            const SizedBox(height: 16),
+            Text(
+              'Error loading saved cards',
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.w600,
+                color: Theme.of(context).hintColor,
+              ),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              errorMessage!,
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontSize: 14,
+                color: Theme.of(context).hintColor.withOpacity(0.7),
+              ),
+            ),
+            const SizedBox(height: 24),
+            ElevatedButton(
+              onPressed: _refreshData,
+              child: const Text('Retry'),
+            ),
+          ],
+        ),
+      );
+    }
+
+    if (filteredPeople.isEmpty) {
+      return Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(
+              Icons.people_outline,
+              size: 64,
+              color: Theme.of(context).hintColor.withOpacity(0.5),
+            ),
+            const SizedBox(height: 16),
+            Text(
+              savedPeople.isEmpty ? 'No saved cards found' : 'No matching results',
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.w600,
+                color: Theme.of(context).hintColor,
+              ),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              savedPeople.isEmpty
+                  ? 'This card has not been saved by anyone yet.'
+                  : 'Try adjusting your search terms.',
+              style: TextStyle(
+                fontSize: 14,
+                color: Theme.of(context).hintColor.withOpacity(0.7),
+              ),
+            ),
+          ],
+        ),
+      );
+    }
+
+    return RefreshIndicator(
+      onRefresh: _refreshData,
+      child: ListView.builder(
+        padding: const EdgeInsets.symmetric(vertical: 20),
+        itemCount: filteredPeople.length,
+        itemBuilder: (context, index) {
+          final person = filteredPeople[index];
+          return PersonCard(person: person);
+        },
       ),
     );
   }
@@ -179,18 +319,28 @@ class PersonCard extends StatelessWidget {
           CircleAvatar(
             radius: 25,
             backgroundColor: Theme.of(context).secondaryHeaderColor,
-            child: person.imageUrl.startsWith('assets/')
+            child: person.imageUrl != null && person.imageUrl!.isNotEmpty
                 ? ClipOval(
-                    child: Image.asset(
-                      person.imageUrl,
-                      width: 50,
-                      height: 50,
-                      fit: BoxFit.cover,
-                      errorBuilder: (context, error, stackTrace) {
-                        return _buildDefaultAvatar(context);
-                      },
-                    ),
-                  )
+              child: person.imageUrl!.startsWith('http')
+                  ? Image.network(
+                person.imageUrl!,
+                width: 50,
+                height: 50,
+                fit: BoxFit.cover,
+                errorBuilder: (context, error, stackTrace) {
+                  return _buildDefaultAvatar(context);
+                },
+              )
+                  : Image.asset(
+                person.imageUrl!,
+                width: 50,
+                height: 50,
+                fit: BoxFit.cover,
+                errorBuilder: (context, error, stackTrace) {
+                  return _buildDefaultAvatar(context);
+                },
+              ),
+            )
                 : _buildDefaultAvatar(context),
           ),
 
@@ -282,12 +432,37 @@ class PersonSave {
   final String name;
   final String role;
   final String cardName;
-  final String imageUrl;
+  final String? imageUrl;
+  final String? email;
+  final String? phoneNumber;
+  final String? company;
 
   PersonSave({
     required this.name,
     required this.role,
     required this.cardName,
-    required this.imageUrl,
+    this.imageUrl,
+    this.email,
+    this.phoneNumber,
+    this.company,
   });
+
+  // Factory constructor to create PersonSave from SavedCardResponse
+  factory PersonSave.fromSavedCardResponse(SavedCardResponse savedCard) {
+    return PersonSave(
+      name: savedCard.user.fullName.isNotEmpty
+          ? savedCard.user.fullName
+          : '${savedCard.user.firstName} ${savedCard.user.lastName}'.trim(),
+      role: savedCard.user.jobTitle.isNotEmpty
+          ? savedCard.user.jobTitle
+          : 'Employee',
+      cardName: savedCard.card.title.isNotEmpty
+          ? savedCard.card.title
+          : 'Business Card',
+      imageUrl: savedCard.user.profilePhoto,
+      email: savedCard.user.email,
+      phoneNumber: savedCard.user.phoneNumber,
+      company: savedCard.user.companyName,
+    );
+  }
 }

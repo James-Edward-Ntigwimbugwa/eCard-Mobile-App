@@ -6,6 +6,8 @@ import 'package:http/http.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:ecard_app/services/app_urls.dart';
 
+import '../modals/saved_card_response.dart';
+
 class CardRequests {
   static Future<Response> fetchUserCards([String? uuid]) async {
     try {
@@ -24,7 +26,8 @@ class CardRequests {
       final url = Uri.parse("${AppUrl.getAllCardsById}?uuid=$userUuid");
 
       debugPrint(
-          "Making API request with token: ${bearerToken.substring(0, Math.min(5, bearerToken.length))}...");
+          "Making API request with token: ${bearerToken.substring(
+              0, Math.min(5, bearerToken.length))}...");
 
       final response = await get(
         url,
@@ -75,8 +78,8 @@ class CardRequests {
     }
   }
 
-  static Future<Response> updateCard(
-      String cardId, Map<String, dynamic> cardData) async {
+  static Future<Response> updateCard(String cardId,
+      Map<String, dynamic> cardData) async {
     try {
       final prefs = await SharedPreferences.getInstance();
       final bearerToken = prefs.getString("accessToken");
@@ -163,7 +166,8 @@ class CardRequests {
     try {
       final prefs = await SharedPreferences.getInstance();
       final bearerToken = prefs.getString("accessToken");
-      debugPrint("Bearer token in cardProvider ========>: $bearerToken");
+      debugPrint(
+          "========Bearer token in cardProvider ========>: $bearerToken");
 
       if (bearerToken == null || bearerToken.isEmpty) {
         throw Exception("Authentication is required");
@@ -186,4 +190,33 @@ class CardRequests {
       throw Exception("An exception caught");
     }
   }
+
+  static Future<Response> getSavedPeople({required int cardId}) async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final bearerToken = prefs.getString("accessToken");
+      debugPrint(
+          "========Bearer token in cardProvider ========>: $bearerToken");
+
+      if (bearerToken == null || bearerToken.isEmpty) {
+        throw Exception("Authentication is required");
+      }
+
+      final url = Uri.parse('${AppUrl.getPeopleWhoSavedCard}/$cardId');
+      debugPrint("final url in card-request ========>: $url");
+
+      final response = await get(url,
+          headers: {
+            "Authorization": "Bearer $bearerToken",
+            "Content-type": "application/json",
+            "Accept": "application/json"
+          });
+
+      return response;
+    } catch (e) {
+      debugPrint(e as String?);
+      throw Exception("An exception caught");
+    }
+  }
+
 }

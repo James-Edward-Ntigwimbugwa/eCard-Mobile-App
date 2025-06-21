@@ -6,6 +6,9 @@ import 'package:ecard_app/services/card_requests.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart';
 
+import '../modals/saved_card_response.dart';
+import 'app_urls.dart';
+
 class CardProvider with ChangeNotifier {
   bool _isLoading = false;
   String? _errorMessage;
@@ -16,19 +19,18 @@ class CardProvider with ChangeNotifier {
 
   Future<Map<String, dynamic>> createCard(
       {required String title,
-        required String cardDescription,
-        required String organization,
-        required String address,
-        required String cardLogo,
-        required String phoneNumber,
-        required String email,
-        String? profilePhoto = '',
-        String? linkedIn = '',
-        String? website = '',
-        String? department = '',
-        required String backgroundColor,
-        required String fontColor}) async {
-
+      required String cardDescription,
+      required String organization,
+      required String address,
+      required String cardLogo,
+      required String phoneNumber,
+      required String email,
+      String? profilePhoto = '',
+      String? linkedIn = '',
+      String? website = '',
+      String? department = '',
+      required String backgroundColor,
+      required String fontColor}) async {
     // Fixed: Use the correct field names expected by the server
     final Object cardRegistrationData = {
       'title': title,
@@ -47,7 +49,8 @@ class CardProvider with ChangeNotifier {
       'backgroundColor': backgroundColor,
     };
 
-    debugPrint("= \n \n================= Card request data ============= \n \n ${cardRegistrationData.toString()}"
+    debugPrint(
+        "= \n \n================= Card request data ============= \n \n ${cardRegistrationData.toString()}"
         "\n \n =============================\n \n");
 
     _isLoading = true;
@@ -99,7 +102,7 @@ class CardProvider with ChangeNotifier {
             return {
               'status': true,
               'message':
-              'Card created, but could not be saved locally: ${e.toString()}',
+                  'Card created, but could not be saved locally: ${e.toString()}',
             };
           }
         } else {
@@ -107,7 +110,7 @@ class CardProvider with ChangeNotifier {
           return {
             'status': true,
             'message':
-            'Card created successfully, but no data returned from server',
+                'Card created successfully, but no data returned from server',
           };
         }
       } else {
@@ -119,7 +122,7 @@ class CardProvider with ChangeNotifier {
               'Card creation failed with status ${response.statusCode}';
         } catch (e) {
           errorMessage =
-          'Card creation failed with status ${response.statusCode}';
+              'Card creation failed with status ${response.statusCode}';
         }
 
         developer.log("Card creation error: $errorMessage");
@@ -171,7 +174,7 @@ class CardProvider with ChangeNotifier {
         return {"status": true, "message": "Success", "cards": cards};
       } else {
         _errorMessage =
-        "Failed to load cards: Server returned ${response.statusCode}";
+            "Failed to load cards: Server returned ${response.statusCode}";
         developer.log(_errorMessage!);
 
         final localCards = await CardPreferences.getCardsByUser(uuid);
@@ -268,7 +271,7 @@ class CardProvider with ChangeNotifier {
     debugPrint("==============================================="
         "\n \n saving card for organization \n \n "
         "id : $cardId \n "
-        "user id : $userId" );
+        "user id : $userId");
     try {
       final response = await CardRequests.saveCard(savingBody: savingBody);
 
@@ -279,6 +282,32 @@ class CardProvider with ChangeNotifier {
     } catch (e) {
       debugPrint(e as String);
       throw Exception("Caught an exception");
+    }
+  }
+
+  static Future<List<SavedCardResponse>> getSavedCardsWithAuth(
+      int cardId) async {
+    try {
+      final response = await CardRequests.getSavedPeople(cardId: 1);
+
+      debugPrint('Response status: ${response.statusCode}');
+
+      if (response.statusCode == 200) {
+        final List<dynamic> jsonList = json.decode(response.body);
+
+        return jsonList
+            .map((json) => SavedCardResponse.fromJson(json))
+            .toList();
+      } else if (response.statusCode == 401) {
+        throw Exception('Unauthorized: Invalid or expired token');
+      } else if (response.statusCode == 404) {
+        throw Exception('Card not found');
+      } else {
+        throw Exception('Failed to load saved cards: ${response.statusCode}');
+      }
+    } catch (e) {
+      print('Error fetching saved cards: $e');
+      throw Exception('Failed to fetch saved cards: $e');
     }
   }
 }
