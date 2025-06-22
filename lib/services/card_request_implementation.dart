@@ -285,10 +285,10 @@ class CardProvider with ChangeNotifier {
     }
   }
 
-  static Future<List<SavedCardResponse>> getSavedCardsWithAuth(
-      int cardId) async {
+  static Future<List<SavedCardResponse>> getSavedCardsWithAuth({required
+  int cardId}) async {
     try {
-      final response = await CardRequests.getSavedPeople(cardId: 1);
+      final response = await CardRequests.getSavedPeople(cardId: cardId);
 
       debugPrint('Response status: ${response.statusCode}');
 

@@ -1,4 +1,3 @@
-import 'package:ecard_app/components/alert_reminder.dart';
 import 'package:ecard_app/services/card_request_implementation.dart';
 import 'package:ecard_app/utils/resources/animes/lottie_animes.dart';
 import 'package:flutter/material.dart';
@@ -6,11 +5,11 @@ import 'package:lottie/lottie.dart';
 import '../modals/saved_card_response.dart';
 
 class PeopleCardSaves extends StatefulWidget {
-  final int cardId; // The card ID to fetch saved cards for
+  final int cardId;
 
   const PeopleCardSaves({
     super.key,
-    this.cardId = 1, // Default to card ID 1, can be passed from parent widget
+    required this.cardId,
   });
 
   @override
@@ -51,7 +50,7 @@ class _PeopleCardSavesState extends State<PeopleCardSaves> {
       });
 
       final savedCards =
-          await CardProvider.getSavedCardsWithAuth(widget.cardId);
+      await CardProvider.getSavedCardsWithAuth(cardId : widget.cardId);
       if (mounted) {
         setState(() {
           savedPeople = savedCards
@@ -356,26 +355,26 @@ class PersonCard extends StatelessWidget {
             backgroundColor: Theme.of(context).secondaryHeaderColor,
             child: person.imageUrl != null && person.imageUrl!.isNotEmpty
                 ? ClipOval(
-                    child: person.imageUrl!.startsWith('http')
-                        ? Image.network(
-                            person.imageUrl!,
-                            width: 50,
-                            height: 50,
-                            fit: BoxFit.cover,
-                            errorBuilder: (context, error, stackTrace) {
-                              return _buildDefaultAvatar(context);
-                            },
-                          )
-                        : Image.asset(
-                            person.imageUrl!,
-                            width: 50,
-                            height: 50,
-                            fit: BoxFit.cover,
-                            errorBuilder: (context, error, stackTrace) {
-                              return _buildDefaultAvatar(context);
-                            },
-                          ),
-                  )
+              child: person.imageUrl!.startsWith('http')
+                  ? Image.network(
+                person.imageUrl!,
+                width: 50,
+                height: 50,
+                fit: BoxFit.cover,
+                errorBuilder: (context, error, stackTrace) {
+                  return _buildDefaultAvatar(context);
+                },
+              )
+                  : Image.asset(
+                person.imageUrl!,
+                width: 50,
+                height: 50,
+                fit: BoxFit.cover,
+                errorBuilder: (context, error, stackTrace) {
+                  return _buildDefaultAvatar(context);
+                },
+              ),
+            )
                 : _buildDefaultAvatar(context),
           ),
 
