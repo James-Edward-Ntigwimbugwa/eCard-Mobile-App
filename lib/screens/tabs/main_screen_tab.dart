@@ -163,22 +163,6 @@ class _MainScreenTabState extends State<MainScreenTab>
             const SizedBox(
               width: 4,
             ),
-            DecoratedBox(
-              decoration: BoxDecoration(
-                  shape: BoxShape.rectangle,
-                  color: Theme.of(context).primaryColor.withOpacity(0.1),
-                  borderRadius: BorderRadius.all(Radius.circular(10.0))),
-              child: IconButton(
-                icon: Icon(
-                  Icons.download_for_offline_outlined,
-                  color: Theme.of(context).indicatorColor,
-                  size: 24.0,
-                ),
-                onPressed: () {
-                  Navigator.pushNamed(context, '/people_card_saves');
-                },
-              ),
-            ),
             const SizedBox(
               width: 4,
             ),

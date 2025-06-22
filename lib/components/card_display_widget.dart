@@ -8,14 +8,12 @@ class CardDisplayWidget extends StatefulWidget {
   final CustomCard card;
   final Function(CustomCard)? onCardTap;
   final Function(CustomCard)? onShare;
-  final Function(CustomCard)? onFavorite;
 
   const CardDisplayWidget({
     super.key,
     required this.card,
     this.onCardTap,
     this.onShare,
-    this.onFavorite,
   });
 
   @override
@@ -119,10 +117,10 @@ class _CardDisplayWidgetState extends State<CardDisplayWidget> {
                           children: [
                             _buildActionButton(
                               icon: widget.card.active
-                                  ? Icons.favorite
+                                  ? Icons.bookmark_add
                                   : Icons.favorite_border,
                               onPressed: () =>
-                                  widget.onFavorite?.call(widget.card),
+                                  Navigator.pushNamed(context, '/people_card_saves'),
                               color: textColor.withOpacity(0.1),
                               iconColor: textColor,
                             ),

@@ -1,6 +1,8 @@
+import 'package:ecard_app/components/alert_reminder.dart';
 import 'package:ecard_app/services/card_request_implementation.dart';
-import 'package:ecard_app/services/card_requests.dart';
+import 'package:ecard_app/utils/resources/animes/lottie_animes.dart';
 import 'package:flutter/material.dart';
+import 'package:lottie/lottie.dart';
 import '../modals/saved_card_response.dart';
 
 class PeopleCardSaves extends StatefulWidget {
@@ -36,19 +38,29 @@ class _PeopleCardSavesState extends State<PeopleCardSaves> {
   }
 
   Future<void> _loadSavedCards() async {
+    // Show loading state immediately
     try {
-      setState(() {
-        isLoading = true;
-        errorMessage = null;
+      await Future.delayed(const Duration(seconds: 2), () {
+        // Check if the widget is still mounted before calling setState
+        if (mounted) {
+          setState(() {
+            isLoading = true;
+            errorMessage = null;
+          });
+        }
       });
 
-      final savedCards = await CardProvider.getSavedCardsWithAuth(widget.cardId);
-
-      setState(() {
-        savedPeople = savedCards.map((savedCard) => PersonSave.fromSavedCardResponse(savedCard)).toList();
-        filteredPeople = List.from(savedPeople);
-        isLoading = false;
-      });
+      final savedCards =
+          await CardProvider.getSavedCardsWithAuth(widget.cardId);
+      if (mounted) {
+        setState(() {
+          savedPeople = savedCards
+              .map((savedCard) => PersonSave.fromSavedCardResponse(savedCard))
+              .toList();
+          filteredPeople = List.from(savedPeople);
+          isLoading = false;
+        });
+      }
     } catch (e) {
       setState(() {
         errorMessage = e.toString();
@@ -101,7 +113,9 @@ class _PeopleCardSavesState extends State<PeopleCardSaves> {
                             child: Container(
                               padding: const EdgeInsets.all(8),
                               decoration: BoxDecoration(
-                                color: Theme.of(context).highlightColor.withOpacity(0.2),
+                                color: Theme.of(context)
+                                    .highlightColor
+                                    .withOpacity(0.2),
                                 borderRadius: BorderRadius.circular(12),
                               ),
                               child: Icon(
@@ -130,7 +144,9 @@ class _PeopleCardSavesState extends State<PeopleCardSaves> {
                             child: Container(
                               padding: const EdgeInsets.all(8),
                               decoration: BoxDecoration(
-                                color: Theme.of(context).highlightColor.withOpacity(0.2),
+                                color: Theme.of(context)
+                                    .highlightColor
+                                    .withOpacity(0.2),
                                 borderRadius: BorderRadius.circular(12),
                               ),
                               child: Icon(
@@ -197,8 +213,25 @@ class _PeopleCardSavesState extends State<PeopleCardSaves> {
 
   Widget _buildContent() {
     if (isLoading) {
-      return const Center(
-        child: CircularProgressIndicator(),
+      return Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Lottie.asset(
+              LottieAnimes.loading,
+              width: 100,
+              height: 100,
+            ),
+            const SizedBox(height: 16),
+            Text(
+              'Loading...',
+              style: TextStyle(
+                fontSize: 16,
+                color: Theme.of(context).hintColor,
+              ),
+            ),
+          ],
+        ),
       );
     }
 
@@ -252,7 +285,9 @@ class _PeopleCardSavesState extends State<PeopleCardSaves> {
             ),
             const SizedBox(height: 16),
             Text(
-              savedPeople.isEmpty ? 'No saved cards found' : 'No matching results',
+              savedPeople.isEmpty
+                  ? 'No saved cards found'
+                  : 'No matching results',
               style: TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.w600,
@@ -321,26 +356,26 @@ class PersonCard extends StatelessWidget {
             backgroundColor: Theme.of(context).secondaryHeaderColor,
             child: person.imageUrl != null && person.imageUrl!.isNotEmpty
                 ? ClipOval(
-              child: person.imageUrl!.startsWith('http')
-                  ? Image.network(
-                person.imageUrl!,
-                width: 50,
-                height: 50,
-                fit: BoxFit.cover,
-                errorBuilder: (context, error, stackTrace) {
-                  return _buildDefaultAvatar(context);
-                },
-              )
-                  : Image.asset(
-                person.imageUrl!,
-                width: 50,
-                height: 50,
-                fit: BoxFit.cover,
-                errorBuilder: (context, error, stackTrace) {
-                  return _buildDefaultAvatar(context);
-                },
-              ),
-            )
+                    child: person.imageUrl!.startsWith('http')
+                        ? Image.network(
+                            person.imageUrl!,
+                            width: 50,
+                            height: 50,
+                            fit: BoxFit.cover,
+                            errorBuilder: (context, error, stackTrace) {
+                              return _buildDefaultAvatar(context);
+                            },
+                          )
+                        : Image.asset(
+                            person.imageUrl!,
+                            width: 50,
+                            height: 50,
+                            fit: BoxFit.cover,
+                            errorBuilder: (context, error, stackTrace) {
+                              return _buildDefaultAvatar(context);
+                            },
+                          ),
+                  )
                 : _buildDefaultAvatar(context),
           ),
 
