@@ -81,8 +81,8 @@ class _SplashScreenState extends State<SplashScreen> {
                           color: Colors.white, // Optional: background color
                           child: Lottie.asset(
                             LottieAnimes.cardLoader,
-                            height: 120,
-                            width: 120,
+                            height: 80,
+                            width: 80,
                             fit: BoxFit.cover,
                           ),
                         ),

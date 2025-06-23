@@ -13,6 +13,8 @@ import '../modals/user_modal.dart';
 import '../router/router_path.dart';
 import 'package:camera/camera.dart';
 
+import 'tabs/messages_screen.dart';
+
 class DashboardPage extends StatefulWidget {
   final User user;
   const DashboardPage({super.key, required this.user});
@@ -22,8 +24,6 @@ class DashboardPage extends StatefulWidget {
 
 class _DashboardPageState extends State<DashboardPage>
     with SingleTickerProviderStateMixin {
-  // TabController? tabController;
-  // int currentTab = 0;remote: Support for password authentication was removed on August 13, 2021.
 
   String tabLocation = RouterPath.dashboard;
   late StatefulWidget app;
@@ -40,6 +40,7 @@ class _DashboardPageState extends State<DashboardPage>
     MainScreenTab(),
     QRScannerScreen(),
     ScanningScreen(),
+    MessagesScreen(),
     SettingsScreen()
   ];
 
@@ -75,44 +76,62 @@ class _DashboardPageState extends State<DashboardPage>
           circleColor: Theme.of(context).primaryColor,
           height: 60,
           elevation:
-              0, // Keep elevation at 0 to avoid conflict with container shadow
+          0, // Keep elevation at 0 to avoid conflict with container shadow
           shadowColor: Colors.transparent,
-          circleWidth: 50,
+          circleWidth: 40,
           onTap: (value) => screenIndexProvider.setCurrentIndex(value),
           activeIcons: [
-            Icon((FontAwesomeIcons.home),
+            Icon(FontAwesomeIcons.home,
+                size: 18, // Reduced icon size
                 color: currentIndex == 0
                     ? Theme.of(context).highlightColor
                     : Theme.of(context).primaryColor),
-            Icon((FontAwesomeIcons.qrcode),
+            Icon(FontAwesomeIcons.qrcode,
+                size: 18, // Reduced icon size
                 color: currentIndex == 1
                     ? Theme.of(context).highlightColor
                     : Theme.of(context).primaryColor),
-            Icon((FontAwesomeIcons.wifi),
+            Icon(FontAwesomeIcons.rss, // Changed to hotspot/scanning icon
+                size: 18, // Reduced icon size
                 color: currentIndex == 2
                     ? Theme.of(context).highlightColor
                     : Theme.of(context).primaryColor),
-            Icon((FontAwesomeIcons.gear),
+            Icon(FontAwesomeIcons.message, // Messages icon
+                size: 18, // Reduced icon size
                 color: currentIndex == 3
+                    ? Theme.of(context).highlightColor
+                    : Theme.of(context).primaryColor),
+            Icon(FontAwesomeIcons.gear,
+                size: 18, // Reduced icon size
+                color: currentIndex == 4
                     ? Theme.of(context).highlightColor
                     : Theme.of(context).primaryColor),
           ],
           activeIndex: currentIndex,
           inactiveIcons: [
-            Icon((FontAwesomeIcons.home),
+            Icon(FontAwesomeIcons.home,
+                size: 18, // Reduced icon size
                 color: currentIndex == 0
                     ? Theme.of(context).highlightColor
                     : Theme.of(context).primaryColor),
-            Icon((FontAwesomeIcons.qrcode),
+            Icon(FontAwesomeIcons.qrcode,
+                size: 18, // Reduced icon size
                 color: currentIndex == 1
                     ? Theme.of(context).highlightColor
                     : Theme.of(context).primaryColor),
-            Icon((FontAwesomeIcons.wifi),
+            Icon(FontAwesomeIcons.rss, // Changed to hotspot/scanning icon
+                size: 18, // Reduced icon size
                 color: currentIndex == 2
                     ? Theme.of(context).highlightColor
                     : Theme.of(context).primaryColor),
-            Icon((FontAwesomeIcons.gear),
+            Icon(FontAwesomeIcons.message, // Messages icon
+                size: 18, // Reduced icon size
                 color: currentIndex == 3
+                    ? Theme.of(context).highlightColor
+                    : Theme.of(context).primaryColor),
+            Icon(FontAwesomeIcons.gear,
+                size: 18, // Reduced icon size
+                color: currentIndex == 4
                     ? Theme.of(context).highlightColor
                     : Theme.of(context).primaryColor),
           ],
