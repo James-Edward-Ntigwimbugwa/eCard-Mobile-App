@@ -80,11 +80,11 @@ class _AdminMessagesDialogState extends State<AdminMessagesDialog> {
         return Container(
           decoration: BoxDecoration(
             gradient: LinearGradient(
-              begin: Alignment.bottomCenter,
+              begin: Alignment.bottomLeft,
               end: Alignment.topCenter,
               colors: [
                 Theme.of(context).primaryColor,
-                Theme.of(context).secondaryHeaderColor,
+                Theme.of(context).indicatorColor,
               ],
             ),
             borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),

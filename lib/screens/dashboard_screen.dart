@@ -9,6 +9,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../modals/user_modal.dart';
 import '../router/router_path.dart';
 import 'package:camera/camera.dart';
@@ -25,9 +26,11 @@ class DashboardPage extends StatefulWidget {
 class _DashboardPageState extends State<DashboardPage>
     with SingleTickerProviderStateMixin {
 
+
   String tabLocation = RouterPath.dashboard;
   late StatefulWidget app;
   late CameraController camera;
+
   Future checkAvailable() async {
     if (Platform.isAndroid || Platform.isIOS) {
       final cameras = await availableCameras();
@@ -35,6 +38,7 @@ class _DashboardPageState extends State<DashboardPage>
       // app = ScanningScreen(camera: firstCamera);
     }
   }
+
 
   List<dynamic> screens = [
     MainScreenTab(),

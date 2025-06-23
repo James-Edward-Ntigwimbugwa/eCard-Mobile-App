@@ -60,6 +60,7 @@ dependencies:
   path: any
   geocoding: ^4.0.0
   curved_navigation_bar: ^1.0.6
+  web_socket_channel: ^3.0.3
 dev_dependencies:
   flutter_test:
     sdk: flutter
