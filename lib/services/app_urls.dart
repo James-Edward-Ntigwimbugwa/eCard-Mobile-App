@@ -21,5 +21,5 @@ class AppUrl {
   static String createCard = '$baseEndpoint/api/v1/cards/create';
 
   // notification endpoints
-  static var getUserNotification = '$baseEndpoint/api/notifications/user';
+  static String getUserNotification = '$baseEndpoint/api/notifications/user';
 }

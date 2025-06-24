@@ -1,6 +1,6 @@
 import 'dart:ui';
 
-import 'package:ecard_app/services/card_request_implementation.dart';
+import 'package:ecard_app/services/cad_service.dart';
 import 'package:flutter/material.dart';
 import 'package:ecard_app/modals/card_modal.dart';
 import 'package:provider/provider.dart';

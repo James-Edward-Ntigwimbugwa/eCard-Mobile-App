@@ -23,32 +23,20 @@ class _MessagesScreenState extends State<MessagesScreen> {
   @override
   void initState() {
     super.initState();
-    _initializeNotifications();
-  }
-
-  void _initializeNotifications() async {
-    final prefs = await SharedPreferences.getInstance();
-    final String? userId = prefs.getString("userId");
-
-    if (userId != null) {
-      _notificationService.initialize(userId);
-      await _loadNotifications();
-    } else {
-      setState(() {
-        error = 'User not authenticated';
-        isLoading = false;
-      });
-    }
+    _loadNotifications();
   }
 
   Future<void> _loadNotifications() async {
     try {
+      await Future.delayed(const Duration(seconds: 2));
       setState(() {
         isLoading = true;
         error = null;
       });
+      final prefs = await SharedPreferences.getInstance();
+      final String? userId = prefs.getString('userId');
 
-      final loadedNotifications = await _notificationService.loadNotifications();
+      final loadedNotifications = await _notificationService.loadNotifications(userId: userId);
 
       if (mounted) {
         setState(() {
@@ -338,31 +326,12 @@ class _MessagesScreenState extends State<MessagesScreen> {
               SliverToBoxAdapter(
                 child: Center(
                   child: Padding(
-                    padding: const EdgeInsets.all(50),
+                    padding: const EdgeInsets.all(10),
                     child: Column(
                       children: [
-                        Icon(
-                          Icons.notifications_none,
-                          size: 64,
-                          color: Theme.of(context).hintColor.withOpacity(0.3),
-                        ),
-                        const SizedBox(height: 16),
-                        Text(
-                          'No notifications yet',
-                          style: TextStyle(
-                            fontSize: 18,
-                            color: Theme.of(context).hintColor.withOpacity(0.6),
-                          ),
-                        ),
-                        const SizedBox(height: 8),
-                        Text(
-                          'Notifications will appear here when you receive them',
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                            fontSize: 14,
-                            color: Theme.of(context).hintColor.withOpacity(0.4),
-                          ),
-                        ),
+                        NormalHeaderWidget(text: "Your inbox is empty", color: Theme.of(context).indicatorColor, size: '20'),
+                        Lottie.asset(LottieAnimes.emptyInbox, height: 200 , width: 200),
+                        NormalHeaderWidget(text: "Your messages will appear here as soon as someone saves your card or sends you direct message", color: const Color.fromARGB(179, 56, 56, 56), size: '16.0')
                       ],
                     ),
                   ),

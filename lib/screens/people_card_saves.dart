@@ -1,4 +1,4 @@
-import 'package:ecard_app/services/card_request_implementation.dart';
+import 'package:ecard_app/services/cad_service.dart';
 import 'package:ecard_app/utils/resources/animes/lottie_animes.dart';
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';

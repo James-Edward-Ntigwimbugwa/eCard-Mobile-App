@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'package:ecard_app/components/alert_reminder.dart';
 import 'package:ecard_app/components/custom_widgets.dart';
-import 'package:ecard_app/services/card_request_implementation.dart';
+import 'package:ecard_app/services/cad_service.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';

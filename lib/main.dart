@@ -1,5 +1,6 @@
+import 'package:device_preview/device_preview.dart';
 import 'package:ecard_app/providers/auth_provider.dart';
-import 'package:ecard_app/services/card_request_implementation.dart';
+import 'package:ecard_app/services/cad_service.dart';
 import 'package:ecard_app/providers/screen_index_provider.dart';
 import 'package:ecard_app/providers/user_provider.dart';
 import 'package:ecard_app/router/page_router.dart';
@@ -20,8 +21,8 @@ Future<void> main() async {
 
   final SharedPreferences prefs = await SharedPreferences.getInstance();
   final bool isDarkMode = prefs.getBool("themeMode") ?? false;
-  // runApp(DevicePreview(builder: (context) => EcardApp(isDarkMode: isDarkMode)));
-  runApp(EcardApp(isDarkMode: isDarkMode));
+  runApp(DevicePreview(builder: (context) => EcardApp(isDarkMode: isDarkMode)));
+  // runApp(EcardApp(isDarkMode: isDarkMode));
 }
 
 class EcardApp extends StatelessWidget {

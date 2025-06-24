@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:ecard_app/services/app_urls.dart';
+import 'package:ecard_app/services/requests/notification_requests.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
@@ -9,39 +10,22 @@ class NotificationService {
   static const String baseUrl = 'http://192.168.1.150:8080/api';
 
   List<MessageNotification> _notifications = [];
-  String? _currentUserId;
-
   List<MessageNotification> get currentNotifications => _notifications;
 
-  void initialize(String userId) {
-    _currentUserId = userId;
-    loadNotifications();
-  }
+  // initialize global user id
+  String? _currentUserId;
+  String? get currentUserId => _currentUserId;
 
-  Future<List<MessageNotification>> loadNotifications() async {
-    if (_currentUserId == null) return [];
-
-    final prefs = await SharedPreferences.getInstance();
-    final token = prefs.getString("acessToken");
-
+  Future<List<MessageNotification>> loadNotifications(
+      {required String? userId}) async {
     try {
-      String url = Uri.parse('$baseUrl/notifications/user/$_currentUserId') as String;
-      debugPrint("======================\n "
-          "$url.toString() \n ========================");
-      final response = await http.get(
-        Uri.parse(url),
-        headers: {
-          'Content-Type': 'application/json',
-          "Accept": "application/json",
-          'Authorization': 'Bearer $token',
-        },
-      );
+      final response =
+          await NotificationRequests.fetchNotifications(id: userId);
 
       if (response.statusCode == 200) {
         final List<dynamic> jsonData = json.decode(response.body);
         _notifications =
             jsonData.map((json) => MessageNotification.fromJson(json)).toList();
-
         // Sort by timestamp (newest first)
         _notifications.sort((a, b) => b.timestamp.compareTo(a.timestamp));
 
@@ -100,8 +84,6 @@ class NotificationService {
   }
 
   Future<bool> markAllAsRead() async {
-    if (_currentUserId == null) return false;
-
     final prefs = await SharedPreferences.getInstance();
     final token = prefs.getString("acessToken");
 
@@ -118,22 +100,22 @@ class NotificationService {
         // Update local state
         _notifications = _notifications
             .map((n) => MessageNotification(
-          id: n.id,
-          companyName: n.companyName,
-          cardHolderName: n.cardHolderName,
-          companyLogo: n.companyLogo,
-          timestamp: n.timestamp,
-          isRead: true,
-          message: n.message,
-          type: n.type,
-          cardTitle: n.cardTitle,
-          organization: n.organization,
-          email: n.email,
-          phoneNumber: n.phoneNumber,
-          address: n.address,
-          actorFullName: n.actorFullName,
-          recipientFullName: n.recipientFullName,
-        ))
+                  id: n.id,
+                  companyName: n.companyName,
+                  cardHolderName: n.cardHolderName,
+                  companyLogo: n.companyLogo,
+                  timestamp: n.timestamp,
+                  isRead: true,
+                  message: n.message,
+                  type: n.type,
+                  cardTitle: n.cardTitle,
+                  organization: n.organization,
+                  email: n.email,
+                  phoneNumber: n.phoneNumber,
+                  address: n.address,
+                  actorFullName: n.actorFullName,
+                  recipientFullName: n.recipientFullName,
+                ))
             .toList();
 
         return true;

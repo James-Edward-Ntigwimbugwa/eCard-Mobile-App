@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'dart:developer' as developer;
 import 'package:ecard_app/modals/card_modal.dart';
 import 'package:ecard_app/preferences/card_preference.dart';
-import 'package:ecard_app/services/card_requests.dart';
+import 'package:ecard_app/services/requests/card_requests.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart';
 

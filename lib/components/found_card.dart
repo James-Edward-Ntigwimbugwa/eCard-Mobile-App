@@ -8,7 +8,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../modals/card_modal.dart';
-import '../services/card_request_implementation.dart';
+import '../services/cad_service.dart';
 import '../utils/resources/animes/lottie_animes.dart';
 import 'alert_reminder.dart';
 
