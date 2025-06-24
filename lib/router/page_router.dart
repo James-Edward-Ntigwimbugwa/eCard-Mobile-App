@@ -20,7 +20,7 @@ class PageRouter {
       case '/dashboard':
         return MaterialPageRoute(builder: (context) {
           final userProvider =
-          Provider.of<UserProvider>(context, listen: false);
+              Provider.of<UserProvider>(context, listen: false);
           return DashboardPage(user: userProvider.user);
         });
       case RouterPath.newCard:
@@ -42,8 +42,8 @@ class PageRouter {
         final cardId = settings.arguments as int?;
         return MaterialPageRoute(
             builder: (context) => PeopleCardSaves(
-              cardId: cardId ?? 1, // Default to 1 if no cardId provided
-            ));
+                  cardId: cardId ?? 1, // Default to 1 if no cardId provided
+                ));
       default:
         return null;
     }

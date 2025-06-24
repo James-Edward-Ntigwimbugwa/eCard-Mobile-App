@@ -281,7 +281,7 @@ class _QRScannerScreenState extends State<QRScannerScreen> {
             id = line.substring(7).trim();
           } else if (upperLine.startsWith('UUID:')) {
             uuid = line.substring(5).trim();
-            if (id == null) id = uuid;
+            id ??= uuid;
           } else if (upperLine.startsWith('TITLE:')) {
             title = line.substring(6).trim();
           } else if (upperLine.startsWith('ORG:')) {

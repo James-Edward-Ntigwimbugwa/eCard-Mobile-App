@@ -7,7 +7,6 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart';
 
 import '../modals/saved_card_response.dart';
-import 'app_urls.dart';
 
 class CardProvider with ChangeNotifier {
   bool _isLoading = false;
@@ -285,8 +284,8 @@ class CardProvider with ChangeNotifier {
     }
   }
 
-  static Future<List<SavedCardResponse>> getSavedCardsWithAuth({required
-  int cardId}) async {
+  static Future<List<SavedCardResponse>> getSavedCardsWithAuth(
+      {required int cardId}) async {
     try {
       final response = await CardRequests.getSavedPeople(cardId: cardId);
 

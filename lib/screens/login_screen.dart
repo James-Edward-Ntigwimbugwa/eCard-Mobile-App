@@ -9,7 +9,6 @@ import 'package:ecard_app/utils/resources/strings/strings.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:lottie/lottie.dart';
 import 'package:provider/provider.dart';
 import '../components/alert_reminder.dart';
@@ -347,7 +346,7 @@ class _LoginPageState extends State<LoginPage> {
                                       height: 50,
                                       fit: BoxFit.contain,
                                     )
-                                  : Container(
+                                  : SizedBox(
                                       width: MediaQuery.of(context).size.width,
                                       child: ElevatedButton(
                                         onPressed: _formIsSubmitted

@@ -1,4 +1,3 @@
-
 class SavedCardResponse {
   final int id;
   final UserDetail user;
@@ -17,9 +16,8 @@ class SavedCardResponse {
       id: json['id'],
       user: UserDetail.fromJson(json['user']),
       card: CardDetail.fromJson(json['card']),
-      savedDate: json['savedDate'] != null
-          ? DateTime.parse(json['savedDate'])
-          : null,
+      savedDate:
+          json['savedDate'] != null ? DateTime.parse(json['savedDate']) : null,
     );
   }
 
@@ -116,8 +114,9 @@ class UserDetail {
       profilePhoto: json['profilePhoto'],
       jobTitle: json['jobTitle'] ?? '',
       userCards: (json['userCards'] as List?)
-          ?.map((card) => UserCard.fromJson(card))
-          .toList() ?? [],
+              ?.map((card) => UserCard.fromJson(card))
+              .toList() ??
+          [],
       accountLocked: json['accountLocked'] ?? false,
       accountExpired: json['accountExpired'] ?? false,
       credentialsExpired: json['credentialsExpired'] ?? false,

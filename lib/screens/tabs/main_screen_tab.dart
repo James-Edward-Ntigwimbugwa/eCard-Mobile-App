@@ -166,7 +166,6 @@ class _MainScreenTabState extends State<MainScreenTab>
             const SizedBox(
               width: 4,
             ),
-        
             const SizedBox(
               width: 4,
             ),

@@ -76,6 +76,8 @@ flutter:
     - assets/
     - assets/images/
     - assets/anime/no-content.json
+    - assets/anime/empty-inbox.json
+    - assets/anime/messages.json
     - assets/images/splash-card-image-front.jpg
     - assets/images/splash-card-image-back.jpg
     - assets/anime/

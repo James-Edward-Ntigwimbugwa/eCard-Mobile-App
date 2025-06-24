@@ -44,7 +44,6 @@ dependencies:
   flutter_colorpicker: ^1.1.0
   flutter_otp_text_field: ^1.4.0+2
   permission_handler: ^11.3.1
-  # qr_code_scanner: ^1.0.1
   qr_flutter: ^4.1.0
   image_picker: ^1.1.2
   flashy_tab_bar2: ^0.0.10

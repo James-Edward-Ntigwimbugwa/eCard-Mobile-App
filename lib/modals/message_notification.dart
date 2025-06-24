@@ -36,12 +36,16 @@ class MessageNotification {
   factory MessageNotification.fromJson(Map<String, dynamic> json) {
     return MessageNotification(
       id: json['id'],
-      companyName: json['card']?['organization'] ?? json['actor']['companyName'] ?? 'Unknown Company',
+      companyName: json['card']?['organization'] ??
+          json['actor']['companyName'] ??
+          'Unknown Company',
       cardHolderName: json['actor']['fullName'] ?? 'Unknown',
-      companyLogo: _getCompanyLogo(json['card']?['organization'] ?? json['actor']['companyName']),
+      companyLogo: _getCompanyLogo(
+          json['card']?['organization'] ?? json['actor']['companyName']),
       timestamp: DateTime.parse(json['createdAt']),
       isRead: json['read'] ?? false,
-      message: _generateMessage(json['type'], json['message'], json['actor']['fullName']),
+      message: _generateMessage(
+          json['type'], json['message'], json['actor']['fullName']),
       type: json['type'],
       cardTitle: json['card']?['title'],
       organization: json['card']?['organization'],
@@ -65,7 +69,8 @@ class MessageNotification {
     return '💼';
   }
 
-  static String _generateMessage(String type, String? messageContent, String actorName) {
+  static String _generateMessage(
+      String type, String? messageContent, String actorName) {
     switch (type) {
       case 'CARD_SAVED':
         return '$actorName saved your business card';
@@ -73,7 +78,10 @@ class MessageNotification {
         if (messageContent != null && messageContent.isNotEmpty) {
           // Try to parse JSON message first
           try {
-            final messageData = messageContent.replaceAll('"', '').replaceAll('{', '').replaceAll('}', '');
+            final messageData = messageContent
+                .replaceAll('"', '')
+                .replaceAll('{', '')
+                .replaceAll('}', '');
             if (messageData.contains('message')) {
               final actualMessage = messageData.split(':').last.trim();
               return '$actorName sent: $actualMessage';

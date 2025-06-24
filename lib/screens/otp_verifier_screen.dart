@@ -2,7 +2,6 @@ import 'dart:async';
 import 'package:ecard_app/components/custom_widgets.dart';
 import 'package:ecard_app/providers/auth_provider.dart';
 import 'package:ecard_app/screens/register_screen.dart';
-import 'package:ecard_app/services/auth_requests.dart';
 import 'package:ecard_app/components/alert_reminder.dart';
 import 'package:ecard_app/utils/resources/animes/lottie_animes.dart';
 import 'package:flutter/material.dart';

@@ -107,129 +107,130 @@ class _CardDisplayWidgetState extends State<CardDisplayWidget> {
         child: _isLoading
             ? const Center(child: CircularProgressIndicator())
             : Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Row(
-                    children: [
-                      CircleAvatar(
-                        radius: 20,
-                        backgroundColor: textColor.withOpacity(0.1),
-                        backgroundImage: widget.card.profilePhoto != null
-                            ? NetworkImage(widget.card.profilePhoto!)
-                            : null,
-                        child: widget.card.profilePhoto == null
-                            ? Icon(Icons.business,
-                            color: textColor.withOpacity(0.7),
-                            size: 16)
-                            : null,
-                      ),
-                      const SizedBox(width: 8),
-                      Text(
-                        _userData?.companyName ??
-                            widget.card.organization ??
-                            'Organization',
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                          color: textColor,
+                padding: const EdgeInsets.all(16.0),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Row(
+                          children: [
+                            CircleAvatar(
+                              radius: 20,
+                              backgroundColor: textColor.withOpacity(0.1),
+                              backgroundImage: widget.card.profilePhoto != null
+                                  ? NetworkImage(widget.card.profilePhoto!)
+                                  : null,
+                              child: widget.card.profilePhoto == null
+                                  ? Icon(Icons.business,
+                                      color: textColor.withOpacity(0.7),
+                                      size: 16)
+                                  : null,
+                            ),
+                            const SizedBox(width: 8),
+                            Text(
+                              _userData?.companyName ??
+                                  widget.card.organization ??
+                                  'Organization',
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                                color: textColor,
+                              ),
+                            ),
+                          ],
                         ),
-                      ),
-                    ],
-                  ),
-                  Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      _buildActionButton(
-                        icon: widget.card.active
-                            ? Icons.bookmark_add
-                            : Icons.favorite_border,
-                        onPressed: _navigateToCardSaves, // Updated to use the new method
-                        color: textColor.withOpacity(0.1),
-                        iconColor: textColor,
-                      ),
-                      const SizedBox(width: 4),
-                      _buildActionButton(
-                        icon: Icons.share,
-                        onPressed: () =>
-                            widget.onShare?.call(widget.card),
-                        color: textColor.withOpacity(0.1),
-                        iconColor: textColor,
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-              const SizedBox(height: 20),
-              Text(
-                widget.card.title ?? 'Business Card',
-                style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                  color: textColor,
-                ),
-              ),
-              const SizedBox(height: 12),
-              Text(
-                _getFullName(),
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.w600,
-                  color: textColor,
-                ),
-              ),
-              const SizedBox(height: 4),
-              Text(
-                _userData?.jobTitle ?? _userData?.jobTitle ?? 'Position',
-                style: TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.normal,
-                  color: textColor.withOpacity(0.8),
-                ),
-              ),
-              const SizedBox(height: 12),
-              Divider(height: 1, color: textColor.withOpacity(0.2)),
-              const SizedBox(height: 12),
-              Row(
-                children: [
-                  Icon(Icons.phone, color: textColor, size: 16),
-                  const SizedBox(width: 8),
-                  Text(
-                    _userData?.phone ??
-                        widget.card.phoneNumber ??
-                        'Phone Number',
-                    style: TextStyle(
-                      fontSize: 14,
-                      color: textColor,
+                        Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            _buildActionButton(
+                              icon: widget.card.active
+                                  ? Icons.bookmark_add
+                                  : Icons.favorite_border,
+                              onPressed:
+                                  _navigateToCardSaves, // Updated to use the new method
+                              color: textColor.withOpacity(0.1),
+                              iconColor: textColor,
+                            ),
+                            const SizedBox(width: 4),
+                            _buildActionButton(
+                              icon: Icons.share,
+                              onPressed: () =>
+                                  widget.onShare?.call(widget.card),
+                              color: textColor.withOpacity(0.1),
+                              iconColor: textColor,
+                            ),
+                          ],
+                        ),
+                      ],
                     ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 8),
-              Row(
-                children: [
-                  Icon(Icons.email, color: textColor, size: 16),
-                  const SizedBox(width: 8),
-                  Text(
-                    _userData?.email ??
-                        widget.card.email ??
-                        'Email Address',
-                    style: TextStyle(
-                      fontSize: 14,
-                      color: textColor,
+                    const SizedBox(height: 20),
+                    Text(
+                      widget.card.title ?? 'Business Card',
+                      style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                        color: textColor,
+                      ),
                     ),
-                  ),
-                ],
+                    const SizedBox(height: 12),
+                    Text(
+                      _getFullName(),
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.w600,
+                        color: textColor,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      _userData?.jobTitle ?? _userData?.jobTitle ?? 'Position',
+                      style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.normal,
+                        color: textColor.withOpacity(0.8),
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    Divider(height: 1, color: textColor.withOpacity(0.2)),
+                    const SizedBox(height: 12),
+                    Row(
+                      children: [
+                        Icon(Icons.phone, color: textColor, size: 16),
+                        const SizedBox(width: 8),
+                        Text(
+                          _userData?.phone ??
+                              widget.card.phoneNumber ??
+                              'Phone Number',
+                          style: TextStyle(
+                            fontSize: 14,
+                            color: textColor,
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 8),
+                    Row(
+                      children: [
+                        Icon(Icons.email, color: textColor, size: 16),
+                        const SizedBox(width: 8),
+                        Text(
+                          _userData?.email ??
+                              widget.card.email ??
+                              'Email Address',
+                          style: TextStyle(
+                            fontSize: 14,
+                            color: textColor,
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 8),
+                  ],
+                ),
               ),
-              const SizedBox(height: 8),
-            ],
-          ),
-        ),
       ),
     );
   }

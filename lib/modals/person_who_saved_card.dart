@@ -1,4 +1,3 @@
-
 import 'package:ecard_app/modals/saved_card_response.dart';
 
 class PersonSave {

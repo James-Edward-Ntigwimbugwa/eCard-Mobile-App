@@ -6,10 +6,10 @@ class AdminMessagesDialog extends StatefulWidget {
   final int additionalRecipientsCount;
 
   const AdminMessagesDialog({
-    Key? key,
+    super.key,
     required this.recipientNames,
     this.additionalRecipientsCount = 0,
-  }) : super(key: key);
+  });
 
   @override
   State<AdminMessagesDialog> createState() => _AdminMessagesDialogState();
@@ -22,19 +22,24 @@ class _AdminMessagesDialogState extends State<AdminMessagesDialog> {
       text: "Welcome everyone! This is an important announcement.",
       timestamp: DateTime.now().subtract(const Duration(minutes: 30)),
       senderName: "Admin",
-      senderAvatar: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100&h=100&fit=crop&crop=face",
+      senderAvatar:
+          "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100&h=100&fit=crop&crop=face",
     ),
     Message(
-      text: "Please review the new guidelines that have been shared in the documents section.",
+      text:
+          "Please review the new guidelines that have been shared in the documents section.",
       timestamp: DateTime.now().subtract(const Duration(minutes: 25)),
       senderName: "Admin",
-      senderAvatar: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100&h=100&fit=crop&crop=face",
+      senderAvatar:
+          "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100&h=100&fit=crop&crop=face",
     ),
     Message(
-      text: "The meeting scheduled for tomorrow has been moved to 3 PM. Please update your calendars accordingly.",
+      text:
+          "The meeting scheduled for tomorrow has been moved to 3 PM. Please update your calendars accordingly.",
       timestamp: DateTime.now().subtract(const Duration(minutes: 15)),
       senderName: "Admin",
-      senderAvatar: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100&h=100&fit=crop&crop=face",
+      senderAvatar:
+          "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100&h=100&fit=crop&crop=face",
     ),
   ];
 
@@ -46,7 +51,8 @@ class _AdminMessagesDialogState extends State<AdminMessagesDialog> {
             text: _messageController.text.trim(),
             timestamp: DateTime.now(),
             senderName: "Admin",
-            senderAvatar: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100&h=100&fit=crop&crop=face",
+            senderAvatar:
+                "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100&h=100&fit=crop&crop=face",
           ),
         );
       });
@@ -62,7 +68,8 @@ class _AdminMessagesDialogState extends State<AdminMessagesDialog> {
     } else if (widget.recipientNames.length == 2) {
       return "You are sending messages to ${widget.recipientNames[0]} and ${widget.recipientNames[1]}";
     } else {
-      String baseText = "You are sending messages to ${widget.recipientNames[0]}, ${widget.recipientNames[1]}";
+      String baseText =
+          "You are sending messages to ${widget.recipientNames[0]}, ${widget.recipientNames[1]}";
       if (widget.additionalRecipientsCount > 0) {
         baseText += " and ${widget.additionalRecipientsCount}+ others";
       }
@@ -111,7 +118,8 @@ class _AdminMessagesDialogState extends State<AdminMessagesDialog> {
                   child: BackdropFilter(
                     filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
                     child: Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 16, vertical: 12),
                       decoration: BoxDecoration(
                         color: Colors.white.withOpacity(0.15),
                         borderRadius: BorderRadius.circular(12),
@@ -227,7 +235,7 @@ class _AdminMessagesDialogState extends State<AdminMessagesDialog> {
 class MessageBubble extends StatelessWidget {
   final Message message;
 
-  const MessageBubble({Key? key, required this.message}) : super(key: key);
+  const MessageBubble({super.key, required this.message});
 
   @override
   Widget build(BuildContext context) {

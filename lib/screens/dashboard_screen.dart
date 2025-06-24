@@ -9,7 +9,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:provider/provider.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import '../modals/user_modal.dart';
 import '../router/router_path.dart';
 import 'package:camera/camera.dart';
@@ -25,8 +24,6 @@ class DashboardPage extends StatefulWidget {
 
 class _DashboardPageState extends State<DashboardPage>
     with SingleTickerProviderStateMixin {
-
-
   String tabLocation = RouterPath.dashboard;
   late StatefulWidget app;
   late CameraController camera;
@@ -38,7 +35,6 @@ class _DashboardPageState extends State<DashboardPage>
       // app = ScanningScreen(camera: firstCamera);
     }
   }
-
 
   List<dynamic> screens = [
     MainScreenTab(),
@@ -80,7 +76,7 @@ class _DashboardPageState extends State<DashboardPage>
           circleColor: Theme.of(context).primaryColor,
           height: 60,
           elevation:
-          0, // Keep elevation at 0 to avoid conflict with container shadow
+              0, // Keep elevation at 0 to avoid conflict with container shadow
           shadowColor: Colors.transparent,
           circleWidth: 40,
           onTap: (value) => screenIndexProvider.setCurrentIndex(value),

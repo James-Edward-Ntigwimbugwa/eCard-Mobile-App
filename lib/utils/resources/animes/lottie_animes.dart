@@ -4,4 +4,7 @@ class LottieAnimes {
   static const successLoader = 'assets/anime/success-loader.json';
   static const errorLoader = 'assets/anime/error-loader.json';
   static const loading = 'assets/anime/loading-anime.json';
+  static const messages = 'assets/anime/messages.json';
+  static const emptyInbox = 'assets/anime/empty-inbox.json';
+
 }

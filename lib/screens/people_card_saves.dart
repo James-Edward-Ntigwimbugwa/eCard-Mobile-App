@@ -2,7 +2,6 @@ import 'package:ecard_app/services/card_request_implementation.dart';
 import 'package:ecard_app/utils/resources/animes/lottie_animes.dart';
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
-import 'dart:ui';
 import '../modals/person_who_saved_card.dart' as model_person_save;
 import 'admin_message_dialog.dart';
 
@@ -52,11 +51,12 @@ class _PeopleCardSavesState extends State<PeopleCardSaves> {
       });
 
       final savedCards =
-      await CardProvider.getSavedCardsWithAuth(cardId : widget.cardId);
+          await CardProvider.getSavedCardsWithAuth(cardId: widget.cardId);
       if (mounted) {
         setState(() {
           savedPeople = savedCards
-              .map((savedCard) => model_person_save.PersonSave.fromSavedCardResponse(savedCard))
+              .map((savedCard) =>
+                  model_person_save.PersonSave.fromSavedCardResponse(savedCard))
               .toList();
           filteredPeople = List.from(savedPeople);
           isLoading = false;
@@ -96,10 +96,8 @@ class _PeopleCardSavesState extends State<PeopleCardSaves> {
 
     if (filteredPeople.isNotEmpty) {
       // Take first 2 names for display
-      recipientNames = filteredPeople
-          .take(2)
-          .map((person) => person.name)
-          .toList();
+      recipientNames =
+          filteredPeople.take(2).map((person) => person.name).toList();
 
       // Calculate additional count
       if (filteredPeople.length > 2) {
@@ -131,11 +129,11 @@ class _PeopleCardSavesState extends State<PeopleCardSaves> {
       floatingActionButton: FloatingActionButton(
         onPressed: _showAdminMessagesDialog,
         backgroundColor: Theme.of(context).primaryColor,
+        shape: const CircleBorder(),
         child: const Icon(
           Icons.message,
           color: Colors.white,
         ),
-        shape: const CircleBorder(),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
       body: SafeArea(
@@ -368,6 +366,7 @@ class _PeopleCardSavesState extends State<PeopleCardSaves> {
     );
   }
 }
+
 class PersonCard extends StatelessWidget {
   final model_person_save.PersonSave person;
 
@@ -384,9 +383,7 @@ class PersonCard extends StatelessWidget {
         color: Theme.of(context).cardColor,
         borderRadius: BorderRadius.circular(16),
         border: Border.all(
-            color: Theme.of(context).primaryColor.withOpacity(0.3),
-            width: 1
-        ),
+            color: Theme.of(context).primaryColor.withOpacity(0.3), width: 1),
         boxShadow: [
           BoxShadow(
             color: Theme.of(context).shadowColor.withOpacity(0.1),
@@ -421,27 +418,27 @@ class PersonCard extends StatelessWidget {
                   ),
                   child: person.imageUrl != null && person.imageUrl!.isNotEmpty
                       ? ClipRRect(
-                    borderRadius: BorderRadius.circular(11),
-                    child: person.imageUrl!.startsWith('http')
-                        ? Image.network(
-                      person.imageUrl!,
-                      width: 50,
-                      height: 50,
-                      fit: BoxFit.cover,
-                      errorBuilder: (context, error, stackTrace) {
-                        return _buildDefaultAvatar(context);
-                      },
-                    )
-                        : Image.asset(
-                      person.imageUrl!,
-                      width: 50,
-                      height: 50,
-                      fit: BoxFit.cover,
-                      errorBuilder: (context, error, stackTrace) {
-                        return _buildDefaultAvatar(context);
-                      },
-                    ),
-                  )
+                          borderRadius: BorderRadius.circular(11),
+                          child: person.imageUrl!.startsWith('http')
+                              ? Image.network(
+                                  person.imageUrl!,
+                                  width: 50,
+                                  height: 50,
+                                  fit: BoxFit.cover,
+                                  errorBuilder: (context, error, stackTrace) {
+                                    return _buildDefaultAvatar(context);
+                                  },
+                                )
+                              : Image.asset(
+                                  person.imageUrl!,
+                                  width: 50,
+                                  height: 50,
+                                  fit: BoxFit.cover,
+                                  errorBuilder: (context, error, stackTrace) {
+                                    return _buildDefaultAvatar(context);
+                                  },
+                                ),
+                        )
                       : _buildDefaultAvatar(context),
                 ),
 
@@ -497,7 +494,8 @@ class PersonCard extends StatelessWidget {
                             'Card saved',
                             style: TextStyle(
                               fontSize: 12,
-                              color: Theme.of(context).hintColor.withOpacity(0.6),
+                              color:
+                                  Theme.of(context).hintColor.withOpacity(0.6),
                             ),
                           ),
                           Row(

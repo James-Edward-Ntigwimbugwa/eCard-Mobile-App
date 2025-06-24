@@ -4,11 +4,11 @@ import 'package:lottie/lottie.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../modals/message_notification.dart';
 import '../../services/notiication_service.dart';
+import '../../utils/resources/animes/lottie_animes.dart';
 import '../../utils/theme/theme.dart';
 
 class MessagesScreen extends StatefulWidget {
-
-  const MessagesScreen({Key? key}) : super(key: key);
+  const MessagesScreen({super.key});
 
   @override
   State<MessagesScreen> createState() => _MessagesScreenState();
@@ -32,43 +32,7 @@ class _MessagesScreenState extends State<MessagesScreen> {
 
     if (userId != null) {
       _notificationService.initialize(userId);
-
-
-      // Listen to notifications stream
-      _notificationService.notificationsStream.listen(
-            (notificationList) {
-          if (mounted) {
-            setState(() {
-              notifications = notificationList;
-              isLoading = false;
-              error = null;
-            });
-          }
-        },
-        onError: (e) {
-          if (mounted) {
-            setState(() {
-              error = 'Failed to load notifications: $e';
-              isLoading = false;
-            });
-          }
-        },
-      );
-
-      // Listen to new notifications
-      _notificationService.newNotificationStream.listen(
-            (newNotification) {
-          if (mounted) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text('New notification from ${newNotification.cardHolderName}'),
-                duration: const Duration(seconds: 3),
-                backgroundColor: AppThemeColor.primaryColor,
-              ),
-            );
-          }
-        },
-      );
+      await _loadNotifications();
     } else {
       setState(() {
         error = 'User not authenticated';
@@ -77,12 +41,84 @@ class _MessagesScreenState extends State<MessagesScreen> {
     }
   }
 
-  void markAsRead(int id) {
-    _notificationService.markAsRead(id);
+  Future<void> _loadNotifications() async {
+    try {
+      setState(() {
+        isLoading = true;
+        error = null;
+      });
+
+      final loadedNotifications = await _notificationService.loadNotifications();
+
+      if (mounted) {
+        setState(() {
+          notifications = loadedNotifications;
+          isLoading = false;
+        });
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() {
+          error = 'Failed to load notifications: $e';
+          isLoading = false;
+        });
+      }
+    }
   }
 
-  void markAllAsRead() {
-    _notificationService.markAllAsRead();
+  void markAsRead(int id) async {
+    final success = await _notificationService.markAsRead(id);
+    if (success && mounted) {
+      setState(() {
+        final index = notifications.indexWhere((n) => n.id == id);
+        if (index != -1) {
+          notifications[index] = MessageNotification(
+            id: notifications[index].id,
+            companyName: notifications[index].companyName,
+            cardHolderName: notifications[index].cardHolderName,
+            companyLogo: notifications[index].companyLogo,
+            timestamp: notifications[index].timestamp,
+            isRead: true,
+            message: notifications[index].message,
+            type: notifications[index].type,
+            cardTitle: notifications[index].cardTitle,
+            organization: notifications[index].organization,
+            email: notifications[index].email,
+            phoneNumber: notifications[index].phoneNumber,
+            address: notifications[index].address,
+            actorFullName: notifications[index].actorFullName,
+            recipientFullName: notifications[index].recipientFullName,
+          );
+        }
+      });
+    }
+  }
+
+  void markAllAsRead() async {
+    final success = await _notificationService.markAllAsRead();
+    if (success && mounted) {
+      setState(() {
+        notifications = notifications
+            .map((n) => MessageNotification(
+          id: n.id,
+          companyName: n.companyName,
+          cardHolderName: n.cardHolderName,
+          companyLogo: n.companyLogo,
+          timestamp: n.timestamp,
+          isRead: true,
+          message: n.message,
+          type: n.type,
+          cardTitle: n.cardTitle,
+          organization: n.organization,
+          email: n.email,
+          phoneNumber: n.phoneNumber,
+          address: n.address,
+          actorFullName: n.actorFullName,
+          recipientFullName: n.recipientFullName,
+        ))
+            .toList();
+      });
+    }
   }
 
   String formatTime(DateTime timestamp) {
@@ -114,9 +150,7 @@ class _MessagesScreenState extends State<MessagesScreen> {
     return Scaffold(
       backgroundColor: Theme.of(context).highlightColor,
       body: RefreshIndicator(
-        onRefresh: () async {
-          await _notificationService.loadNotifications();
-        },
+        onRefresh: _loadNotifications,
         child: CustomScrollView(
           slivers: [
             SliverAppBar(
@@ -125,21 +159,11 @@ class _MessagesScreenState extends State<MessagesScreen> {
               pinned: true,
               elevation: 0,
               backgroundColor: Colors.transparent,
-              // actions: [
-              //   if (!isLoading)
-              //     IconButton(
-              //       icon: const Icon(Icons.refresh, color: Colors.white),
-              //       onPressed: () {
-              //         _notificationService.loadNotifications();
-              //       },
-              //     ),
-              // ],
               flexibleSpace: FlexibleSpaceBar(
                 title: HeaderBoldWidget(
                     text: "Messages",
                     color: Theme.of(context).highlightColor,
-                    size: '20'
-                ),
+                    size: '20'),
                 titlePadding: const EdgeInsets.only(left: 20, bottom: 16),
                 background: ClipRRect(
                   borderRadius: const BorderRadius.only(
@@ -163,22 +187,19 @@ class _MessagesScreenState extends State<MessagesScreen> {
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           // Lottie Animation
-                          Container(
+                          SizedBox(
                             height: 200,
                             width: 200,
-                            child: Lottie.network(
-                              'https://assets2.lottiefiles.com/packages/lf20_V9t630.json',
-                              fit: BoxFit.contain,
-                            ),
+                            child: Lottie.asset(LottieAnimes.messages, fit: BoxFit.cover)
                           ),
                           const SizedBox(height: 20),
                           if (isLoading)
-                            const CircularProgressIndicator(
-                              valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-                            )
+                            Lottie.asset(LottieAnimes.loading,
+                                width: 130, height: 130)
                           else if (unreadCount > 0)
                             Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 12, vertical: 6),
                               decoration: BoxDecoration(
                                 color: AppThemeColor.brightness,
                                 borderRadius: BorderRadius.circular(20),
@@ -194,9 +215,11 @@ class _MessagesScreenState extends State<MessagesScreen> {
                             )
                           else if (notifications.isNotEmpty)
                               Container(
-                                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 12, vertical: 6),
                                 decoration: BoxDecoration(
-                                  color: AppThemeColor.brightness.withOpacity(0.8),
+                                  color:
+                                  AppThemeColor.brightness.withOpacity(0.8),
                                   borderRadius: BorderRadius.circular(20),
                                 ),
                                 child: Text(
@@ -235,11 +258,13 @@ class _MessagesScreenState extends State<MessagesScreen> {
                           decoration: BoxDecoration(
                             color: Colors.red.withOpacity(0.1),
                             borderRadius: BorderRadius.circular(12),
-                            border: Border.all(color: Colors.red.withOpacity(0.3)),
+                            border:
+                            Border.all(color: Colors.red.withOpacity(0.3)),
                           ),
                           child: Row(
                             children: [
-                              const Icon(Icons.error_outline, color: Colors.red),
+                              const Icon(Icons.error_outline,
+                                  color: Colors.red),
                               const SizedBox(width: 12),
                               Expanded(
                                 child: Column(
@@ -263,13 +288,7 @@ class _MessagesScreenState extends State<MessagesScreen> {
                                 ),
                               ),
                               TextButton(
-                                onPressed: () {
-                                  setState(() {
-                                    error = null;
-                                    isLoading = true;
-                                  });
-                                  _notificationService.loadNotifications();
-                                },
+                                onPressed: _loadNotifications,
                                 child: const Text('Retry'),
                               ),
                             ],
@@ -310,13 +329,10 @@ class _MessagesScreenState extends State<MessagesScreen> {
               ),
             ),
             if (isLoading && error == null)
-              const SliverToBoxAdapter(
+              SliverToBoxAdapter(
                 child: Center(
-                  child: Padding(
-                    padding: EdgeInsets.all(50),
-                    child: CircularProgressIndicator(),
-                  ),
-                ),
+                    child: Lottie.asset(LottieAnimes.loading,
+                        height: 130, width: 130)),
               )
             else if (notifications.isEmpty && !isLoading)
               SliverToBoxAdapter(
@@ -382,11 +398,11 @@ class NotificationCard extends StatelessWidget {
   final String Function(DateTime) formatTime;
 
   const NotificationCard({
-    Key? key,
+    super.key,
     required this.notification,
     required this.onTap,
     required this.formatTime,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -399,7 +415,8 @@ class NotificationCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(16),
         border: notification.isRead
             ? null
-            : Border.all(color: AppThemeColor.primaryColor.withOpacity(0.3), width: 1),
+            : Border.all(
+            color: AppThemeColor.primaryColor.withOpacity(0.3), width: 1),
         boxShadow: [
           BoxShadow(
             color: AppThemeColor.shadows.withOpacity(0.1),
@@ -459,13 +476,17 @@ class NotificationCard extends StatelessWidget {
                           ),
                           const SizedBox(width: 8),
                           Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 8, vertical: 2),
                             decoration: BoxDecoration(
-                              color: AppThemeColor.primaryColor.withOpacity(0.1),
+                              color:
+                              AppThemeColor.primaryColor.withOpacity(0.1),
                               borderRadius: BorderRadius.circular(8),
                             ),
                             child: Text(
-                              notification.type == 'CARD_SAVED' ? 'SAVED' : 'MESSAGE',
+                              notification.type == 'CARD_SAVED'
+                                  ? 'SAVED'
+                                  : 'MESSAGE',
                               style: TextStyle(
                                 fontSize: 10,
                                 color: AppThemeColor.primaryColor,
@@ -505,7 +526,8 @@ class NotificationCard extends StatelessWidget {
                             formatTime(notification.timestamp),
                             style: TextStyle(
                               fontSize: 12,
-                              color: Theme.of(context).hintColor.withOpacity(0.6),
+                              color:
+                              Theme.of(context).hintColor.withOpacity(0.6),
                             ),
                           ),
                           Row(
@@ -527,7 +549,9 @@ class NotificationCard extends StatelessWidget {
                                     : Icons.mark_email_unread_outlined,
                                 size: 16,
                                 color: notification.isRead
-                                    ? Theme.of(context).hintColor.withOpacity(0.5)
+                                    ? Theme.of(context)
+                                    .hintColor
+                                    .withOpacity(0.5)
                                     : AppThemeColor.primaryColor,
                               ),
                             ],

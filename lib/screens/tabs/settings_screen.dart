@@ -41,21 +41,17 @@ class _SettingsScreenState extends State<SettingsScreen> {
       final userPreferences = UserPreferences();
       final user = await userPreferences.getUser();
 
-      if (user != null) {
-        setState(() {
-          userName = _formatName(user.firstName, user.lastName);
-          userJobTitle = user.jobTitle ?? 'Not specified';
-          userEmail = user.email ?? 'Not specified';
-          userDepartment =
-              'Engineering'; // You might want to add this to your User model
-          userEmployeeId = user.id ?? 'N/A';
-          userPhone = user.phone ?? 'Not specified';
-        });
-        developer.log("Loaded user data for settings screen: $userName");
-      } else {
-        developer.log("No user data found, using defaults");
-      }
-
+      setState(() {
+        userName = _formatName(user.firstName, user.lastName);
+        userJobTitle = user.jobTitle ?? 'Not specified';
+        userEmail = user.email ?? 'Not specified';
+        userDepartment =
+            'Engineering'; // You might want to add this to your User model
+        userEmployeeId = user.id ?? 'N/A';
+        userPhone = user.phone ?? 'Not specified';
+      });
+      developer.log("Loaded user data for settings screen: $userName");
+    
       // Load other settings from SharedPreferences if needed
       final prefs = await SharedPreferences.getInstance();
       setState(() {

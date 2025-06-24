@@ -1,6 +1,6 @@
 import 'dart:async';
-import 'dart:developer' as developer;
 import 'package:ecard_app/components/alert_reminder.dart';
+import 'package:ecard_app/components/custom_widgets.dart';
 import 'package:ecard_app/services/card_request_implementation.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -26,7 +26,7 @@ class CreateNewCardState extends State<CreateNewCard> {
   // Controllers for input fields
   final TextEditingController _titleController = TextEditingController();
   final TextEditingController _organizationNameController =
-  TextEditingController();
+      TextEditingController();
   final TextEditingController _jobTitleController = TextEditingController();
   final TextEditingController _locationController = TextEditingController();
   final TextEditingController _emailAddressController = TextEditingController();
@@ -48,7 +48,7 @@ class CreateNewCardState extends State<CreateNewCard> {
   LayoutPosition _logoPosition = LayoutPosition.left;
   LayoutPosition _textPosition = LayoutPosition.right;
 
-  List<CardElement> _orderedElements = [
+  final List<CardElement> _orderedElements = [
     CardElement.organizationName,
     CardElement.address,
     CardElement.title,
@@ -193,7 +193,8 @@ class CreateNewCardState extends State<CreateNewCard> {
           _buildLabel(label, textColor),
           Row(
             children: [
-              Icon(iconData, color: textColor, size: _isKeyboardVisible ? 14 : 18),
+              Icon(iconData,
+                  color: textColor, size: _isKeyboardVisible ? 14 : 18),
               const SizedBox(width: 6),
               Flexible(
                 child: Text(
@@ -295,8 +296,9 @@ class CreateNewCardState extends State<CreateNewCard> {
       );
     }
 
-    return Container(
-      width: _isKeyboardVisible ? MediaQuery.of(context).size.width * 0.8 : null,
+    return SizedBox(
+      width:
+          _isKeyboardVisible ? MediaQuery.of(context).size.width * 0.8 : null,
       child: Card(
         shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(_isKeyboardVisible ? 12 : 20)),
@@ -374,7 +376,8 @@ class CreateNewCardState extends State<CreateNewCard> {
         ),
       );
 
-      final CardProvider provider = Provider.of<CardProvider>(context, listen: false);
+      final CardProvider provider =
+          Provider.of<CardProvider>(context, listen: false);
       final backgroundColor = _formatColorForBackend(_selectedColor);
       final fontColor = _formatColorForBackend(_textColor);
 
@@ -390,20 +393,21 @@ class CreateNewCardState extends State<CreateNewCard> {
           "email: ${_emailAddressController.text}, "
           "backgroundColor: $backgroundColor, "
           "fontColor: $fontColor"
-          " \n \n ==================================\n \n"
-      );
+          " \n \n ==================================\n \n");
 
-      final response = await provider.createCard(
-        title: _titleController.text,
-        cardDescription: _jobTitleController.text,
-        organization: _organizationNameController.text,
-        address: _locationController.text,
-        cardLogo: _organizationLogoPath,
-        phoneNumber: _phoneNumberController.text,
-        email: _emailAddressController.text,
-        backgroundColor: backgroundColor,
-        fontColor: fontColor,
-      ).timeout(const Duration(seconds: 60));
+      final response = await provider
+          .createCard(
+            title: _titleController.text,
+            cardDescription: _jobTitleController.text,
+            organization: _organizationNameController.text,
+            address: _locationController.text,
+            cardLogo: _organizationLogoPath,
+            phoneNumber: _phoneNumberController.text,
+            email: _emailAddressController.text,
+            backgroundColor: backgroundColor,
+            fontColor: fontColor,
+          )
+          .timeout(const Duration(seconds: 60));
 
       Navigator.pop(context); // Close loader
 
@@ -415,7 +419,8 @@ class CreateNewCardState extends State<CreateNewCard> {
         );
         await Future.delayed(const Duration(seconds: 1));
         if (context.mounted) {
-          Navigator.pushNamedAndRemoveUntil(context, '/dashboard', (route) => false);
+          Navigator.pushNamedAndRemoveUntil(
+              context, '/dashboard', (route) => false);
         }
       } else {
         Alerts.showError(
@@ -451,24 +456,13 @@ class CreateNewCardState extends State<CreateNewCard> {
     return Scaffold(
       backgroundColor: Theme.of(context).highlightColor,
       appBar: AppBar(
-        backgroundColor: Theme.of(context).highlightColor,
-        iconTheme: IconThemeData(color: Theme.of(context).indicatorColor),
-        title: Text(
-          "Create New Card",
-          style: TextStyle(color: Theme.of(context).indicatorColor),
-        ),
-        centerTitle: true,
-        actions: [
-          TextButton(
-            onPressed: () => _submitCard(context),
-            child: Text(
-              "Save",
-              style: TextStyle(
-                  color: Theme.of(context).indicatorColor, fontSize: 18),
-            ),
-          )
-        ],
-      ),
+          backgroundColor: Theme.of(context).highlightColor,
+          iconTheme: IconThemeData(color: Theme.of(context).indicatorColor),
+          title: HeaderBoldWidget(
+              text: "New Card",
+              color: Theme.of(context).indicatorColor,
+              size: '22'),
+          centerTitle: true),
       body: Container(
         padding: const EdgeInsets.all(12),
         child: Column(
@@ -499,7 +493,7 @@ class CreateNewCardState extends State<CreateNewCard> {
                         _titleController,
                         Icon(CupertinoIcons.doc_text,
                             color: Theme.of(context).indicatorColor),
-                            (value) {
+                        (value) {
                           if (value == null || value.isEmpty) {
                             return 'Please enter a title';
                           }
@@ -514,7 +508,7 @@ class CreateNewCardState extends State<CreateNewCard> {
                         _organizationNameController,
                         Icon(CupertinoIcons.building_2_fill,
                             color: Theme.of(context).indicatorColor),
-                            (value) {
+                        (value) {
                           if (value == null || value.isEmpty) {
                             return 'Please enter organization name';
                           }
@@ -530,7 +524,7 @@ class CreateNewCardState extends State<CreateNewCard> {
                         _jobTitleController,
                         Icon(CupertinoIcons.person,
                             color: Theme.of(context).indicatorColor),
-                            (value) {
+                        (value) {
                           if (value == null || value.isEmpty) {
                             return 'Please enter job title';
                           }
@@ -546,7 +540,7 @@ class CreateNewCardState extends State<CreateNewCard> {
                         _locationController,
                         Icon(CupertinoIcons.location,
                             color: Theme.of(context).indicatorColor),
-                            (value) {
+                        (value) {
                           if (value == null || value.isEmpty) {
                             return 'Please enter business location';
                           }
@@ -561,7 +555,7 @@ class CreateNewCardState extends State<CreateNewCard> {
                         "example@organization.co.tz",
                         _emailAddressController,
                         const Icon(Icons.email),
-                            (value) {
+                        (value) {
                           if (value == null || value.isEmpty) {
                             return 'Please enter email address';
                           }
@@ -580,7 +574,7 @@ class CreateNewCardState extends State<CreateNewCard> {
                         "eg: 255 716 521 848",
                         _phoneNumberController,
                         const Icon(Icons.phone),
-                            (value) {
+                        (value) {
                           if (value == null || value.isEmpty) {
                             return 'Please enter phone number';
                           }
@@ -598,7 +592,7 @@ class CreateNewCardState extends State<CreateNewCard> {
                         "eg: www.certainwebsite.com",
                         _websiteController,
                         const Icon(Icons.language),
-                            (value) {
+                        (value) {
                           if (value == null || value.isEmpty) {
                             return 'Please enter website link';
                           }
@@ -617,7 +611,7 @@ class CreateNewCardState extends State<CreateNewCard> {
                         _linkedinController,
                         Icon(FontAwesomeIcons.linkedin,
                             color: Theme.of(context).indicatorColor),
-                            (value) {
+                        (value) {
                           if (value != null && value.isNotEmpty) {
                             if (!value.contains('linkedin.com')) {
                               return 'Please enter a valid LinkedIn URL';
@@ -680,9 +674,11 @@ class CreateNewCardState extends State<CreateNewCard> {
                         spacing: 10,
                         children: [
                           _positionSelector(LayoutPosition.left, isLogo: false),
-                          _positionSelector(LayoutPosition.right, isLogo: false),
+                          _positionSelector(LayoutPosition.right,
+                              isLogo: false),
                           _positionSelector(LayoutPosition.top, isLogo: false),
-                          _positionSelector(LayoutPosition.bottom, isLogo: false),
+                          _positionSelector(LayoutPosition.bottom,
+                              isLogo: false),
                         ],
                       ),
                       const SizedBox(height: 20),
@@ -693,7 +689,7 @@ class CreateNewCardState extends State<CreateNewCard> {
                         style: TextStyle(
                           fontSize: 12,
                           color:
-                          Theme.of(context).indicatorColor.withOpacity(0.5),
+                              Theme.of(context).indicatorColor.withOpacity(0.5),
                           fontStyle: FontStyle.italic,
                         ),
                       ),
@@ -705,6 +701,25 @@ class CreateNewCardState extends State<CreateNewCard> {
                         }).toList(),
                       ),
                       const SizedBox(height: 32),
+                      Container(
+                        width: MediaQuery.of(context).size.width,
+                        padding: const EdgeInsets.symmetric(horizontal: 20),
+                        child: ElevatedButton(
+                            onPressed: () => _submitCard(context),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Theme.of(context).primaryColor,
+                              shape: const RoundedRectangleBorder(
+                                borderRadius:
+                                    BorderRadius.all(Radius.circular(30)),
+                              ),
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 40, vertical: 15),
+                            ),
+                            child: HeaderBoldWidget(
+                                text: "Save",
+                                color: Theme.of(context).highlightColor,
+                                size: '20')),
+                      )
                     ],
                   ),
                 ),
@@ -828,7 +843,7 @@ class CreateNewCardState extends State<CreateNewCard> {
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
         decoration: BoxDecoration(
           color:
-          isSelected ? Theme.of(context).primaryColor : Colors.transparent,
+              isSelected ? Theme.of(context).primaryColor : Colors.transparent,
           border: Border.all(
               color: isSelected ? Theme.of(context).primaryColor : Colors.grey),
           borderRadius: BorderRadius.circular(20),
@@ -854,7 +869,7 @@ class CreateNewCardState extends State<CreateNewCard> {
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
         decoration: BoxDecoration(
           color:
-          isSelected ? Theme.of(context).primaryColor : Colors.transparent,
+              isSelected ? Theme.of(context).primaryColor : Colors.transparent,
           borderRadius: BorderRadius.circular(30),
           border: Border.all(
             color: isSelected ? Theme.of(context).primaryColor : Colors.grey,

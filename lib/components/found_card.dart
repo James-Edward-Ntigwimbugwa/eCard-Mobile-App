@@ -17,10 +17,10 @@ class FoundCard extends StatefulWidget {
   final VoidCallback? onSeeMore;
 
   const FoundCard({
-    Key? key,
+    super.key,
     required this.card,
     this.onSeeMore,
-  }) : super(key: key);
+  });
 
   @override
   State<FoundCard> createState() => _FoundCardState();
@@ -34,8 +34,7 @@ class _FoundCardState extends State<FoundCard> {
     super.initState();
   }
 
-  void _saveCardLogic(
-      BuildContext context,  int  userId, int cardId) async {
+  void _saveCardLogic(BuildContext context, int userId, int cardId) async {
     debugPrint("method savecardLogic in nearbyscreen executed ====>");
     if (mounted) {
       setState(() => _isSaving = true);
@@ -85,7 +84,7 @@ class _FoundCardState extends State<FoundCard> {
           Navigator.pop(context);
         });
       }
-    } on TimeoutException catch (e) {
+    } on TimeoutException {
       Alerts.showError(
         context: context,
         message: "Operation timed out. Please try again later.",
@@ -97,7 +96,7 @@ class _FoundCardState extends State<FoundCard> {
         }
         Navigator.pop(context);
       });
-    } on SocketException catch (e) {
+    } on SocketException {
       Alerts.showError(
         context: context,
         message: "Network error. Please check your connection.",
