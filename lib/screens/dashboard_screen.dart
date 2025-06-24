@@ -1,10 +1,6 @@
 import 'dart:io';
 import 'package:circle_nav_bar/circle_nav_bar.dart';
 import 'package:ecard_app/providers/screen_index_provider.dart';
-import 'package:ecard_app/screens/tabs/main_screen_tab.dart';
-import 'package:ecard_app/screens/tabs/nearby_screen.dart';
-import 'package:ecard_app/screens/tabs/scanning_screen.dart';
-import 'package:ecard_app/screens/tabs/settings_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -12,8 +8,11 @@ import 'package:provider/provider.dart';
 import '../modals/user_modal.dart';
 import '../router/router_path.dart';
 import 'package:camera/camera.dart';
-
-import 'tabs/messages_screen.dart';
+import 'nav/main_screen_tab.dart';
+import 'nav/messages_screen.dart';
+import 'nav/nearby_screen.dart';
+import 'nav/scanning_screen.dart';
+import 'nav/settings_screen.dart';
 
 class DashboardPage extends StatefulWidget {
   final User user;

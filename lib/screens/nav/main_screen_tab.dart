@@ -3,8 +3,11 @@ import 'package:ecard_app/providers/screen_index_provider.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import '../../modals/photo_item.dart';
 import '../../utils/resources/images/images.dart';
+import '../../utils/theme/theme.dart';
 import '../all_cards_screen.dart';
+import '../gallery_picker.dart';
 import '../group_cards_screen.dart';
 
 class MainScreenTab extends StatefulWidget {
@@ -19,6 +22,8 @@ class _MainScreenTabState extends State<MainScreenTab>
   late TabController _tabController;
   final int _notificationCount = 3;
   bool _showSkeleton = true;
+  PhotoItem? selectedPhoto;
+
   final GlobalKey<FormState> _key = GlobalKey();
   final List<Widget> _tabs = [
     const AllCardsScreen(),
@@ -64,6 +69,30 @@ class _MainScreenTabState extends State<MainScreenTab>
     super.dispose();
   }
 
+  void _showGalleryPicker() {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) => GalleryPicker(
+        onPhotoSelected: (photo) {
+          setState(() {
+            selectedPhoto = photo;
+          });
+          Navigator.pop(context);
+          if (photo != null) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text('Profile photo selected'),
+                backgroundColor: AppThemeColor.primaryColor,
+              ),
+            );
+          }
+        },
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     super.build(context);
@@ -92,9 +121,12 @@ class _MainScreenTabState extends State<MainScreenTab>
               size: '20.0'),
           leading: Padding(
             padding: const EdgeInsets.only(top: 10.0, left: 10.0),
-            child: CircleAvatar(
-              radius: 18,
-              child: Image.asset(Images.profileImage),
+            child: IconButton(
+              onPressed: _showGalleryPicker,
+              icon: CircleAvatar(
+                radius: 18,
+                child: Image.asset(Images.profileImage),
+              ),
             ),
           ),
           actions: [
