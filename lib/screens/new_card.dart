@@ -406,6 +406,9 @@ class CreateNewCardState extends State<CreateNewCard> {
             email: _emailAddressController.text,
             backgroundColor: backgroundColor,
             fontColor: fontColor,
+            textPosition: _textPosition.label.toLowerCase(),
+            logoPosition: _logoPosition.label.toLowerCase(),
+            fontStyle: _selectedFontStyle,
           )
           .timeout(const Duration(seconds: 60));
 

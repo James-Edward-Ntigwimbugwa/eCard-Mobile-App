@@ -16,20 +16,23 @@ class CardProvider with ChangeNotifier {
 
   String? get errorMessage => _errorMessage;
 
-  Future<Map<String, dynamic>> createCard(
-      {required String title,
-      required String cardDescription,
-      required String organization,
-      required String address,
-      required String cardLogo,
-      required String phoneNumber,
-      required String email,
-      String? profilePhoto = '',
-      String? linkedIn = '',
-      String? website = '',
-      String? department = '',
-      required String backgroundColor,
-      required String fontColor}) async {
+  Future<Map<String, dynamic>> createCard({required String title,
+    required String cardDescription,
+    required String organization,
+    required String address,
+    required String cardLogo,
+    required String phoneNumber,
+    required String email,
+    String? profilePhoto = '',
+    String? linkedIn = '',
+    String? website = '',
+    String? department = '',
+    required String backgroundColor,
+    required String fontColor,
+    required String textPosition,
+    required String logoPosition,
+    required String fontStyle
+  }) async {
     // Fixed: Use the correct field names expected by the server
     final Object cardRegistrationData = {
       'title': title,
@@ -46,11 +49,15 @@ class CardProvider with ChangeNotifier {
       'department': department,
       'fontColor': fontColor,
       'backgroundColor': backgroundColor,
+      'textPosition' : textPosition ,
+      'logoPosition' : logoPosition ,
+      'fontStyle'  : fontStyle
     };
 
     debugPrint(
-        "= \n \n================= Card request data ============= \n \n ${cardRegistrationData.toString()}"
-        "\n \n =============================\n \n");
+        "= \n \n================= Card request data ============= \n \n ${cardRegistrationData
+            .toString()}"
+            "\n \n =============================\n \n");
 
     _isLoading = true;
     notifyListeners();
@@ -101,7 +108,7 @@ class CardProvider with ChangeNotifier {
             return {
               'status': true,
               'message':
-                  'Card created, but could not be saved locally: ${e.toString()}',
+              'Card created, but could not be saved locally: ${e.toString()}',
             };
           }
         } else {
@@ -109,7 +116,7 @@ class CardProvider with ChangeNotifier {
           return {
             'status': true,
             'message':
-                'Card created successfully, but no data returned from server',
+            'Card created successfully, but no data returned from server',
           };
         }
       } else {
@@ -121,7 +128,7 @@ class CardProvider with ChangeNotifier {
               'Card creation failed with status ${response.statusCode}';
         } catch (e) {
           errorMessage =
-              'Card creation failed with status ${response.statusCode}';
+          'Card creation failed with status ${response.statusCode}';
         }
 
         developer.log("Card creation error: $errorMessage");
@@ -173,7 +180,7 @@ class CardProvider with ChangeNotifier {
         return {"status": true, "message": "Success", "cards": cards};
       } else {
         _errorMessage =
-            "Failed to load cards: Server returned ${response.statusCode}";
+        "Failed to load cards: Server returned ${response.statusCode}";
         developer.log(_errorMessage!);
 
         final localCards = await CardPreferences.getCardsByUser(uuid);
