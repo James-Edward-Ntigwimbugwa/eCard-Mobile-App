@@ -6,5 +6,4 @@ class LottieAnimes {
   static const loading = 'assets/anime/loading-anime.json';
   static const messages = 'assets/anime/messages.json';
   static const emptyInbox = 'assets/anime/empty-inbox.json';
-
 }

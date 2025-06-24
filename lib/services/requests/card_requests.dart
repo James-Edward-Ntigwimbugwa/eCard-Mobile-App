@@ -6,7 +6,6 @@ import 'package:http/http.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:ecard_app/services/app_urls.dart';
 
-
 class CardRequests {
   static Future<Response> fetchUserCards([String? uuid]) async {
     try {

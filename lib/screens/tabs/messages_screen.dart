@@ -36,7 +36,8 @@ class _MessagesScreenState extends State<MessagesScreen> {
       final prefs = await SharedPreferences.getInstance();
       final String? userId = prefs.getString('userId');
 
-      final loadedNotifications = await _notificationService.loadNotifications(userId: userId);
+      final loadedNotifications =
+          await _notificationService.loadNotifications(userId: userId);
 
       if (mounted) {
         setState(() {
@@ -88,22 +89,22 @@ class _MessagesScreenState extends State<MessagesScreen> {
       setState(() {
         notifications = notifications
             .map((n) => MessageNotification(
-          id: n.id,
-          companyName: n.companyName,
-          cardHolderName: n.cardHolderName,
-          companyLogo: n.companyLogo,
-          timestamp: n.timestamp,
-          isRead: true,
-          message: n.message,
-          type: n.type,
-          cardTitle: n.cardTitle,
-          organization: n.organization,
-          email: n.email,
-          phoneNumber: n.phoneNumber,
-          address: n.address,
-          actorFullName: n.actorFullName,
-          recipientFullName: n.recipientFullName,
-        ))
+                  id: n.id,
+                  companyName: n.companyName,
+                  cardHolderName: n.cardHolderName,
+                  companyLogo: n.companyLogo,
+                  timestamp: n.timestamp,
+                  isRead: true,
+                  message: n.message,
+                  type: n.type,
+                  cardTitle: n.cardTitle,
+                  organization: n.organization,
+                  email: n.email,
+                  phoneNumber: n.phoneNumber,
+                  address: n.address,
+                  actorFullName: n.actorFullName,
+                  recipientFullName: n.recipientFullName,
+                ))
             .toList();
       });
     }
@@ -176,10 +177,10 @@ class _MessagesScreenState extends State<MessagesScreen> {
                         children: [
                           // Lottie Animation
                           SizedBox(
-                            height: 200,
-                            width: 200,
-                            child: Lottie.asset(LottieAnimes.messages, fit: BoxFit.cover)
-                          ),
+                              height: 200,
+                              width: 200,
+                              child: Lottie.asset(LottieAnimes.messages,
+                                  fit: BoxFit.cover)),
                           const SizedBox(height: 20),
                           if (isLoading)
                             Lottie.asset(LottieAnimes.loading,
@@ -202,23 +203,23 @@ class _MessagesScreenState extends State<MessagesScreen> {
                               ),
                             )
                           else if (notifications.isNotEmpty)
-                              Container(
-                                padding: const EdgeInsets.symmetric(
-                                    horizontal: 12, vertical: 6),
-                                decoration: BoxDecoration(
-                                  color:
-                                  AppThemeColor.brightness.withOpacity(0.8),
-                                  borderRadius: BorderRadius.circular(20),
-                                ),
-                                child: Text(
-                                  'All caught up!',
-                                  style: TextStyle(
-                                    color: AppThemeColor.primaryColor,
-                                    fontWeight: FontWeight.w600,
-                                    fontSize: 14,
-                                  ),
+                            Container(
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 12, vertical: 6),
+                              decoration: BoxDecoration(
+                                color:
+                                    AppThemeColor.brightness.withOpacity(0.8),
+                                borderRadius: BorderRadius.circular(20),
+                              ),
+                              child: Text(
+                                'All caught up!',
+                                style: TextStyle(
+                                  color: AppThemeColor.primaryColor,
+                                  fontWeight: FontWeight.w600,
+                                  fontSize: 14,
                                 ),
                               ),
+                            ),
                         ],
                       ),
                     ),
@@ -247,7 +248,7 @@ class _MessagesScreenState extends State<MessagesScreen> {
                             color: Colors.red.withOpacity(0.1),
                             borderRadius: BorderRadius.circular(12),
                             border:
-                            Border.all(color: Colors.red.withOpacity(0.3)),
+                                Border.all(color: Colors.red.withOpacity(0.3)),
                           ),
                           child: Row(
                             children: [
@@ -329,9 +330,17 @@ class _MessagesScreenState extends State<MessagesScreen> {
                     padding: const EdgeInsets.all(10),
                     child: Column(
                       children: [
-                        NormalHeaderWidget(text: "Your inbox is empty", color: Theme.of(context).indicatorColor, size: '20'),
-                        Lottie.asset(LottieAnimes.emptyInbox, height: 200 , width: 200),
-                        NormalHeaderWidget(text: "Your messages will appear here as soon as someone saves your card or sends you direct message", color: const Color.fromARGB(179, 56, 56, 56), size: '16.0')
+                        NormalHeaderWidget(
+                            text: "Your inbox is empty",
+                            color: Theme.of(context).indicatorColor,
+                            size: '20'),
+                        Lottie.asset(LottieAnimes.emptyInbox,
+                            height: 200, width: 200),
+                        NormalHeaderWidget(
+                            text:
+                                "Your messages will appear here as soon as someone saves your card or sends you direct message",
+                            color: const Color.fromARGB(179, 56, 56, 56),
+                            size: '16.0')
                       ],
                     ),
                   ),
@@ -340,7 +349,7 @@ class _MessagesScreenState extends State<MessagesScreen> {
             else
               SliverList(
                 delegate: SliverChildBuilderDelegate(
-                      (context, index) {
+                  (context, index) {
                     final notification = notifications[index];
                     return NotificationCard(
                       notification: notification,
@@ -385,7 +394,7 @@ class NotificationCard extends StatelessWidget {
         border: notification.isRead
             ? null
             : Border.all(
-            color: AppThemeColor.primaryColor.withOpacity(0.3), width: 1),
+                color: AppThemeColor.primaryColor.withOpacity(0.3), width: 1),
         boxShadow: [
           BoxShadow(
             color: AppThemeColor.shadows.withOpacity(0.1),
@@ -449,7 +458,7 @@ class NotificationCard extends StatelessWidget {
                                 horizontal: 8, vertical: 2),
                             decoration: BoxDecoration(
                               color:
-                              AppThemeColor.primaryColor.withOpacity(0.1),
+                                  AppThemeColor.primaryColor.withOpacity(0.1),
                               borderRadius: BorderRadius.circular(8),
                             ),
                             child: Text(
@@ -496,7 +505,7 @@ class NotificationCard extends StatelessWidget {
                             style: TextStyle(
                               fontSize: 12,
                               color:
-                              Theme.of(context).hintColor.withOpacity(0.6),
+                                  Theme.of(context).hintColor.withOpacity(0.6),
                             ),
                           ),
                           Row(
@@ -519,8 +528,8 @@ class NotificationCard extends StatelessWidget {
                                 size: 16,
                                 color: notification.isRead
                                     ? Theme.of(context)
-                                    .hintColor
-                                    .withOpacity(0.5)
+                                        .hintColor
+                                        .withOpacity(0.5)
                                     : AppThemeColor.primaryColor,
                               ),
                             ],

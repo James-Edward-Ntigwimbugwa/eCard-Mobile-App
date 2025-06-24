@@ -51,7 +51,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
         userPhone = user.phone ?? 'Not specified';
       });
       developer.log("Loaded user data for settings screen: $userName");
-    
+
       // Load other settings from SharedPreferences if needed
       final prefs = await SharedPreferences.getInstance();
       setState(() {
