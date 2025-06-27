@@ -1,9 +1,10 @@
 import 'dart:async';
+import 'dart:ui';
 import 'package:ecard_app/components/custom_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:geolocator/geolocator.dart';
-import 'package:geocoding/geocoding.dart'; // Added for geocoding and reverse geocoding
+import 'package:geocoding/geocoding.dart';
 
 class GoogleMapLocationPicker extends StatefulWidget {
   const GoogleMapLocationPicker({super.key});
@@ -20,10 +21,9 @@ class GoogleMapLocationPickerState extends State<GoogleMapLocationPicker> {
   LatLng _selectedPosition = _initialCenter;
   bool _isLoading = true;
   Set<Marker> _markers = {};
-  String? _selectedAddress; // To store the fetched address
-  bool _isFetchingAddress = false; // To track address fetching state
-  final TextEditingController _searchController =
-      TextEditingController(); // For search input
+  String? _selectedAddress;
+  bool _isFetchingAddress = false;
+  final TextEditingController _searchController = TextEditingController();
 
   @override
   void initState() {
@@ -33,7 +33,7 @@ class GoogleMapLocationPickerState extends State<GoogleMapLocationPicker> {
 
   @override
   void dispose() {
-    _searchController.dispose(); // Clean up the controller
+    _searchController.dispose();
     super.dispose();
   }
 
@@ -84,7 +84,7 @@ class GoogleMapLocationPickerState extends State<GoogleMapLocationPicker> {
         ),
       };
     });
-    _fetchAddress(position); // Fetch the address for the selected position
+    _fetchAddress(position);
   }
 
   Future<void> _fetchAddress(LatLng position) async {
@@ -100,9 +100,41 @@ class GoogleMapLocationPickerState extends State<GoogleMapLocationPicker> {
       );
       if (placemarks.isNotEmpty) {
         Placemark place = placemarks.first;
-        String address = [place.street, place.locality, place.country]
-            .where((e) => e != null && e.isNotEmpty)
-            .join(', ');
+        
+        // Build a more comprehensive address
+        List<String> addressParts = [];
+        
+        // Add subLocality (like Mabibo)
+        if (place.subLocality != null && place.subLocality!.isNotEmpty) {
+          addressParts.add(place.subLocality!);
+        }
+        
+        // Add locality (like Dar es Salaam)
+        if (place.locality != null && place.locality!.isNotEmpty) {
+          addressParts.add(place.locality!);
+        }
+        
+        // Add administrativeArea (like Dar es Salaam Region)
+        if (place.administrativeArea != null && place.administrativeArea!.isNotEmpty) {
+          addressParts.add(place.administrativeArea!);
+        }
+        
+        // Add country
+        if (place.country != null && place.country!.isNotEmpty) {
+          addressParts.add(place.country!);
+        }
+        
+        // If we still don't have subLocality, try thoroughfare or name
+        if (addressParts.isEmpty || 
+            (place.subLocality == null || place.subLocality!.isEmpty)) {
+          if (place.thoroughfare != null && place.thoroughfare!.isNotEmpty) {
+            addressParts.insert(0, place.thoroughfare!);
+          } else if (place.name != null && place.name!.isNotEmpty) {
+            addressParts.insert(0, place.name!);
+          }
+        }
+        
+        String address = addressParts.join(', ');
         setState(() {
           _selectedAddress = address.isNotEmpty ? address : "Address not found";
         });
@@ -170,39 +202,148 @@ class GoogleMapLocationPickerState extends State<GoogleMapLocationPicker> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Theme.of(context).highlightColor,
-      appBar: AppBar(
-        title: Row(
-          children: [
-            Icon(Icons.location_on, color: Theme.of(context).indicatorColor),
-            const SizedBox(width: 8),
-            Expanded(
-              child: TextField(
-                controller: _searchController,
-                decoration: InputDecoration(
-                  hintText: "Search for a location",
-                  border: InputBorder.none,
-                  hintStyle: TextStyle(
-                      color: Theme.of(context).indicatorColor.withOpacity(0.5)),
+      appBar: PreferredSize(
+        preferredSize: const Size.fromHeight(120),
+        child: AppBar(
+          backgroundColor: Theme.of(context).highlightColor,
+          elevation: 0,
+          automaticallyImplyLeading: false,
+          flexibleSpace: SafeArea(
+            child: Column(
+              children: [
+                // Title Row
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  child: Row(
+                    children: [
+                      IconButton(
+                        icon: Icon(
+                          Icons.arrow_back,
+                          color: Theme.of(context).indicatorColor,
+                        ),
+                        onPressed: () => Navigator.pop(context),
+                      ),
+                      Expanded(
+                        child: Text(
+                          "Pick Location",
+                          style: TextStyle(
+                            color: Theme.of(context).indicatorColor,
+                            fontSize: 20,
+                            fontWeight: FontWeight.w600,
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
+                      ),
+                      const SizedBox(width: 48), // Balance the back button
+                    ],
+                  ),
                 ),
-                style: TextStyle(color: Theme.of(context).indicatorColor),
-                textInputAction: TextInputAction.search,
-                onSubmitted: (value) {
-                  _searchLocation(value);
-                },
-              ),
+                // Search Bar
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(25),
+                          child: BackdropFilter(
+                            filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+                            child: Container(
+                              decoration: BoxDecoration(
+                                color: Colors.white.withOpacity(0.15),
+                                borderRadius: BorderRadius.circular(25),
+                                border: Border.all(
+                                  color: Colors.white.withOpacity(0.2),
+                                  width: 1,
+                                ),
+                              ),
+                                child: TextField(
+                                controller: _searchController,
+                                style: TextStyle(color: Theme.of(context).indicatorColor),
+                                decoration: InputDecoration(
+                                  hintText: "Search for a location...",
+                                  hintStyle: TextStyle(
+                                  color: Theme.of(context).indicatorColor.withOpacity(0.7),
+                                  ),
+                                  contentPadding: const EdgeInsets.symmetric(
+                                  horizontal: 20,
+                                  vertical: 12,
+                                  ),
+                                  border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(25),
+                                  borderSide: BorderSide(
+                                    color: Theme.of(context).primaryColor,
+                                    width: 2,
+                                  ),
+                                  ),
+                                  enabledBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(25),
+                                  borderSide: BorderSide(
+                                    color: Theme.of(context).primaryColor,
+                                    width: 2,
+                                  ),
+                                  ),
+                                  focusedBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(25),
+                                  borderSide: BorderSide(
+                                    color: Theme.of(context).primaryColor.withOpacity(0.7),
+                                    width: 1.4,
+                                  ),
+                                  ),
+                                ),
+                                textInputAction: TextInputAction.search,
+                                onSubmitted: (value) {
+                                  _searchLocation(value);
+                                },
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      GestureDetector(
+                        onTap: () {
+                          _searchLocation(_searchController.text);
+                        },
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(25),
+                          child: BackdropFilter(
+                            filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+                            child: Container(
+                              width: 50,
+                              height: 50,
+                              decoration: BoxDecoration(
+                                color: Colors.white.withOpacity(0.2),
+                                borderRadius: BorderRadius.circular(25),
+                                border: Border.all(
+                                  color: Colors.white.withOpacity(0.3),
+                                  width: 1,
+                                ),
+                              ),
+                                // Add border
+                                foregroundDecoration: BoxDecoration(
+                                border: Border.all(
+                                  color: Theme.of(context).primaryColor.withOpacity(0.7),
+                                  width: 1.4,
+                                ),
+                                borderRadius: BorderRadius.circular(25),
+                                ),
+                                child: Icon(
+                                Icons.search,
+                                color: Theme.of(context).indicatorColor,
+                                size: 24,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                    
+                    ],
+                  ),
+                ),
+              ],
             ),
-          ],
-        ),
-        centerTitle: true,
-        backgroundColor: Theme.of(context).highlightColor,
-        elevation: 0,
-        automaticallyImplyLeading: true,
-        leading: IconButton(
-          icon: Icon(
-            Icons.arrow_back,
-            color: Theme.of(context).indicatorColor,
           ),
-          onPressed: () => Navigator.pop(context),
         ),
       ),
       body: Stack(

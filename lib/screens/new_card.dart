@@ -400,7 +400,6 @@ class CreateNewCardState extends State<CreateNewCard> {
             title: _titleController.text,
             cardDescription: _jobTitleController.text,
             organization: _organizationNameController.text,
-            address: _locationController.text,
             cardLogo: _organizationLogoPath,
             phoneNumber: _phoneNumberController.text,
             email: _emailAddressController.text,
@@ -536,7 +535,7 @@ class CreateNewCardState extends State<CreateNewCard> {
                         onChanged: (value) => setState(() {}),
                       ),
                       const SizedBox(height: 12),
-                      _buildTextField(context, "Business location"),
+                      
                       _buildInputField(
                         context,
                         "eg: Mabibo Dar-es-Salaam",
@@ -624,6 +623,38 @@ class CreateNewCardState extends State<CreateNewCard> {
                         },
                         onChanged: (value) => setState(() {}),
                       ),
+                      const SizedBox(height: 12),
+                      _buildTextField(context, "Business Location"),
+                      const SizedBox(height: 6),
+                      Container(
+                        width: MediaQuery.of(context).size.width,
+                        padding: const EdgeInsets.symmetric(horizontal: 20),
+                        child: ElevatedButton(
+                            onPressed: () => Navigator.pushNamed(
+                                context, '/location-picker'),
+
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Theme.of(context).primaryColor,
+                              shape: const RoundedRectangleBorder(
+                                borderRadius:
+                                    BorderRadius.all(Radius.circular(30)),
+                              ),
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 40, vertical: 15),
+                            ),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                const Icon(Icons.location_on, color: Colors.white),
+                                const SizedBox(width: 8),
+                                HeaderBoldWidget(
+                                    text: "Pick Your business location",
+                                    color: Theme.of(context).highlightColor,
+                                    size: '16'),
+                              ],
+                            )),
+                      ),
+                      const SizedBox(height: 12),
                       const SizedBox(height: 20),
                       _buildTextField(context, "Card Color"),
                       SizedBox(
