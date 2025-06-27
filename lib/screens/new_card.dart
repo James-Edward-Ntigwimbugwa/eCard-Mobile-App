@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:ecard_app/components/alert_reminder.dart';
 import 'package:ecard_app/components/custom_widgets.dart';
+import 'package:ecard_app/providers/location_provider.dart';
 import 'package:ecard_app/services/cad_service.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -28,7 +29,6 @@ class CreateNewCardState extends State<CreateNewCard> {
   final TextEditingController _organizationNameController =
       TextEditingController();
   final TextEditingController _jobTitleController = TextEditingController();
-  final TextEditingController _locationController = TextEditingController();
   final TextEditingController _emailAddressController = TextEditingController();
   final TextEditingController _phoneNumberController = TextEditingController();
   final TextEditingController _websiteController = TextEditingController();
@@ -37,6 +37,11 @@ class CreateNewCardState extends State<CreateNewCard> {
   final TextEditingController _linkedinController = TextEditingController();
   final TextEditingController _twitterController = TextEditingController();
   final TextEditingController _instagramController = TextEditingController();
+
+  double? _selectedLatitude;
+  double? _selectedLongitude;
+  String? _selectedLocationAddress;
+
   List<Map<String, dynamic>> _socialMediaLinks = [];
 
   // Selected style properties with default values
@@ -50,7 +55,6 @@ class CreateNewCardState extends State<CreateNewCard> {
 
   final List<CardElement> _orderedElements = [
     CardElement.organizationName,
-    CardElement.address,
     CardElement.title,
     CardElement.email,
     CardElement.phone,
@@ -87,7 +91,6 @@ class CreateNewCardState extends State<CreateNewCard> {
     _titleController.dispose();
     _jobTitleController.dispose();
     _organizationNameController.dispose();
-    _locationController.dispose();
     _phoneNumberController.dispose();
     _emailAddressController.dispose();
     _websiteController.dispose();
@@ -139,13 +142,6 @@ class CreateNewCardState extends State<CreateNewCard> {
         value = _organizationNameController.text.isEmpty
             ? "Organization name"
             : _organizationNameController.text;
-        break;
-      case CardElement.address:
-        iconData = Icons.location_on;
-        label = 'Address';
-        value = _locationController.text.isEmpty
-            ? "Organization address"
-            : _locationController.text;
         break;
       case CardElement.title:
         iconData = CupertinoIcons.person;
@@ -376,6 +372,11 @@ class CreateNewCardState extends State<CreateNewCard> {
         ),
       );
 
+      final LocationProvider locationProvider = Provider.of<LocationProvider>(context, listen: false);
+      _selectedLatitude = locationProvider.latitude;
+      _selectedLongitude = locationProvider.longitude;
+      _selectedLocationAddress = locationProvider.address;
+
       final CardProvider provider =
           Provider.of<CardProvider>(context, listen: false);
       final backgroundColor = _formatColorForBackend(_selectedColor);
@@ -387,7 +388,6 @@ class CreateNewCardState extends State<CreateNewCard> {
           "title: ${_titleController.text}, "
           "cardDescription: ${_jobTitleController.text}, "
           "organization: ${_organizationNameController.text}, "
-          "address: ${_locationController.text}, "
           "cardLogo: $_organizationLogoPath, "
           "phoneNumber: ${_phoneNumberController.text}, "
           "email: ${_emailAddressController.text}, "
@@ -408,6 +408,9 @@ class CreateNewCardState extends State<CreateNewCard> {
             textPosition: _textPosition.label.toLowerCase(),
             logoPosition: _logoPosition.label.toLowerCase(),
             fontStyle: _selectedFontStyle,
+            latitude: _selectedLatitude,
+            longitude: _selectedLongitude,
+            address: _selectedLocationAddress,
           )
           .timeout(const Duration(seconds: 60));
 
@@ -535,21 +538,7 @@ class CreateNewCardState extends State<CreateNewCard> {
                         onChanged: (value) => setState(() {}),
                       ),
                       const SizedBox(height: 12),
-                      
-                      _buildInputField(
-                        context,
-                        "eg: Mabibo Dar-es-Salaam",
-                        _locationController,
-                        Icon(CupertinoIcons.location,
-                            color: Theme.of(context).indicatorColor),
-                        (value) {
-                          if (value == null || value.isEmpty) {
-                            return 'Please enter business location';
-                          }
-                          return null;
-                        },
-                        onChanged: (value) => setState(() {}),
-                      ),
+
                       const SizedBox(height: 12),
                       _buildTextField(context, "Email Address"),
                       _buildInputField(
@@ -964,7 +953,6 @@ enum LayoutPosition {
 
 enum CardElement {
   organizationName('Organization Name'),
-  address('Address'),
   title('Job Title'),
   email('Email Address'),
   phone('Phone Number'),

@@ -17,31 +17,39 @@ class AdminMessagesDialog extends StatefulWidget {
 
 class _AdminMessagesDialogState extends State<AdminMessagesDialog> {
   final TextEditingController _messageController = TextEditingController();
+  final ScrollController _scrollController = ScrollController();
   final List<Message> _messages = [
     Message(
       text: "Welcome everyone! This is an important announcement.",
       timestamp: DateTime.now().subtract(const Duration(minutes: 30)),
       senderName: "Admin",
       senderAvatar:
-          "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100&h=100&fit=crop&crop=face",
+      "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100&h=100&fit=crop&crop=face",
     ),
     Message(
       text:
-          "Please review the new guidelines that have been shared in the documents section.",
+      "Please review the new guidelines that have been shared in the documents section.",
       timestamp: DateTime.now().subtract(const Duration(minutes: 25)),
       senderName: "Admin",
       senderAvatar:
-          "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100&h=100&fit=crop&crop=face",
+      "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100&h=100&fit=crop&crop=face",
     ),
     Message(
       text:
-          "The meeting scheduled for tomorrow has been moved to 3 PM. Please update your calendars accordingly.",
+      "The meeting scheduled for tomorrow has been moved to 3 PM. Please update your calendars accordingly.",
       timestamp: DateTime.now().subtract(const Duration(minutes: 15)),
       senderName: "Admin",
       senderAvatar:
-          "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100&h=100&fit=crop&crop=face",
+      "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100&h=100&fit=crop&crop=face",
     ),
   ];
+
+  @override
+  void dispose() {
+    _messageController.dispose();
+    _scrollController.dispose();
+    super.dispose();
+  }
 
   void _sendMessage() {
     if (_messageController.text.trim().isNotEmpty) {
@@ -52,11 +60,22 @@ class _AdminMessagesDialogState extends State<AdminMessagesDialog> {
             timestamp: DateTime.now(),
             senderName: "Admin",
             senderAvatar:
-                "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100&h=100&fit=crop&crop=face",
+            "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100&h=100&fit=crop&crop=face",
           ),
         );
       });
       _messageController.clear();
+
+      // Auto-scroll to bottom after sending message
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (_scrollController.hasClients) {
+          _scrollController.animateTo(
+            _scrollController.position.maxScrollExtent,
+            duration: const Duration(milliseconds: 300),
+            curve: Curves.easeOut,
+          );
+        }
+      });
     }
   }
 
@@ -79,12 +98,18 @@ class _AdminMessagesDialogState extends State<AdminMessagesDialog> {
 
   @override
   Widget build(BuildContext context) {
+    // Get keyboard height
+    final keyboardHeight = MediaQuery.of(context).viewInsets.bottom;
+
     return DraggableScrollableSheet(
       initialChildSize: 0.8,
       minChildSize: 0.5,
       maxChildSize: 0.95,
       builder: (context, scrollController) {
-        return Container(
+        return AnimatedContainer(
+          duration: const Duration(milliseconds: 200),
+          // Adjust the bottom padding based on keyboard height
+          padding: EdgeInsets.only(bottom: keyboardHeight > 0 ? keyboardHeight * 0.1 : 0),
           decoration: BoxDecoration(
             gradient: LinearGradient(
               begin: Alignment.bottomLeft,
@@ -145,7 +170,7 @@ class _AdminMessagesDialogState extends State<AdminMessagesDialog> {
               // Messages list
               Expanded(
                 child: ListView.builder(
-                  controller: scrollController,
+                  controller: _scrollController,
                   padding: const EdgeInsets.symmetric(horizontal: 16),
                   itemCount: _messages.length,
                   itemBuilder: (context, index) {
@@ -154,74 +179,84 @@ class _AdminMessagesDialogState extends State<AdminMessagesDialog> {
                 ),
               ),
 
-              // Message input
-              Container(
-                padding: const EdgeInsets.all(16),
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: ClipRRect(
-                        borderRadius: BorderRadius.circular(25),
-                        child: BackdropFilter(
-                          filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
-                          child: Container(
-                            decoration: BoxDecoration(
-                              color: Colors.white.withOpacity(0.15),
-                              borderRadius: BorderRadius.circular(25),
-                              border: Border.all(
+              // Message input - wrapped in keyboard-aware container
+              AnimatedContainer(
+                duration: const Duration(milliseconds: 200),
+                padding: EdgeInsets.only(
+                  left: 16,
+                  right: 16,
+                  top: 16,
+                  bottom: 16 + (keyboardHeight > 0 ? 0 : MediaQuery.of(context).padding.bottom),
+                ),
+                child: SafeArea(
+                  top: false,
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(25),
+                          child: BackdropFilter(
+                            filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+                            child: Container(
+                              decoration: BoxDecoration(
+                                color: Colors.white.withOpacity(0.15),
+                                borderRadius: BorderRadius.circular(25),
+                                border: Border.all(
+                                  color: Colors.white.withOpacity(0.2),
+                                  width: 1,
+                                ),
+                              ),
+                              child: TextField(
+                                controller: _messageController,
+                                style: const TextStyle(color: Colors.white),
+                                decoration: InputDecoration(
+                                  hintText: "Type your message...",
+                                  hintStyle: TextStyle(
+                                    color: Colors.white.withOpacity(0.7),
+                                  ),
+                                  contentPadding: const EdgeInsets.symmetric(
+                                    horizontal: 20,
+                                    vertical: 12,
+                                  ),
+                                  border: InputBorder.none,
+                                ),
+                                maxLines: null,
+                                textInputAction: TextInputAction.send,
+                                onSubmitted: (_) => _sendMessage(),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      GestureDetector(
+                        onTap: _sendMessage,
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(25),
+                          child: BackdropFilter(
+                            filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+                            child: Container(
+                              width: 50,
+                              height: 50,
+                              decoration: BoxDecoration(
                                 color: Colors.white.withOpacity(0.2),
-                                width: 1,
-                              ),
-                            ),
-                            child: TextField(
-                              controller: _messageController,
-                              style: const TextStyle(color: Colors.white),
-                              decoration: InputDecoration(
-                                hintText: "Type your message...",
-                                hintStyle: TextStyle(
-                                  color: Colors.white.withOpacity(0.7),
+                                borderRadius: BorderRadius.circular(25),
+                                border: Border.all(
+                                  color: Colors.white.withOpacity(0.3),
+                                  width: 1,
                                 ),
-                                contentPadding: const EdgeInsets.symmetric(
-                                  horizontal: 20,
-                                  vertical: 12,
-                                ),
-                                border: InputBorder.none,
                               ),
-                              maxLines: null,
-                              onSubmitted: (_) => _sendMessage(),
+                              child: const Icon(
+                                Icons.send,
+                                color: Colors.white,
+                                size: 24,
+                              ),
                             ),
                           ),
                         ),
                       ),
-                    ),
-                    const SizedBox(width: 12),
-                    GestureDetector(
-                      onTap: _sendMessage,
-                      child: ClipRRect(
-                        borderRadius: BorderRadius.circular(25),
-                        child: BackdropFilter(
-                          filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
-                          child: Container(
-                            width: 50,
-                            height: 50,
-                            decoration: BoxDecoration(
-                              color: Colors.white.withOpacity(0.2),
-                              borderRadius: BorderRadius.circular(25),
-                              border: Border.all(
-                                color: Colors.white.withOpacity(0.3),
-                                width: 1,
-                              ),
-                            ),
-                            child: const Icon(
-                              Icons.send,
-                              color: Colors.white,
-                              size: 24,
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
             ],
@@ -374,17 +409,4 @@ class Message {
     required this.senderName,
     required this.senderAvatar,
   });
-}
-
-// Usage example:
-void showAdminMessagesDialog(BuildContext context) {
-  showModalBottomSheet(
-    context: context,
-    isScrollControlled: true,
-    backgroundColor: Colors.transparent,
-    builder: (context) => const AdminMessagesDialog(
-      recipientNames: ["Alice Johnson", "Bob Smith"],
-      additionalRecipientsCount: 15,
-    ),
-  );
 }

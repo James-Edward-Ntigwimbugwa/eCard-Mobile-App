@@ -30,7 +30,10 @@ class CardProvider with ChangeNotifier {
     required String fontColor,
     required String textPosition,
     required String logoPosition,
-    required String fontStyle
+    required String fontStyle,
+    required double? latitude ,
+    required double? longitude ,
+    required String? address ,
   }) async {
     // Fixed: Use the correct field names expected by the server
     final Object cardRegistrationData = {

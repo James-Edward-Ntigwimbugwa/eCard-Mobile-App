@@ -5,6 +5,9 @@ import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:geocoding/geocoding.dart';
+import 'package:provider/provider.dart';
+
+import '../providers/location_provider.dart';
 
 class GoogleMapLocationPicker extends StatefulWidget {
   const GoogleMapLocationPicker({super.key});
@@ -100,32 +103,32 @@ class GoogleMapLocationPickerState extends State<GoogleMapLocationPicker> {
       );
       if (placemarks.isNotEmpty) {
         Placemark place = placemarks.first;
-        
+
         // Build a more comprehensive address
         List<String> addressParts = [];
-        
+
         // Add subLocality (like Mabibo)
         if (place.subLocality != null && place.subLocality!.isNotEmpty) {
           addressParts.add(place.subLocality!);
         }
-        
+
         // Add locality (like Dar es Salaam)
         if (place.locality != null && place.locality!.isNotEmpty) {
           addressParts.add(place.locality!);
         }
-        
+
         // Add administrativeArea (like Dar es Salaam Region)
         if (place.administrativeArea != null && place.administrativeArea!.isNotEmpty) {
           addressParts.add(place.administrativeArea!);
         }
-        
+
         // Add country
         if (place.country != null && place.country!.isNotEmpty) {
           addressParts.add(place.country!);
         }
-        
+
         // If we still don't have subLocality, try thoroughfare or name
-        if (addressParts.isEmpty || 
+        if (addressParts.isEmpty ||
             (place.subLocality == null || place.subLocality!.isEmpty)) {
           if (place.thoroughfare != null && place.thoroughfare!.isNotEmpty) {
             addressParts.insert(0, place.thoroughfare!);
@@ -133,7 +136,7 @@ class GoogleMapLocationPickerState extends State<GoogleMapLocationPicker> {
             addressParts.insert(0, place.name!);
           }
         }
-        
+
         String address = addressParts.join(', ');
         setState(() {
           _selectedAddress = address.isNotEmpty ? address : "Address not found";
@@ -195,6 +198,15 @@ class GoogleMapLocationPickerState extends State<GoogleMapLocationPicker> {
   }
 
   void _confirmLocation() {
+    final locationProvider = Provider.of<LocationProvider>(context, listen: false);
+
+    locationProvider.updateLocation(
+      latitude: _selectedPosition.latitude,
+      longitude: _selectedPosition.longitude,
+      address: _selectedAddress,
+    );
+
+    // Return the selected position (optional, for backward compatibility)
     Navigator.pop(context, _selectedPosition);
   }
 
@@ -257,38 +269,38 @@ class GoogleMapLocationPickerState extends State<GoogleMapLocationPicker> {
                                   width: 1,
                                 ),
                               ),
-                                child: TextField(
+                              child: TextField(
                                 controller: _searchController,
                                 style: TextStyle(color: Theme.of(context).indicatorColor),
                                 decoration: InputDecoration(
                                   hintText: "Search for a location...",
                                   hintStyle: TextStyle(
-                                  color: Theme.of(context).indicatorColor.withOpacity(0.7),
+                                    color: Theme.of(context).indicatorColor.withOpacity(0.7),
                                   ),
                                   contentPadding: const EdgeInsets.symmetric(
-                                  horizontal: 20,
-                                  vertical: 12,
+                                    horizontal: 20,
+                                    vertical: 12,
                                   ),
                                   border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(25),
-                                  borderSide: BorderSide(
-                                    color: Theme.of(context).primaryColor,
-                                    width: 2,
-                                  ),
+                                    borderRadius: BorderRadius.circular(25),
+                                    borderSide: BorderSide(
+                                      color: Theme.of(context).primaryColor,
+                                      width: 2,
+                                    ),
                                   ),
                                   enabledBorder: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(25),
-                                  borderSide: BorderSide(
-                                    color: Theme.of(context).primaryColor,
-                                    width: 2,
-                                  ),
+                                    borderRadius: BorderRadius.circular(25),
+                                    borderSide: BorderSide(
+                                      color: Theme.of(context).primaryColor,
+                                      width: 2,
+                                    ),
                                   ),
                                   focusedBorder: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(25),
-                                  borderSide: BorderSide(
-                                    color: Theme.of(context).primaryColor.withOpacity(0.7),
-                                    width: 1.4,
-                                  ),
+                                    borderRadius: BorderRadius.circular(25),
+                                    borderSide: BorderSide(
+                                      color: Theme.of(context).primaryColor.withOpacity(0.7),
+                                      width: 1.4,
+                                    ),
                                   ),
                                 ),
                                 textInputAction: TextInputAction.search,
@@ -320,24 +332,24 @@ class GoogleMapLocationPickerState extends State<GoogleMapLocationPicker> {
                                   width: 1,
                                 ),
                               ),
-                                // Add border
-                                foregroundDecoration: BoxDecoration(
+                              // Add border
+                              foregroundDecoration: BoxDecoration(
                                 border: Border.all(
                                   color: Theme.of(context).primaryColor.withOpacity(0.7),
                                   width: 1.4,
                                 ),
                                 borderRadius: BorderRadius.circular(25),
-                                ),
-                                child: Icon(
+                              ),
+                              child: Icon(
                                 Icons.search,
                                 color: Theme.of(context).indicatorColor,
                                 size: 24,
-                                ),
                               ),
                             ),
                           ),
                         ),
-                    
+                      ),
+
                     ],
                   ),
                 ),
@@ -417,7 +429,7 @@ class GoogleMapLocationPickerState extends State<GoogleMapLocationPicker> {
                         "Select a location",
                         style: TextStyle(
                           color:
-                              Theme.of(context).indicatorColor.withOpacity(0.7),
+                          Theme.of(context).indicatorColor.withOpacity(0.7),
                         ),
                       ),
                     const SizedBox(height: 12),
