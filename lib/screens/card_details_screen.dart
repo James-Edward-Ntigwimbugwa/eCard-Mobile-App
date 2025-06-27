@@ -1,5 +1,4 @@
 import 'dart:ui';
-
 import 'package:ecard_app/services/cad_service.dart';
 import 'package:flutter/material.dart';
 import 'package:ecard_app/modals/card_modal.dart';
@@ -7,14 +6,19 @@ import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 
+import '../components/card_display_widget.dart';
+
 class CardDetailsPage extends StatelessWidget {
   final CustomCard card;
+  final String? currentUserId;
+  final bool isFromShareLink;
 
-  const CardDetailsPage(
-      {super.key,
-      required this.card,
-      required currentUserId,
-      required bool isFromShareLink});
+  const CardDetailsPage({
+    super.key,
+    required this.card,
+    required this.currentUserId,
+    required this.isFromShareLink,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -32,8 +36,7 @@ class CardDetailsPage extends StatelessWidget {
         headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
           return <Widget>[
             SliverAppBar(
-              expandedHeight: screenHeight * 0.4,
-              // Take up 40% of screen height
+              expandedHeight: screenHeight * 0.4, // Increased height for better display
               floating: false,
               pinned: true,
               backgroundColor: Colors.white,
@@ -58,39 +61,18 @@ class CardDetailsPage extends StatelessWidget {
                 ),
               ),
               title: innerBoxIsScrolled
-                  ? const Text(
-                      'Card Details',
-                      style: TextStyle(color: Colors.black, fontSize: 16),
-                    )
+                  ? Text(
+                card.title ?? 'Card Details',
+                style: const TextStyle(color: Colors.black, fontSize: 16),
+              )
                   : null,
               flexibleSpace: FlexibleSpaceBar(
                 background: Container(
                   color: Colors.white,
-                  child: Stack(
-                    children: [
-                      // Card header
-                      Positioned(
-                        top: MediaQuery.of(context).padding.top + 50,
-                        left: 20,
-                        right: 20,
-                        child: Text(
-                          card.title ?? 'Card Details',
-                          style: const TextStyle(
-                            color: Colors.black,
-                            fontSize: 22,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ),
-                      // Custom Card
-                      Positioned(
-                        top: MediaQuery.of(context).padding.top + 90,
-                        left: 20,
-                        right: 20,
-                        bottom: 20,
-                        child: _buildBusinessCard(context, screenHeight),
-                      ),
-                    ],
+                  child: CardDisplayWidget(
+                    card: card,
+                    onCardTap: (card) {}, // Prevents navigation since we're already on details page
+                    onShare: (card) => _showShareModal(context), // Links to existing share functionality
                   ),
                 ),
               ),
@@ -105,11 +87,10 @@ class CardDetailsPage extends StatelessWidget {
             children: [
               // Quick Action Buttons
               SizedBox(
-                height: 120, // Adjust height as needed
+                height: 120,
                 child: GridView.count(
-                  padding: const EdgeInsets.only(bottom: 10),
+                  padding: const EdgeInsets.only(top: 10),
                   crossAxisCount: 5,
-                  // Increased from 4 to 5 to add Share button
                   shrinkWrap: true,
                   physics: const NeverScrollableScrollPhysics(),
                   mainAxisSpacing: 8,
@@ -133,7 +114,7 @@ class CardDetailsPage extends StatelessWidget {
                       color: primaryColor.withOpacity(0.6),
                       iconColor: Colors.white,
                       onTap: () =>
-                          card.email != null ? _launchEmail(card.email!) : null,
+                      card.email != null ? _launchEmail(card.email!) : null,
                     ),
                     _buildActionButton(
                       context,
@@ -157,7 +138,6 @@ class CardDetailsPage extends StatelessWidget {
                         );
                       },
                     ),
-                    // Added Share button
                     _buildActionButton(
                       context,
                       icon: Icons.share,
@@ -169,9 +149,7 @@ class CardDetailsPage extends StatelessWidget {
                   ],
                 ),
               ),
-
               const SizedBox(height: 24),
-
               // Contact Information Section
               _buildSectionHeader('Contact Information'),
               const SizedBox(height: 8),
@@ -219,9 +197,7 @@ class CardDetailsPage extends StatelessWidget {
                   ),
                 ),
               ),
-
               const SizedBox(height: 24),
-
               // Social Media Section
               _buildSectionHeader('Social Media'),
               const SizedBox(height: 8),
@@ -264,9 +240,7 @@ class CardDetailsPage extends StatelessWidget {
                   ],
                 ),
               ),
-
               const SizedBox(height: 24),
-
               // Card Analytics
               _buildSectionHeader('Card Analytics', trailing: 'Last 30 days'),
               const SizedBox(height: 8),
@@ -286,9 +260,7 @@ class CardDetailsPage extends StatelessWidget {
                   ],
                 ),
               ),
-
               const SizedBox(height: 24),
-
               // Ratings
               _buildSectionHeader('Ratings'),
               const SizedBox(height: 8),
@@ -309,9 +281,7 @@ class CardDetailsPage extends StatelessWidget {
                   ],
                 ),
               ),
-
               const SizedBox(height: 24),
-
               // Rate This Card
               _buildSectionHeader('Rate This Card'),
               const SizedBox(height: 8),
@@ -343,7 +313,6 @@ class CardDetailsPage extends StatelessWidget {
                   ],
                 ),
               ),
-
               const SizedBox(height: 40),
             ],
           ),
@@ -352,7 +321,6 @@ class CardDetailsPage extends StatelessWidget {
     );
   }
 
-  // New method to show the share modal
   void _showShareModal(BuildContext context) {
     final primaryColor = Theme.of(context).primaryColor;
     final screenWidth = MediaQuery.of(context).size.width;
@@ -360,20 +328,17 @@ class CardDetailsPage extends StatelessWidget {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
-      backgroundColor: Colors.transparent, // Transparent background
+      backgroundColor: Colors.transparent,
       builder: (context) => Stack(
         children: [
-          // Blurred background
           Positioned.fill(
             child: BackdropFilter(
               filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
               child: Container(
-                color:
-                    Colors.black.withOpacity(0.5), // Dark overlay for contrast
+                color: Colors.black.withOpacity(0.5),
               ),
             ),
           ),
-          // Styled modal content
           Center(
             child: Container(
               decoration: BoxDecoration(
@@ -422,7 +387,6 @@ class CardDetailsPage extends StatelessWidget {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          // Header
                           Container(
                             padding: const EdgeInsets.all(20),
                             decoration: BoxDecoration(
@@ -451,7 +415,6 @@ class CardDetailsPage extends StatelessWidget {
                               ],
                             ),
                           ),
-                          // Description
                           const Padding(
                             padding: EdgeInsets.all(20),
                             child: Text(
@@ -462,7 +425,6 @@ class CardDetailsPage extends StatelessWidget {
                               ),
                             ),
                           ),
-                          // QR Code Section
                           Container(
                             alignment: Alignment.center,
                             padding: const EdgeInsets.symmetric(horizontal: 30),
@@ -489,7 +451,7 @@ class CardDetailsPage extends StatelessWidget {
                                     backgroundColor: Colors.white,
                                     embeddedImage: card.profilePhoto != null
                                         ? NetworkImage(card.profilePhoto!)
-                                            as ImageProvider
+                                    as ImageProvider
                                         : null,
                                     embeddedImageStyle: QrEmbeddedImageStyle(
                                       size: const Size(40, 40),
@@ -512,7 +474,7 @@ class CardDetailsPage extends StatelessWidget {
                                     ScaffoldMessenger.of(context).showSnackBar(
                                       const SnackBar(
                                           content:
-                                              Text('QR Code saved to gallery')),
+                                          Text('QR Code saved to gallery')),
                                     );
                                   },
                                   style: OutlinedButton.styleFrom(
@@ -522,7 +484,6 @@ class CardDetailsPage extends StatelessWidget {
                               ],
                             ),
                           ),
-                          // Divider
                           Padding(
                             padding: const EdgeInsets.symmetric(horizontal: 20),
                             child: Row(
@@ -544,7 +505,6 @@ class CardDetailsPage extends StatelessWidget {
                               ],
                             ),
                           ),
-                          // Social Media Sharing Options
                           Padding(
                             padding: const EdgeInsets.all(20),
                             child: GridView.count(
@@ -606,14 +566,13 @@ class CardDetailsPage extends StatelessWidget {
     );
   }
 
-  // Helper method to build share option buttons
   Widget _buildShareOption(
-    BuildContext context, {
-    required IconData icon,
-    required Color color,
-    required String label,
-    required VoidCallback onTap,
-  }) {
+      BuildContext context, {
+        required IconData icon,
+        required Color color,
+        required String label,
+        required VoidCallback onTap,
+      }) {
     return SizedBox(
       height: 90,
       child: InkWell(
@@ -624,8 +583,8 @@ class CardDetailsPage extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Container(
-              width: 48, // Reduced from 50
-              height: 48, // Reduced from 50
+              width: 48,
+              height: 48,
               decoration: BoxDecoration(
                 color: color.withOpacity(0.1),
                 shape: BoxShape.circle,
@@ -638,7 +597,7 @@ class CardDetailsPage extends StatelessWidget {
               child: Text(
                 label,
                 style: const TextStyle(
-                  fontSize: 10, // Reduced from 11
+                  fontSize: 10,
                   fontWeight: FontWeight.w500,
                 ),
                 textAlign: TextAlign.center,
@@ -653,83 +612,57 @@ class CardDetailsPage extends StatelessWidget {
   }
 
   String _generateCardQrData() {
-    // Create a formatted string with all card details
     String qrData = '';
-
-    // Essential identification fields
     if (card.id != null && card.id!.isNotEmpty) {
       qrData += 'ID:${card.id}\n';
     }
-
     if (card.uuid != null && card.uuid!.isNotEmpty) {
       qrData += 'UUID:${card.uuid}\n';
     }
-
-    // Organization information
     if (card.company != null && card.company!.isNotEmpty) {
       qrData += 'ORG:${card.company}\n';
     }
-
     if (card.organization != null && card.organization!.isNotEmpty) {
       qrData += 'ORGANIZATION:${card.organization}\n';
     }
-
-    // Personal information
     if (card.title != null && card.title!.isNotEmpty) {
       qrData += 'TITLE:${card.title}\n';
     }
-
     if (card.department != null && card.department!.isNotEmpty) {
       qrData += 'DEPT:${card.department}\n';
     }
-
-    // Contact information
     if (card.phoneNumber != null && card.phoneNumber!.isNotEmpty) {
       qrData += 'TEL:${card.phoneNumber}\n';
     }
-
     if (card.email != null && card.email!.isNotEmpty) {
       qrData += 'EMAIL:${card.email}\n';
     }
-
     if (card.websiteUrl != null && card.websiteUrl!.isNotEmpty) {
       qrData += 'URL:${card.websiteUrl}\n';
     }
-
     if (card.address != null && card.address!.isNotEmpty) {
       qrData += 'ADR:${card.address}\n';
     }
-
     if (card.linkedIn != null && card.linkedIn!.isNotEmpty) {
       qrData += 'LINKEDIN:${card.linkedIn}\n';
     }
-
-    // Additional information
     if (card.cardDescription != null && card.cardDescription!.isNotEmpty) {
       qrData += 'DESC:${card.cardDescription}\n';
     }
-
     if (card.profilePhoto != null && card.profilePhoto!.isNotEmpty) {
       qrData += 'PHOTO:${card.profilePhoto}\n';
     }
-
-    // Styling information
     if (card.backgroundColor != null && card.backgroundColor!.isNotEmpty) {
       qrData += 'BGCOLOR:${card.backgroundColor}\n';
     }
-
     if (card.fontColor != null && card.fontColor!.isNotEmpty) {
       qrData += 'FONTCOLOR:${card.fontColor}\n';
     }
-
-    // Status information
     qrData += 'ACTIVE:${card.active}\n';
     qrData += 'PUBLISHED:${card.publishCard}\n';
-
     return qrData.isEmpty ? 'No card data available' : qrData;
   }
 
-  // Share methods
   void _shareViaSms() {
     if (card.phoneNumber != null) {
       final message = 'Check out ${card.title}\'s business card!';
@@ -749,11 +682,9 @@ class CardDetailsPage extends StatelessWidget {
 
   void _shareViaSocialMedia(String platform) {
     // Implementation depends on what social media integrations you have
-    // Could use platform-specific share plugins
   }
 
   void _copyCardLink(BuildContext context) {
-    // Implementation would copy a shareable URL to clipboard
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(content: Text('Card link copied to clipboard')),
     );
@@ -761,7 +692,6 @@ class CardDetailsPage extends StatelessWidget {
 
   void _shareViaSystem() {
     // Implementation would use platform share dialog
-    // This typically requires a share plugin like share_plus
   }
 
   Widget _buildBusinessCard(BuildContext context, double screenHeight) {
@@ -773,8 +703,7 @@ class CardDetailsPage extends StatelessWidget {
     textColor ??= isDark ? Colors.white : Colors.black87;
 
     return Container(
-      height:
-          screenHeight * 0.25, // Significantly increased height for the card
+      height: screenHeight * 0.25,
       decoration: BoxDecoration(
         color: backgroundColor,
         borderRadius: BorderRadius.circular(16),
@@ -790,21 +719,18 @@ class CardDetailsPage extends StatelessWidget {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Avatar/logo with larger size
           CircleAvatar(
-            radius: 36, // Significantly increased
+            radius: 36,
             backgroundColor: textColor.withOpacity(0.1),
             backgroundImage: card.profilePhoto != null
                 ? NetworkImage(card.profilePhoto!)
                 : null,
             child: card.profilePhoto == null
                 ? Icon(Icons.business,
-                    color: textColor.withOpacity(0.7), size: 36)
+                color: textColor.withOpacity(0.7), size: 36)
                 : null,
           ),
           const SizedBox(width: 20),
-
-          // Card information
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -813,7 +739,7 @@ class CardDetailsPage extends StatelessWidget {
                 Text(
                   card.company ?? 'Organization',
                   style: TextStyle(
-                    fontSize: 22, // Increased font size
+                    fontSize: 22,
                     fontWeight: FontWeight.bold,
                     color: textColor,
                   ),
@@ -822,11 +748,11 @@ class CardDetailsPage extends StatelessWidget {
                 Text(
                   card.title ?? 'Position',
                   style: TextStyle(
-                    fontSize: 18, // Increased font size
+                    fontSize: 18,
                     color: textColor.withOpacity(0.8),
                   ),
                 ),
-                const SizedBox(height: 16), // Increased spacing
+                const SizedBox(height: 16),
                 Row(
                   children: [
                     Icon(Icons.phone, color: textColor, size: 18),
@@ -835,7 +761,7 @@ class CardDetailsPage extends StatelessWidget {
                       child: Text(
                         card.phoneNumber ?? 'Phone number',
                         style: TextStyle(
-                          fontSize: 16, // Increased font size
+                          fontSize: 16,
                           color: textColor,
                         ),
                         overflow: TextOverflow.ellipsis,
@@ -852,7 +778,7 @@ class CardDetailsPage extends StatelessWidget {
                       child: Text(
                         card.email ?? 'Email address',
                         style: TextStyle(
-                          fontSize: 16, // Increased font size
+                          fontSize: 16,
                           color: textColor,
                         ),
                         overflow: TextOverflow.ellipsis,
@@ -860,7 +786,6 @@ class CardDetailsPage extends StatelessWidget {
                     ),
                   ],
                 ),
-                // Add website if available
                 if (card.websiteUrl != null && card.websiteUrl!.isNotEmpty)
                   const SizedBox(height: 8),
                 if (card.websiteUrl != null && card.websiteUrl!.isNotEmpty)
@@ -912,13 +837,13 @@ class CardDetailsPage extends StatelessWidget {
   }
 
   Widget _buildActionButton(
-    BuildContext context, {
-    required IconData icon,
-    required String label,
-    required Color color,
-    required Color iconColor,
-    required VoidCallback? onTap,
-  }) {
+      BuildContext context, {
+        required IconData icon,
+        required String label,
+        required Color color,
+        required Color iconColor,
+        required VoidCallback? onTap,
+      }) {
     return SizedBox(
       height: 90,
       child: InkWell(
@@ -929,8 +854,8 @@ class CardDetailsPage extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Container(
-              width: 48, // Reduced from 50
-              height: 48, // Reduced from 50
+              width: 48,
+              height: 48,
               decoration: BoxDecoration(
                 color: color.withOpacity(0.1),
                 shape: BoxShape.circle,
@@ -943,7 +868,7 @@ class CardDetailsPage extends StatelessWidget {
               child: Text(
                 label,
                 style: const TextStyle(
-                  fontSize: 10, // Reduced from 11
+                  fontSize: 10,
                   fontWeight: FontWeight.w500,
                 ),
                 textAlign: TextAlign.center,
@@ -1029,8 +954,6 @@ class CardDetailsPage extends StatelessWidget {
                   fontSize: 20,
                 ),
               ),
-              // Use this instead if you have actual icons:
-              // child: Image.asset(icon, width: 24, height: 24),
             ),
           ),
           const SizedBox(height: 4),
@@ -1118,7 +1041,6 @@ class CardDetailsPage extends StatelessWidget {
     );
   }
 
-// Helper methods for parsing colors and determining text color
   Color? _parseColor(String? colorString, Color? defaultColor) {
     if (colorString == null || colorString.isEmpty) {
       return defaultColor;
@@ -1131,14 +1053,11 @@ class CardDetailsPage extends StatelessWidget {
   }
 
   bool _isColorDark(Color color) {
-    // Calculate the perceptive luminance (perceived brightness)
-    // This formula gives a value between 0 and 255
     double luminance =
         (0.299 * color.red + 0.587 * color.green + 0.114 * color.blue) / 255;
     return luminance < 0.5;
   }
 
-// URL launcher methods
   void _launchPhone(String phoneNumber) {
     launchUrl(Uri.parse('tel:$phoneNumber'));
   }
@@ -1164,7 +1083,6 @@ class CardDetailsPage extends StatelessWidget {
   }
 
   void _openOrganizationCard(BuildContext context) async {
-    // Show loading indicator
     showDialog(
       context: context,
       barrierDismissible: false,
@@ -1174,23 +1092,14 @@ class CardDetailsPage extends StatelessWidget {
     );
 
     try {
-      // Fetch the organization's card information
-      // This would typically be a database call to fetch the card by company name
-
       final CardProvider cardProvider =
-          Provider.of<CardProvider>(context, listen: false);
-
+      Provider.of<CardProvider>(context, listen: false);
       final String uuid = card.uuid ?? '';
       final organizationCard = await cardProvider.getCardByUuid(uuid: uuid);
-
-      // Close loading dialog
       Navigator.pop(context);
 
       if (organizationCard != null) {
-        // final bool isOwner = card.userUuid == organizationCard[];
         final bool isOwner = card.userUuid == organizationCard.userUuid;
-
-        // Navigate to the organization's card details page
         Navigator.push(
           context,
           MaterialPageRoute(
@@ -1201,8 +1110,6 @@ class CardDetailsPage extends StatelessWidget {
             ),
           ),
         );
-
-        // Show permission toast based on ownership
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(
@@ -1215,7 +1122,6 @@ class CardDetailsPage extends StatelessWidget {
           ),
         );
       } else {
-        // Show error if organization card couldn't be found
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('No card found for ${card.company}'),
@@ -1224,7 +1130,6 @@ class CardDetailsPage extends StatelessWidget {
         );
       }
     } catch (e) {
-      // Close loading dialog and show error
       Navigator.pop(context);
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(

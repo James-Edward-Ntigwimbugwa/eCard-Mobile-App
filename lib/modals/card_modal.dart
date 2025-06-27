@@ -12,6 +12,13 @@ class CustomCard {
   final bool publishCard;
   final String? cardLogo;
   final String? profilePhoto;
+  final String? latitude;
+  final String? longitude;
+  final String? selected_address;
+  final String? textPosition;
+  final String? logoPosition;
+  final String? fontStyle;
+
   final String? address;
   final String? cardDescription;
   final String? phoneNumber;
@@ -38,6 +45,12 @@ class CustomCard {
     this.publishCard = false,
     this.cardLogo,
     this.profilePhoto,
+    this.latitude,
+    this.longitude,
+    this.selected_address,
+    this.logoPosition,
+    this.textPosition,
+    this.fontStyle,
     this.address,
     this.cardDescription,
     this.phoneNumber,
@@ -67,6 +80,12 @@ class CustomCard {
       publishCard: json['publishCard'] ?? false,
       cardLogo: json['cardLogo'],
       profilePhoto: json['profilePhoto'],
+      latitude: json['latitude'],
+      longitude: json['longitude'],
+      selected_address: json['selected_address'],
+      logoPosition: json['logoPosition'],
+      textPosition: json['textPosition'],
+      fontStyle: json['fontStyle'],
       address: json['address'],
       cardDescription: json['cardDescription'],
       phoneNumber: json['phoneNumber'],

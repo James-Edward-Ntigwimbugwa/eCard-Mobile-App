@@ -72,6 +72,242 @@ class _CardDisplayWidgetState extends State<CardDisplayWidget> {
     }
   }
 
+  /// Helper method to get font family from font style
+  String _getFontFamily(String? fontStyle) {
+    switch (fontStyle?.toLowerCase()) {
+      case 'serif':
+        return 'serif';
+      case 'mono':
+        return 'monospace';
+      case 'sans-serif':
+      default:
+        return 'sans-serif';
+    }
+  }
+
+  /// Get layout position enum from string
+  LayoutPosition _getLayoutPosition(String? position) {
+    switch (position?.toLowerCase()) {
+      case 'left':
+        return LayoutPosition.left;
+      case 'right':
+        return LayoutPosition.right;
+      case 'top':
+        return LayoutPosition.top;
+      case 'bottom':
+        return LayoutPosition.bottom;
+      default:
+        return LayoutPosition.left;
+    }
+  }
+
+  /// Build label text widget for card elements
+  Widget _buildLabel(String labelText, Color textColor) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 4.0),
+      child: Text(
+        labelText,
+        style: TextStyle(
+          fontSize: 12,
+          color: textColor.withOpacity(0.7),
+          fontWeight: FontWeight.w600,
+        ),
+      ),
+    );
+  }
+
+  /// Build a single card element widget with label on top, icon and value text
+  Widget _buildCardElement(
+      CardElement element, Color textColor, String fontFamily) {
+    IconData iconData;
+    String label;
+    String value;
+
+    switch (element) {
+      case CardElement.organizationName:
+        iconData = Icons.business;
+        label = 'Organization';
+        value = widget.card.organization ?? 'Organization';
+        break;
+      case CardElement.title:
+        iconData = Icons.person;
+        label = 'Title';
+        value = widget.card.title ?? 'Title';
+        break;
+      case CardElement.description:
+        iconData = Icons.description;
+        label = 'Description';
+        value = widget.card.cardDescription ?? 'Description';
+        break;
+      case CardElement.email:
+        iconData = Icons.email;
+        label = 'Email';
+        value = widget.card.email ?? 'Email';
+        break;
+      case CardElement.phone:
+        iconData = Icons.phone;
+        label = 'Phone';
+        value = widget.card.phoneNumber ?? 'Phone';
+        break;
+      case CardElement.website:
+        iconData = Icons.language;
+        label = 'Website';
+        value = widget.card.websiteUrl ?? 'Website';
+        break;
+      case CardElement.linkedIn:
+        iconData = Icons.work;
+        label = 'LinkedIn';
+        value = widget.card.linkedIn ?? 'LinkedIn';
+        break;
+      case CardElement.department:
+        iconData = Icons.corporate_fare;
+        label = 'Department';
+        value = widget.card.department ?? 'Department';
+        break;
+    }
+
+    // Only show element if it has a non-empty value
+    if (value.isEmpty || value == label) {
+      return const SizedBox.shrink();
+    }
+
+    TextStyle valueStyle = TextStyle(
+      fontSize: 14,
+      color: textColor,
+      fontFamily: fontFamily,
+      fontWeight: FontWeight.w500,
+    );
+
+    return Padding(
+      key: ValueKey(element),
+      padding: const EdgeInsets.symmetric(vertical: 2.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          _buildLabel(label, textColor),
+          Row(
+            children: [
+              Icon(iconData, color: textColor, size: 16),
+              const SizedBox(width: 6),
+              Flexible(
+                child: Text(
+                  value,
+                  style: valueStyle,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 8),
+        ],
+      ),
+    );
+  }
+
+  /// Build the card content based on backend styling
+  Widget _buildCardContent(Color textColor, String fontFamily) {
+    // Get positions from backend data
+    final logoPosition = _getLayoutPosition(widget.card.logoPosition);
+    final textPosition = _getLayoutPosition(widget.card.textPosition);
+
+    // Build logo widget
+    Widget logoWidget = CircleAvatar(
+      radius: 30,
+      backgroundColor: textColor.withOpacity(0.15),
+      backgroundImage: widget.card.profilePhoto != null && widget.card.profilePhoto!.isNotEmpty
+          ? NetworkImage(widget.card.profilePhoto!)
+          : null,
+      child: widget.card.profilePhoto == null || widget.card.profilePhoto!.isEmpty
+          ? Icon(
+        Icons.business,
+        color: textColor.withOpacity(0.7),
+        size: 24,
+      )
+          : null,
+    );
+
+    // Build text elements - show only non-empty fields
+    List<Widget> textElements = [];
+
+    // Define the order of elements to display
+    final orderedElements = [
+      CardElement.organizationName,
+      CardElement.title,
+      CardElement.description,
+      CardElement.email,
+      CardElement.phone,
+      CardElement.website,
+      CardElement.linkedIn,
+      CardElement.department,
+    ];
+
+    for (var element in orderedElements) {
+      final elementWidget = _buildCardElement(element, textColor, fontFamily);
+      if (elementWidget is! SizedBox) {
+        textElements.add(elementWidget);
+      }
+    }
+
+    Widget elementsColumn = Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: textElements,
+    );
+
+    // Build card content based on positions
+    Widget cardContent;
+    const double spacing = 16;
+
+    if (logoPosition == LayoutPosition.left && textPosition == LayoutPosition.right) {
+      cardContent = Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          logoWidget,
+          const SizedBox(width: spacing),
+          Expanded(child: elementsColumn),
+        ],
+      );
+    } else if (logoPosition == LayoutPosition.right && textPosition == LayoutPosition.left) {
+      cardContent = Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Expanded(child: elementsColumn),
+          const SizedBox(width: spacing),
+          logoWidget,
+        ],
+      );
+    } else if (logoPosition == LayoutPosition.top && textPosition == LayoutPosition.bottom) {
+      cardContent = Column(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          logoWidget,
+          const SizedBox(height: spacing),
+          elementsColumn,
+        ],
+      );
+    } else if (logoPosition == LayoutPosition.bottom && textPosition == LayoutPosition.top) {
+      cardContent = Column(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          elementsColumn,
+          const SizedBox(height: spacing),
+          logoWidget,
+        ],
+      );
+    } else {
+      // Default to left-right layout
+      cardContent = Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          logoWidget,
+          const SizedBox(width: spacing),
+          Expanded(child: elementsColumn),
+        ],
+      );
+    }
+
+    return cardContent;
+  }
+
   @override
   Widget build(BuildContext context) {
     Color backgroundColor =
@@ -80,6 +316,9 @@ class _CardDisplayWidgetState extends State<CardDisplayWidget> {
     Color? textColor = _parseColor(widget.card.fontColor, null);
     final bool isDark = _isColorDark(backgroundColor);
     textColor ??= isDark ? Colors.white : Colors.black87;
+
+    // Get font family from card data
+    String fontFamily = _getFontFamily(widget.card.fontStyle);
 
     return InkWell(
       onTap: () {
@@ -107,144 +346,53 @@ class _CardDisplayWidgetState extends State<CardDisplayWidget> {
         child: _isLoading
             ? const Center(child: CircularProgressIndicator())
             : Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Row(
-                          children: [
-                            CircleAvatar(
-                              radius: 20,
-                              backgroundColor: textColor.withOpacity(0.1),
-                              backgroundImage: widget.card.profilePhoto != null
-                                  ? NetworkImage(widget.card.profilePhoto!)
-                                  : null,
-                              child: widget.card.profilePhoto == null
-                                  ? Icon(Icons.business,
-                                      color: textColor.withOpacity(0.7),
-                                      size: 16)
-                                  : null,
-                            ),
-                            const SizedBox(width: 8),
-                            Text(
-                              _userData?.companyName ??
-                                  widget.card.organization ??
-                                  'Organization',
-                              style: TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.bold,
-                                color: textColor,
-                              ),
-                            ),
-                          ],
-                        ),
-                        Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            _buildActionButton(
-                              icon: widget.card.active
-                                  ? Icons.bookmark_add
-                                  : Icons.favorite_border,
-                              onPressed:
-                                  _navigateToCardSaves, // Updated to use the new method
-                              color: textColor.withOpacity(0.1),
-                              iconColor: textColor,
-                            ),
-                            const SizedBox(width: 4),
-                            _buildActionButton(
-                              icon: Icons.share,
-                              onPressed: () =>
-                                  widget.onShare?.call(widget.card),
-                              color: textColor.withOpacity(0.1),
-                              iconColor: textColor,
-                            ),
-                          ],
-                        ),
-                      ],
+          padding: const EdgeInsets.all(20.0),
+          child: Column(
+            children: [
+              // Header with action buttons
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    widget.card.title ?? 'Business Card',
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      color: textColor,
+                      fontFamily: fontFamily,
                     ),
-                    const SizedBox(height: 20),
-                    Text(
-                      widget.card.title ?? 'Business Card',
-                      style: TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                        color: textColor,
+                  ),
+                  Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      _buildActionButton(
+                        icon: widget.card.active
+                            ? Icons.bookmark_add
+                            : Icons.favorite_border,
+                        onPressed: _navigateToCardSaves,
+                        color: textColor.withOpacity(0.1),
+                        iconColor: textColor,
                       ),
-                    ),
-                    const SizedBox(height: 12),
-                    Text(
-                      _getFullName(),
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.w600,
-                        color: textColor,
+                      const SizedBox(width: 4),
+                      _buildActionButton(
+                        icon: Icons.share,
+                        onPressed: () =>
+                            widget.onShare?.call(widget.card),
+                        color: textColor.withOpacity(0.1),
+                        iconColor: textColor,
                       ),
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      _userData?.jobTitle ?? _userData?.jobTitle ?? 'Position',
-                      style: TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.normal,
-                        color: textColor.withOpacity(0.8),
-                      ),
-                    ),
-                    const SizedBox(height: 12),
-                    Divider(height: 1, color: textColor.withOpacity(0.2)),
-                    const SizedBox(height: 12),
-                    Row(
-                      children: [
-                        Icon(Icons.phone, color: textColor, size: 16),
-                        const SizedBox(width: 8),
-                        Text(
-                          _userData?.phone ??
-                              widget.card.phoneNumber ??
-                              'Phone Number',
-                          style: TextStyle(
-                            fontSize: 14,
-                            color: textColor,
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 8),
-                    Row(
-                      children: [
-                        Icon(Icons.email, color: textColor, size: 16),
-                        const SizedBox(width: 8),
-                        Text(
-                          _userData?.email ??
-                              widget.card.email ??
-                              'Email Address',
-                          style: TextStyle(
-                            fontSize: 14,
-                            color: textColor,
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 8),
-                  ],
-                ),
+                    ],
+                  ),
+                ],
               ),
+              const SizedBox(height: 16),
+              // Main card content with dynamic layout
+              _buildCardContent(textColor, fontFamily),
+            ],
+          ),
+        ),
       ),
     );
-  }
-
-  String _getFullName() {
-    if (_userData != null) {
-      final firstName = _userData!.firstName;
-      final lastName = _userData!.lastName;
-
-      if (firstName!.isNotEmpty || lastName!.isNotEmpty) {
-        return '$firstName $lastName'.trim();
-      }
-    }
-    return widget.card.company ?? 'Card Creator';
   }
 
   Widget _buildActionButton({
@@ -291,4 +439,22 @@ class _CardDisplayWidgetState extends State<CardDisplayWidget> {
         (color.red * 299 + color.green * 587 + color.blue * 114) / 1000;
     return brightness < 128;
   }
+}
+
+enum LayoutPosition {
+  left,
+  right,
+  top,
+  bottom,
+}
+
+enum CardElement {
+  organizationName,
+  title,
+  description,
+  email,
+  phone,
+  website,
+  linkedIn,
+  department,
 }
