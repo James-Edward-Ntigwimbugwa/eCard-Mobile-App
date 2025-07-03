@@ -64,31 +64,14 @@ class _SplashScreenState extends State<SplashScreen> {
         ),
         child: Column(
           children: [
-            ClipOval(
-              child: Container(
-                width: 100,
-                height: 100,
-                color: Colors.grey,
-                child: Stack(
-                  children: [
-                    Positioned(
-                      left: -10,
-                      child: ClipRRect(
-                        borderRadius: BorderRadius.circular(20),
-                        child: Container(
-                          width: 120,
-                          height: 120,
-                          color: Colors.white, // Optional: background color
-                          child: Lottie.asset(
-                            LottieAnimes.cardLoader,
-                            height: 80,
-                            width: 80,
-                            fit: BoxFit.cover,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
+            Center(
+              // Center the Lottie animation within the circle
+              child: SizedBox(
+                width: 180, // Reduced size to fit inside the 100x100 circle with padding
+                height: 180, // Reduced size to fit inside the 100x100 circle with padding
+                child: Lottie.asset(
+                  LottieAnimes.cardLoader,
+                  fit: BoxFit.cover, // Ensures the entire animation is visible
                 ),
               ),
             ),
@@ -116,7 +99,7 @@ class _SplashScreenState extends State<SplashScreen> {
           ],
         ),
       ),
-      duration: 6000,
+      duration: 3000,
       splashIconSize: 500,
       backgroundColor: Theme.of(context).primaryColor,
       nextScreen: _nextScreen,

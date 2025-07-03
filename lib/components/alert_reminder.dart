@@ -134,7 +134,7 @@ class Alerts {
                 const SizedBox(height: 20),
                 NormalHeaderWidget(
                   text: message,
-                  color: Colors.orange,
+                  color: Theme.of(context).indicatorColor,
                   size: '24.0',
                 ),
               ],

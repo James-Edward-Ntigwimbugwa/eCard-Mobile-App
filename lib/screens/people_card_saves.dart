@@ -2,6 +2,7 @@ import 'package:ecard_app/services/cad_service.dart';
 import 'package:ecard_app/utils/resources/animes/lottie_animes.dart';
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
+import '../components/alert_reminder.dart';
 import '../modals/person_who_saved_card.dart' as model_person_save;
 import 'admin_message_dialog.dart';
 
@@ -38,10 +39,8 @@ class _PeopleCardSavesState extends State<PeopleCardSaves> {
   }
 
   Future<void> _loadSavedCards() async {
-    // Show loading state immediately
     try {
       await Future.delayed(const Duration(seconds: 2), () {
-        // Check if the widget is still mounted before calling setState
         if (mounted) {
           setState(() {
             isLoading = true;
@@ -94,6 +93,16 @@ class _PeopleCardSavesState extends State<PeopleCardSaves> {
     List<String> recipientNames = [];
     int additionalCount = 0;
 
+    // If savedPeople is empty, show warning and exit early
+    if (savedPeople.isEmpty) {
+      Alerts.showWarning(
+        context: context,
+        message: "No card saves",
+        icon: Lottie.asset(LottieAnimes.warning, width: 130, height: 130),
+      );
+      return;
+    }
+
     if (filteredPeople.isNotEmpty) {
       // Take first 2 names for display
       recipientNames =
@@ -105,12 +114,17 @@ class _PeopleCardSavesState extends State<PeopleCardSaves> {
       }
     }
 
-    // Fallback to mock data if no saved people
+    // If recipientNames is empty (e.g., due to filtering), show warning and exit
     if (recipientNames.isEmpty) {
-      recipientNames = ["John Doe", "Jane Smith"];
-      additionalCount = 8;
+      Alerts.showWarning(
+        context: context,
+        message: "No matching card saves",
+        icon: Lottie.asset(LottieAnimes.warning, width: 130, height: 130),
+      );
+      return;
     }
 
+    // Only show the modal if there are recipients
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -140,7 +154,6 @@ class _PeopleCardSavesState extends State<PeopleCardSaves> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Header section
             Padding(
               padding: const EdgeInsets.all(20.0),
               child: Center(
@@ -151,7 +164,6 @@ class _PeopleCardSavesState extends State<PeopleCardSaves> {
                       padding: const EdgeInsets.all(20.0),
                       child: Row(
                         children: [
-                          // Back button
                           GestureDetector(
                             onTap: () => Navigator.pop(context),
                             child: Container(
@@ -169,7 +181,6 @@ class _PeopleCardSavesState extends State<PeopleCardSaves> {
                               ),
                             ),
                           ),
-                          // Title centered
                           Expanded(
                             child: Center(
                               child: Text(
@@ -182,7 +193,6 @@ class _PeopleCardSavesState extends State<PeopleCardSaves> {
                               ),
                             ),
                           ),
-                          // Refresh button
                           GestureDetector(
                             onTap: _refreshData,
                             child: Container(
@@ -204,7 +214,6 @@ class _PeopleCardSavesState extends State<PeopleCardSaves> {
                       ),
                     ),
                     const SizedBox(height: 20),
-                    // Search bar
                     Container(
                       decoration: BoxDecoration(
                         color: Theme.of(context).highlightColor,
@@ -235,8 +244,6 @@ class _PeopleCardSavesState extends State<PeopleCardSaves> {
                 ),
               ),
             ),
-
-            // People list section
             Expanded(
               child: Container(
                 decoration: BoxDecoration(
@@ -404,7 +411,6 @@ class PersonCard extends StatelessWidget {
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Profile image with updated styling
                 Container(
                   width: 50,
                   height: 50,
@@ -441,15 +447,11 @@ class PersonCard extends StatelessWidget {
                   )
                       : _buildDefaultAvatar(context),
                 ),
-
                 const SizedBox(width: 12),
-
-                // Person info with updated layout
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      // Name and role row (similar to company name and card holder)
                       Row(
                         children: [
                           Expanded(
@@ -475,7 +477,6 @@ class PersonCard extends StatelessWidget {
                         ],
                       ),
                       const SizedBox(height: 6),
-                      // Card name (similar to message)
                       Text(
                         'Saved: ${person.cardName}',
                         style: TextStyle(
@@ -486,7 +487,6 @@ class PersonCard extends StatelessWidget {
                         overflow: TextOverflow.ellipsis,
                       ),
                       const SizedBox(height: 8),
-                      // Status row (similar to time and read status)
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
