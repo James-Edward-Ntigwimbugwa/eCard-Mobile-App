@@ -6,8 +6,10 @@ import 'package:ecard_app/components/alert_reminder.dart';
 import 'package:ecard_app/utils/resources/animes/lottie_animes.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_otp_text_field/flutter_otp_text_field.dart';
+import 'package:http/http.dart';
 import 'package:lottie/lottie.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:developer' as developer;
 import '../providers/user_provider.dart';
 import '../utils/resources/strings/strings.dart';
@@ -30,8 +32,8 @@ class OtpVerifierState extends State<OtpVerifier> {
       message: message,
       icon: Lottie.asset(
         LottieAnimes.successLoader,
-        width: 60,
-        height: 60,
+        width: 130,
+        height: 130,
         fit: BoxFit.contain,
       ),
     );
@@ -44,12 +46,22 @@ class OtpVerifierState extends State<OtpVerifier> {
       message: message,
       icon: Lottie.asset(
         LottieAnimes.errorLoader,
-        width: 60,
-        height: 60,
+        width: 130,
+        height: 130,
         fit: BoxFit.contain,
       ),
     );
   }
+
+  void showLoader(String message) => Alerts.showLoader(
+      context: context,
+      message: message,
+      icon: Lottie.asset(
+        LottieAnimes.loading,
+        width: 130,
+        height: 130,
+        fit: BoxFit.contain,
+      ));
 
   Future<void> _verifyOtp() async {
     if (_otpCode.length < 6) {
@@ -61,47 +73,44 @@ class OtpVerifierState extends State<OtpVerifier> {
       _isSubmitting = true;
     });
 
-    Alerts.showLoader(
-        context: context,
-        message: "Verifying OTP...",
-        icon: Lottie.asset(
-          LottieAnimes.loading,
-          width: 60,
-          height: 60,
-          fit: BoxFit.contain,
-        ));
+    showLoader("Verifying OTP...");
 
     try {
       final authProvider = Provider.of<AuthProvider>(context, listen: false);
-      final response = await authProvider
+      final Response response = await authProvider
           .verifyOtp(_otpCode)
           .timeout(const Duration(seconds: 60));
       debugPrint("OTP verification response: $response");
 
       // Close the loading dialog
       Navigator.pop(context);
-
-      if (response['message'] == 'User activated successfully') {
+      if (response.statusCode == 200) {
         // Account activated successfully
         showSuccessMessage("Account activated successfully!");
 
         // Wait for success animation to show for 2 seconds before navigating
-        Timer(const Duration(seconds: 2), () {
-          Navigator.pop(context); // Close success alert
+        Timer(const Duration(seconds: 2), () async {
+          // Close the success dialog
+          if (Navigator.canPop(context)) {
+            Navigator.pop(context);
+          }
 
           // Check if username and password are available
-          final registerPageState =
-              Provider.of<RegisterPageState>(context, listen: false);
-          final username = registerPageState.username;
-          final password = registerPageState.password;
+          final prefs = await SharedPreferences.getInstance();
+          final String? username = prefs.getString("autoLoginUsername");
+          final String? password = prefs.getString("autoLoginPassword");
 
-          if (username.text.isNotEmpty && password.text.isNotEmpty) {
+          developer.log("Auto-login credentials check - Username: ${username ?? 'null'}, Password: ${password != null ? '[PRESENT]' : 'null'}", name: 'OtpVerifierScreen');
+
+          if (username != null && password != null && username.isNotEmpty && password.isNotEmpty) {
             // Proceed with auto-login
-            _performAutoLogin(username.text, password.text);
+            developer.log("Proceeding with auto-login", name: 'OtpVerifierScreen');
+            _performAutoLogin(username, password);
           } else {
             // Navigate back to login screen if credentials are not available
+            developer.log("Auto-login credentials not available, navigating to login", name: 'OtpVerifierScreen');
             final authProvider =
-                Provider.of<AuthProvider>(context, listen: false);
+            Provider.of<AuthProvider>(context, listen: false);
             authProvider.navigateToLoginScreen();
           }
         });
@@ -113,7 +122,9 @@ class OtpVerifierState extends State<OtpVerifier> {
         });
       }
     } catch (error) {
-      Navigator.pop(context); // Close loading dialog
+      if (Navigator.canPop(context)) {
+        Navigator.pop(context); // Close loading dialog
+      }
       showErrorMessage(
           "Verification failed. Please check your connection and try again.");
       setState(() {
@@ -123,15 +134,7 @@ class OtpVerifierState extends State<OtpVerifier> {
   }
 
   Future<void> _performAutoLogin(String username, String password) async {
-    Alerts.showLoader(
-        context: context,
-        message: "Logging in ...",
-        icon: Lottie.asset(
-          LottieAnimes.cardLoader,
-          width: 60,
-          height: 60,
-          fit: BoxFit.contain,
-        ));
+    showLoader("Logging in ...");
 
     final authProvider = Provider.of<AuthProvider>(context, listen: false);
 
@@ -143,31 +146,41 @@ class OtpVerifierState extends State<OtpVerifier> {
       if (response == true) {
         var userProvider = Provider.of<UserProvider>(context, listen: false);
         // Optionally set user if needed, e.g. userProvider.setUser(authProvider.user);
-        Navigator.pop(context); // Close loader
+        if (Navigator.canPop(context)) {
+          Navigator.pop(context); // Close loader
+        }
 
         // Show login success message for 2 seconds
         showSuccessMessage("Login successful!");
         Timer(const Duration(seconds: 2), () {
-          Navigator.pop(context); // Close success dialog
+          if (Navigator.canPop(context)) {
+            Navigator.pop(context); // Close success dialog
+          }
           Navigator.pushReplacementNamed(context, '/dashboard');
         });
       } else {
-        Navigator.pop(context); // Close loader
+        if (Navigator.canPop(context)) {
+          Navigator.pop(context); // Close loader
+        }
         showErrorMessage("Login failed. Please try again.");
         authProvider.navigateToLoginScreen();
       }
     } on TimeoutException {
-      Navigator.pop(context); // Close loader
+      if (Navigator.canPop(context)) {
+        Navigator.pop(context); // Close loader
+      }
       showErrorMessage(
           "Login request timed out. Please check your internet connection.");
       authProvider.navigateToLoginScreen();
     } catch (error) {
-      developer.log("Error during auto-login: $error",
+      developer.log(
+          "Error during auto-login: $error",
           name: 'OtpVerifierScreen',
           error: error,
           stackTrace: StackTrace.current);
-
-      Navigator.pop(context); // Close loader
+      if (Navigator.canPop(context)) {
+        Navigator.pop(context); // Close loader
+      }
       showErrorMessage("Error logging in. Please try again.");
       authProvider.navigateToLoginScreen();
     }
@@ -245,12 +258,14 @@ class OtpVerifierState extends State<OtpVerifier> {
                 ),
                 const SizedBox(height: 10),
                 TextButton(
-                    onPressed: () {
+                    onPressed: _isSubmitting ? null : () {
                       final auth =
-                          Provider.of<AuthProvider>(context, listen: false);
+                      Provider.of<AuthProvider>(context, listen: false);
                       auth.navigateToLoginScreen();
                     },
-                    child: Text(Texts.backToRegister)),
+                    child: Text(Texts.backToRegister, style: TextStyle(
+                      color: _isSubmitting ? Colors.grey : Theme.of(context).primaryColor,
+                    ),)),
                 const SizedBox(height: 10),
               ],
             ),

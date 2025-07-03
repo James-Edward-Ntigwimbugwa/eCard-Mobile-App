@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../components/custom_widgets.dart';
 import '../utils/resources/images/images.dart';
 import '../utils/resources/strings/strings.dart';
@@ -153,7 +154,7 @@ class RegisterPageState extends State<RegisterPage> {
         _usernameController.text.trim(),
         _lastNameController.text.trim(),
         _emailController.text.trim(),
-        "USER", // Fixed role
+        "USER",
         _passwordController.text.trim(),
         _phoneNumberController.text.trim(),
         "", // Bio not included
@@ -168,6 +169,7 @@ class RegisterPageState extends State<RegisterPage> {
 
       if (success) {
         // Navigate to OTP verification screen
+        _saveAutoLoginCredentials();
         if (mounted) {
           Navigator.pushReplacementNamed(context, '/verify_with_otp');
         }
@@ -212,6 +214,12 @@ class RegisterPageState extends State<RegisterPage> {
         });
       }
     }
+  }
+
+  Future<void> _saveAutoLoginCredentials() async{
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString("autoLoginUsername", _usernameController.text);
+    await prefs.setString("autoLoginPassword", _passwordController.text);
   }
 
   @override

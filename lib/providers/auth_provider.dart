@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:ecard_app/modals/user_modal.dart';
 import 'package:ecard_app/services/auth_requests.dart';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:jwt_decode/jwt_decode.dart';
 import 'dart:developer' as developer;
@@ -114,29 +115,10 @@ class AuthProvider with ChangeNotifier {
           // Extract token and refreshToken from the new structure
           _accessToken = data['token'];
           String refreshToken = data['refreshToken'];
-
-          // Create User model from all available fields in the JSON response
           try {
             User authUser =
                 User.fromJson(data); // Use the fromJson factory method
 
-            // Alternative manual creation if you prefer:
-            // User authUser = User(
-            //   id: data['id']?.toString(), // Convert to string as your model expects
-            //   uuid: data['uuid'],
-            //   username: data['username'],
-            //   email: data['email'], // Now properly included
-            //   firstName: data['firstName'],
-            //   lastName: data['lastName'],
-            //   phone: data['phone'],
-            //   jobTitle: data['jobTitle'],
-            //   companyName: data['companyName'],
-            //   userType: data['userType'], // Fixed field name
-            //   accessToken: data['token'], // Use 'token' from response
-            //   refreshToken: data['refreshToken'],
-            //   tokenType: data['tokenType'],
-            //   lastLogin: data['lastLogin'],
-            // );
 
             bool saveResult = await UserPreferences.saveUser(authUser);
             if (saveResult) {
@@ -290,10 +272,11 @@ class AuthProvider with ChangeNotifier {
   }
 
   // Updated OTP verification with improved error handling
-  Future<Map<String, dynamic>> verifyOtp(String otp) async {
+  Future<Response> verifyOtp(String otp) async {
     _isLoading = true;
     _errorMessage = null;
     notifyListeners();
+
 
     try {
       final response = await _apiService.activateAccount(otp);
@@ -301,10 +284,7 @@ class AuthProvider with ChangeNotifier {
       if (response.statusCode == 200) {
         _isLoading = false;
         notifyListeners();
-        return {
-          'status': true,
-          'message': 'Account verified successfully',
-        };
+        return response;
       } else {
         String errorMessage;
         try {
@@ -320,21 +300,23 @@ class AuthProvider with ChangeNotifier {
         _errorMessage = errorMessage;
         _isLoading = false;
         notifyListeners();
-        return {
-          'status': false,
-          'message': errorMessage,
-        };
+        return response;
       }
     } catch (e) {
       developer.log("OTP verification error: $e");
-      _errorMessage =
-          'Connection error. Please check your internet connection.';
+      if (e.toString().contains("SocketException") ||
+          e.toString().contains("Connection")) {
+        _errorMessage =
+            "Network connection error. Please check your internet and try again.";
+      } else if (e.toString().contains("timeout")) {
+        _errorMessage = "Request timed out. Please try again later.";
+      } else {
+        _errorMessage =
+            "An unexpected error occurred. Please try again.";
+      }
       _isLoading = false;
       notifyListeners();
-      return {
-        'status': false,
-        'message': 'Connection error. Please check your internet connection.',
-      };
+      return Response('{"error": "$_errorMessage"}', 500);
     }
   }
 

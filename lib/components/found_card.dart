@@ -1,8 +1,7 @@
 import 'dart:async';
 import 'dart:io';
-
 import 'package:flutter/material.dart';
-import 'package:loading_animation_widget/loading_animation_widget.dart';
+import 'package:lottie/lottie.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -27,23 +26,22 @@ class FoundCard extends StatefulWidget {
 }
 
 class _FoundCardState extends State<FoundCard> {
-  bool _isSaving = false;
 
   @override
   void initState() {
     super.initState();
   }
 
-  void _saveCardLogic(BuildContext context, int userId, int cardId) async {
+  void _saveCardLogic(BuildContext context, String? userId, String? cardId) async {
     debugPrint("method savecardLogic in nearbyscreen executed ====>");
     if (mounted) {
-      setState(() => _isSaving = true);
       Alerts.showLoader(
         context: context,
         message: "Saving Card ...",
-        icon: LoadingAnimationWidget.stretchedDots(
-          color: Theme.of(context).primaryColor,
-          size: 20,
+        icon: Lottie.asset(LottieAnimes.loading, 
+          width: 50,
+          height: 50,
+          fit: BoxFit.fill,
         ),
       );
     }
@@ -122,7 +120,6 @@ class _FoundCardState extends State<FoundCard> {
       });
     } finally {
       if (mounted) {
-        setState(() => _isSaving = false);
       }
       if (Navigator.canPop(context)) {
         // Ensure loader is popped only if it's the current route
@@ -238,7 +235,7 @@ class _FoundCardState extends State<FoundCard> {
                           final prefs = await SharedPreferences.getInstance();
                           final String? userId = prefs.getString("userId");
                           _saveCardLogic(
-                              context, userId as int, widget.card.id as int);
+                              context, userId, widget.card.id);
                         },
                         icon: const Icon(Icons.bookmark_add),
                         label: const Text('Save Card'),

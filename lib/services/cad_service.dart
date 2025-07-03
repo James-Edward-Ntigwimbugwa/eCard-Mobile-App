@@ -48,6 +48,9 @@ class CardProvider with ChangeNotifier {
       'linkedin': linkedIn,
       'websiteUrl': website,
       'department': department,
+      "latitude": latitude,
+      "longitude": longitude,
+      "address": address,
       'fontColor': fontColor,
       'backgroundColor': backgroundColor,
       'textPosition' : textPosition ,
@@ -270,15 +273,16 @@ class CardProvider with ChangeNotifier {
   }
 
   Future<bool> saveOrganizationCard(
-      {required int userId, required int cardId}) async {
+      {required String? userId, required String? cardId}) async {
     debugPrint(
         "Save Card organization in card-request-implementation executed ====>");
-    final Object savingBody = {"userId": userId, "cardId": cardId};
+    final Object savingBody = {"userId": int.parse(userId!), "cardId": int.parse(cardId!)};
 
     debugPrint("==============================================="
         "\n \n saving card for organization \n \n "
         "id : $cardId \n "
         "user id : $userId");
+
     try {
       final response = await CardRequests.saveCard(savingBody: savingBody);
 

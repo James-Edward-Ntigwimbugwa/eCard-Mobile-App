@@ -42,7 +42,6 @@ class CreateNewCardState extends State<CreateNewCard> {
   double? _selectedLongitude;
   String? _selectedLocationAddress;
 
-  List<Map<String, dynamic>> _socialMediaLinks = [];
 
   // Selected style properties with default values
   Color _selectedColor = const Color(0xFF9C27B0); // purple
@@ -67,23 +66,6 @@ class CreateNewCardState extends State<CreateNewCard> {
   @override
   void initState() {
     super.initState();
-    _socialMediaLinks = [
-      {
-        'platform': 'LinkedIn',
-        'controller': _linkedinController,
-        'icon': FontAwesomeIcons.linkedin
-      },
-      {
-        'platform': 'Twitter',
-        'controller': _twitterController,
-        'icon': FontAwesomeIcons.twitter
-      },
-      {
-        'platform': 'Instagram',
-        'controller': _instagramController,
-        'icon': FontAwesomeIcons.instagram
-      },
-    ];
   }
 
   @override
@@ -390,6 +372,11 @@ class CreateNewCardState extends State<CreateNewCard> {
           "organization: ${_organizationNameController.text}, "
           "cardLogo: $_organizationLogoPath, "
           "phoneNumber: ${_phoneNumberController.text}, "
+          "latitude: $_selectedLatitude, "
+          "longitude: $_selectedLongitude, "
+          "address: $_selectedLocationAddress, "
+          "website: ${_websiteController.text}, "
+          "linkedin: ${_linkedinController.text}, "
           "email: ${_emailAddressController.text}, "
           "backgroundColor: $backgroundColor, "
           "fontColor: $fontColor"
