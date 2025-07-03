@@ -42,7 +42,6 @@ class CreateNewCardState extends State<CreateNewCard> {
   double? _selectedLongitude;
   String? _selectedLocationAddress;
 
-
   // Selected style properties with default values
   Color _selectedColor = const Color(0xFF9C27B0); // purple
   Color _textColor = Colors.white;
@@ -354,7 +353,8 @@ class CreateNewCardState extends State<CreateNewCard> {
         ),
       );
 
-      final LocationProvider locationProvider = Provider.of<LocationProvider>(context, listen: false);
+      final LocationProvider locationProvider =
+          Provider.of<LocationProvider>(context, listen: false);
       _selectedLatitude = locationProvider.latitude;
       _selectedLongitude = locationProvider.longitude;
       _selectedLocationAddress = locationProvider.address;
@@ -525,7 +525,6 @@ class CreateNewCardState extends State<CreateNewCard> {
                         onChanged: (value) => setState(() {}),
                       ),
                       const SizedBox(height: 12),
-
                       const SizedBox(height: 12),
                       _buildTextField(context, "Email Address"),
                       _buildInputField(
@@ -608,7 +607,6 @@ class CreateNewCardState extends State<CreateNewCard> {
                         child: ElevatedButton(
                             onPressed: () => Navigator.pushNamed(
                                 context, '/location-picker'),
-
                             style: ElevatedButton.styleFrom(
                               backgroundColor: Theme.of(context).primaryColor,
                               shape: const RoundedRectangleBorder(
@@ -621,7 +619,8 @@ class CreateNewCardState extends State<CreateNewCard> {
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
-                                const Icon(Icons.location_on, color: Colors.white),
+                                const Icon(Icons.location_on,
+                                    color: Colors.white),
                                 const SizedBox(width: 8),
                                 HeaderBoldWidget(
                                     text: "Pick Your business location",

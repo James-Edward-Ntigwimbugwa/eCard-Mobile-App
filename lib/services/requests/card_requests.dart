@@ -158,7 +158,8 @@ class CardRequests {
       rethrow;
     }
   }
-  static Future<Response> fetchUserSavedCards({required String userId}) async{
+
+  static Future<Response> fetchUserSavedCards({required String userId}) async {
     try {
       final prefs = await SharedPreferences.getInstance();
       final bearerToken = prefs.getString("accessToken");
@@ -167,7 +168,8 @@ class CardRequests {
         throw Exception("Authentication required");
       }
 
-      final url = Uri.parse("${AppUrl.getAllUserSavedCards}/${int.parse(userId)}");
+      final url =
+          Uri.parse("${AppUrl.getAllUserSavedCards}/${int.parse(userId)}");
 
       final response = await get(
         url,
@@ -179,8 +181,7 @@ class CardRequests {
       );
 
       return response;
-
-    }catch(e){
+    } catch (e) {
       debugPrint("Fetch card details API call failed in card_request.dart: $e");
       rethrow;
     }

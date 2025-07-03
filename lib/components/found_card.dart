@@ -26,19 +26,20 @@ class FoundCard extends StatefulWidget {
 }
 
 class _FoundCardState extends State<FoundCard> {
-
   @override
   void initState() {
     super.initState();
   }
 
-  void _saveCardLogic(BuildContext context, String? userId, String? cardId) async {
+  void _saveCardLogic(
+      BuildContext context, String? userId, String? cardId) async {
     debugPrint("method savecardLogic in nearbyscreen executed ====>");
     if (mounted) {
       Alerts.showLoader(
         context: context,
         message: "Saving Card ...",
-        icon: Lottie.asset(LottieAnimes.loading, 
+        icon: Lottie.asset(
+          LottieAnimes.loading,
           width: 50,
           height: 50,
           fit: BoxFit.fill,
@@ -119,8 +120,7 @@ class _FoundCardState extends State<FoundCard> {
         Navigator.pop(context);
       });
     } finally {
-      if (mounted) {
-      }
+      if (mounted) {}
       if (Navigator.canPop(context)) {
         // Ensure loader is popped only if it's the current route
         Navigator.pop(context); // Dismiss the loader
@@ -234,8 +234,7 @@ class _FoundCardState extends State<FoundCard> {
                         onPressed: () async {
                           final prefs = await SharedPreferences.getInstance();
                           final String? userId = prefs.getString("userId");
-                          _saveCardLogic(
-                              context, userId, widget.card.id);
+                          _saveCardLogic(context, userId, widget.card.id);
                         },
                         icon: const Icon(Icons.bookmark_add),
                         label: const Text('Save Card'),

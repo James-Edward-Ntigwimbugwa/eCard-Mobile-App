@@ -67,8 +67,10 @@ class _SplashScreenState extends State<SplashScreen> {
             Center(
               // Center the Lottie animation within the circle
               child: SizedBox(
-                width: 180, // Reduced size to fit inside the 100x100 circle with padding
-                height: 180, // Reduced size to fit inside the 100x100 circle with padding
+                width:
+                    180, // Reduced size to fit inside the 100x100 circle with padding
+                height:
+                    180, // Reduced size to fit inside the 100x100 circle with padding
                 child: Lottie.asset(
                   LottieAnimes.cardLoader,
                   fit: BoxFit.cover, // Ensures the entire animation is visible

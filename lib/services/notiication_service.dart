@@ -7,7 +7,6 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../modals/message_notification.dart';
 
 class NotificationService {
-
   List<MessageNotification> _notifications = [];
   List<MessageNotification> get currentNotifications => _notifications;
 
@@ -44,7 +43,7 @@ class NotificationService {
   }) async {
     try {
       final response = await NotificationRequests.sendNotificationToUsers(
-         cardId: cardId, message: message);
+          cardId: cardId, message: message);
       return response;
     } catch (e) {
       throw e;
@@ -114,22 +113,22 @@ class NotificationService {
         // Update local state
         _notifications = _notifications
             .map((n) => MessageNotification(
-          id: n.id,
-          companyName: n.companyName,
-          cardHolderName: n.cardHolderName,
-          companyLogo: n.companyLogo,
-          timestamp: n.timestamp,
-          isRead: true,
-          message: n.message,
-          type: n.type,
-          cardTitle: n.cardTitle,
-          organization: n.organization,
-          email: n.email,
-          phoneNumber: n.phoneNumber,
-          address: n.address,
-          actorFullName: n.actorFullName,
-          recipientFullName: n.recipientFullName,
-        ))
+                  id: n.id,
+                  companyName: n.companyName,
+                  cardHolderName: n.cardHolderName,
+                  companyLogo: n.companyLogo,
+                  timestamp: n.timestamp,
+                  isRead: true,
+                  message: n.message,
+                  type: n.type,
+                  cardTitle: n.cardTitle,
+                  organization: n.organization,
+                  email: n.email,
+                  phoneNumber: n.phoneNumber,
+                  address: n.address,
+                  actorFullName: n.actorFullName,
+                  recipientFullName: n.recipientFullName,
+                ))
             .toList();
 
         return true;
@@ -145,6 +144,4 @@ class NotificationService {
     // Clean up any resources if needed
     _notifications.clear();
   }
-
-
 }

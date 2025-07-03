@@ -214,16 +214,18 @@ class _CardDisplayWidgetState extends State<CardDisplayWidget> {
     Widget logoWidget = CircleAvatar(
       radius: 30,
       backgroundColor: textColor.withOpacity(0.15),
-      backgroundImage: widget.card.profilePhoto != null && widget.card.profilePhoto!.isNotEmpty
+      backgroundImage: widget.card.profilePhoto != null &&
+              widget.card.profilePhoto!.isNotEmpty
           ? NetworkImage(widget.card.profilePhoto!)
           : null,
-      child: widget.card.profilePhoto == null || widget.card.profilePhoto!.isEmpty
-          ? Icon(
-        Icons.business,
-        color: textColor.withOpacity(0.7),
-        size: 24,
-      )
-          : null,
+      child:
+          widget.card.profilePhoto == null || widget.card.profilePhoto!.isEmpty
+              ? Icon(
+                  Icons.business,
+                  color: textColor.withOpacity(0.7),
+                  size: 24,
+                )
+              : null,
     );
 
     // Build text elements - show only non-empty fields
@@ -257,7 +259,8 @@ class _CardDisplayWidgetState extends State<CardDisplayWidget> {
     Widget cardContent;
     const double spacing = 16;
 
-    if (logoPosition == LayoutPosition.left && textPosition == LayoutPosition.right) {
+    if (logoPosition == LayoutPosition.left &&
+        textPosition == LayoutPosition.right) {
       cardContent = Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -266,7 +269,8 @@ class _CardDisplayWidgetState extends State<CardDisplayWidget> {
           Expanded(child: elementsColumn),
         ],
       );
-    } else if (logoPosition == LayoutPosition.right && textPosition == LayoutPosition.left) {
+    } else if (logoPosition == LayoutPosition.right &&
+        textPosition == LayoutPosition.left) {
       cardContent = Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -275,7 +279,8 @@ class _CardDisplayWidgetState extends State<CardDisplayWidget> {
           logoWidget,
         ],
       );
-    } else if (logoPosition == LayoutPosition.top && textPosition == LayoutPosition.bottom) {
+    } else if (logoPosition == LayoutPosition.top &&
+        textPosition == LayoutPosition.bottom) {
       cardContent = Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
@@ -284,7 +289,8 @@ class _CardDisplayWidgetState extends State<CardDisplayWidget> {
           elementsColumn,
         ],
       );
-    } else if (logoPosition == LayoutPosition.bottom && textPosition == LayoutPosition.top) {
+    } else if (logoPosition == LayoutPosition.bottom &&
+        textPosition == LayoutPosition.top) {
       cardContent = Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
@@ -346,51 +352,51 @@ class _CardDisplayWidgetState extends State<CardDisplayWidget> {
         child: _isLoading
             ? const Center(child: CircularProgressIndicator())
             : Padding(
-          padding: const EdgeInsets.all(20.0),
-          child: Column(
-            children: [
-              // Header with action buttons
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    widget.card.title ?? 'Business Card',
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                      color: textColor,
-                      fontFamily: fontFamily,
+                padding: const EdgeInsets.all(20.0),
+                child: Column(
+                  children: [
+                    // Header with action buttons
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          widget.card.title ?? 'Business Card',
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                            color: textColor,
+                            fontFamily: fontFamily,
+                          ),
+                        ),
+                        Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            _buildActionButton(
+                              icon: widget.card.active
+                                  ? Icons.bookmark_add
+                                  : Icons.favorite_border,
+                              onPressed: _navigateToCardSaves,
+                              color: textColor.withOpacity(0.1),
+                              iconColor: textColor,
+                            ),
+                            const SizedBox(width: 4),
+                            _buildActionButton(
+                              icon: Icons.share,
+                              onPressed: () =>
+                                  widget.onShare?.call(widget.card),
+                              color: textColor.withOpacity(0.1),
+                              iconColor: textColor,
+                            ),
+                          ],
+                        ),
+                      ],
                     ),
-                  ),
-                  Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      _buildActionButton(
-                        icon: widget.card.active
-                            ? Icons.bookmark_add
-                            : Icons.favorite_border,
-                        onPressed: _navigateToCardSaves,
-                        color: textColor.withOpacity(0.1),
-                        iconColor: textColor,
-                      ),
-                      const SizedBox(width: 4),
-                      _buildActionButton(
-                        icon: Icons.share,
-                        onPressed: () =>
-                            widget.onShare?.call(widget.card),
-                        color: textColor.withOpacity(0.1),
-                        iconColor: textColor,
-                      ),
-                    ],
-                  ),
-                ],
+                    const SizedBox(height: 16),
+                    // Main card content with dynamic layout
+                    _buildCardContent(textColor, fontFamily),
+                  ],
+                ),
               ),
-              const SizedBox(height: 16),
-              // Main card content with dynamic layout
-              _buildCardContent(textColor, fontFamily),
-            ],
-          ),
-        ),
       ),
     );
   }

@@ -119,7 +119,6 @@ class AuthProvider with ChangeNotifier {
             User authUser =
                 User.fromJson(data); // Use the fromJson factory method
 
-
             bool saveResult = await UserPreferences.saveUser(authUser);
             if (saveResult) {
               developer
@@ -277,7 +276,6 @@ class AuthProvider with ChangeNotifier {
     _errorMessage = null;
     notifyListeners();
 
-
     try {
       final response = await _apiService.activateAccount(otp);
 
@@ -311,8 +309,7 @@ class AuthProvider with ChangeNotifier {
       } else if (e.toString().contains("timeout")) {
         _errorMessage = "Request timed out. Please try again later.";
       } else {
-        _errorMessage =
-            "An unexpected error occurred. Please try again.";
+        _errorMessage = "An unexpected error occurred. Please try again.";
       }
       _isLoading = false;
       notifyListeners();

@@ -38,7 +38,7 @@ class PageRouter {
         return MaterialPageRoute(builder: (context) => const OtpVerifier());
 
       case '/people_card_saves':
-      final cardId = settings.arguments as int?;
+        final cardId = settings.arguments as int?;
         return MaterialPageRoute(
             builder: (context) => PeopleCardSaves(
                   cardId: cardId ?? 1, // Default to 1 if no cardId provided

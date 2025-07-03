@@ -118,7 +118,8 @@ class GoogleMapLocationPickerState extends State<GoogleMapLocationPicker> {
         }
 
         // Add administrativeArea (like Dar es Salaam Region)
-        if (place.administrativeArea != null && place.administrativeArea!.isNotEmpty) {
+        if (place.administrativeArea != null &&
+            place.administrativeArea!.isNotEmpty) {
           addressParts.add(place.administrativeArea!);
         }
 
@@ -198,7 +199,8 @@ class GoogleMapLocationPickerState extends State<GoogleMapLocationPicker> {
   }
 
   void _confirmLocation() {
-    final locationProvider = Provider.of<LocationProvider>(context, listen: false);
+    final locationProvider =
+        Provider.of<LocationProvider>(context, listen: false);
 
     locationProvider.updateLocation(
       latitude: _selectedPosition.latitude,
@@ -225,7 +227,8 @@ class GoogleMapLocationPickerState extends State<GoogleMapLocationPicker> {
               children: [
                 // Title Row
                 Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                   child: Row(
                     children: [
                       IconButton(
@@ -271,11 +274,14 @@ class GoogleMapLocationPickerState extends State<GoogleMapLocationPicker> {
                               ),
                               child: TextField(
                                 controller: _searchController,
-                                style: TextStyle(color: Theme.of(context).indicatorColor),
+                                style: TextStyle(
+                                    color: Theme.of(context).indicatorColor),
                                 decoration: InputDecoration(
                                   hintText: "Search for a location...",
                                   hintStyle: TextStyle(
-                                    color: Theme.of(context).indicatorColor.withOpacity(0.7),
+                                    color: Theme.of(context)
+                                        .indicatorColor
+                                        .withOpacity(0.7),
                                   ),
                                   contentPadding: const EdgeInsets.symmetric(
                                     horizontal: 20,
@@ -298,7 +304,9 @@ class GoogleMapLocationPickerState extends State<GoogleMapLocationPicker> {
                                   focusedBorder: OutlineInputBorder(
                                     borderRadius: BorderRadius.circular(25),
                                     borderSide: BorderSide(
-                                      color: Theme.of(context).primaryColor.withOpacity(0.7),
+                                      color: Theme.of(context)
+                                          .primaryColor
+                                          .withOpacity(0.7),
                                       width: 1.4,
                                     ),
                                   ),
@@ -335,7 +343,9 @@ class GoogleMapLocationPickerState extends State<GoogleMapLocationPicker> {
                               // Add border
                               foregroundDecoration: BoxDecoration(
                                 border: Border.all(
-                                  color: Theme.of(context).primaryColor.withOpacity(0.7),
+                                  color: Theme.of(context)
+                                      .primaryColor
+                                      .withOpacity(0.7),
                                   width: 1.4,
                                 ),
                                 borderRadius: BorderRadius.circular(25),
@@ -349,7 +359,6 @@ class GoogleMapLocationPickerState extends State<GoogleMapLocationPicker> {
                           ),
                         ),
                       ),
-
                     ],
                   ),
                 ),
@@ -429,7 +438,7 @@ class GoogleMapLocationPickerState extends State<GoogleMapLocationPicker> {
                         "Select a location",
                         style: TextStyle(
                           color:
-                          Theme.of(context).indicatorColor.withOpacity(0.7),
+                              Theme.of(context).indicatorColor.withOpacity(0.7),
                         ),
                       ),
                     const SizedBox(height: 12),

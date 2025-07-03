@@ -217,9 +217,7 @@ class _MainScreenTabState extends State<MainScreenTab>
                   Tab(
                     text: 'All Cards',
                   ),
-                  Tab(
-                      text: "Saved"
-                  ),
+                  Tab(text: "Saved"),
                   Tab(
                     text: 'Groups',
                   ),

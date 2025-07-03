@@ -1,7 +1,10 @@
 import 'dart:ui';
+import 'package:ecard_app/components/alert_reminder.dart';
 import 'package:ecard_app/services/cad_service.dart';
+import 'package:ecard_app/utils/resources/animes/lottie_animes.dart';
 import 'package:flutter/material.dart';
 import 'package:ecard_app/modals/card_modal.dart';
+import 'package:lottie/lottie.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:qr_flutter/qr_flutter.dart';
@@ -36,7 +39,8 @@ class CardDetailsPage extends StatelessWidget {
         headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
           return <Widget>[
             SliverAppBar(
-              expandedHeight: screenHeight * 0.4, // Increased height for better display
+              expandedHeight:
+                  screenHeight * 0.4, // Increased height for better display
               floating: false,
               pinned: true,
               backgroundColor: Colors.white,
@@ -62,17 +66,19 @@ class CardDetailsPage extends StatelessWidget {
               ),
               title: innerBoxIsScrolled
                   ? Text(
-                card.title ?? 'Card Details',
-                style: const TextStyle(color: Colors.black, fontSize: 16),
-              )
+                      card.title ?? 'Card Details',
+                      style: const TextStyle(color: Colors.black, fontSize: 16),
+                    )
                   : null,
               flexibleSpace: FlexibleSpaceBar(
                 background: Container(
                   color: Colors.white,
                   child: CardDisplayWidget(
                     card: card,
-                    onCardTap: (card) {}, // Prevents navigation since we're already on details page
-                    onShare: (card) => _showShareModal(context), // Links to existing share functionality
+                    onCardTap:
+                        (card) {}, // Prevents navigation since we're already on details page
+                    onShare: (card) => _showShareModal(
+                        context), // Links to existing share functionality
                   ),
                 ),
               ),
@@ -114,7 +120,7 @@ class CardDetailsPage extends StatelessWidget {
                       color: primaryColor.withOpacity(0.6),
                       iconColor: Colors.white,
                       onTap: () =>
-                      card.email != null ? _launchEmail(card.email!) : null,
+                          card.email != null ? _launchEmail(card.email!) : null,
                     ),
                     _buildActionButton(
                       context,
@@ -451,7 +457,7 @@ class CardDetailsPage extends StatelessWidget {
                                     backgroundColor: Colors.white,
                                     embeddedImage: card.profilePhoto != null
                                         ? NetworkImage(card.profilePhoto!)
-                                    as ImageProvider
+                                            as ImageProvider
                                         : null,
                                     embeddedImageStyle: QrEmbeddedImageStyle(
                                       size: const Size(40, 40),
@@ -474,7 +480,7 @@ class CardDetailsPage extends StatelessWidget {
                                     ScaffoldMessenger.of(context).showSnackBar(
                                       const SnackBar(
                                           content:
-                                          Text('QR Code saved to gallery')),
+                                              Text('QR Code saved to gallery')),
                                     );
                                   },
                                   style: OutlinedButton.styleFrom(
@@ -567,12 +573,12 @@ class CardDetailsPage extends StatelessWidget {
   }
 
   Widget _buildShareOption(
-      BuildContext context, {
-        required IconData icon,
-        required Color color,
-        required String label,
-        required VoidCallback onTap,
-      }) {
+    BuildContext context, {
+    required IconData icon,
+    required Color color,
+    required String label,
+    required VoidCallback onTap,
+  }) {
     return SizedBox(
       height: 90,
       child: InkWell(
@@ -727,7 +733,7 @@ class CardDetailsPage extends StatelessWidget {
                 : null,
             child: card.profilePhoto == null
                 ? Icon(Icons.business,
-                color: textColor.withOpacity(0.7), size: 36)
+                    color: textColor.withOpacity(0.7), size: 36)
                 : null,
           ),
           const SizedBox(width: 20),
@@ -837,13 +843,13 @@ class CardDetailsPage extends StatelessWidget {
   }
 
   Widget _buildActionButton(
-      BuildContext context, {
-        required IconData icon,
-        required String label,
-        required Color color,
-        required Color iconColor,
-        required VoidCallback? onTap,
-      }) {
+    BuildContext context, {
+    required IconData icon,
+    required String label,
+    required Color color,
+    required Color iconColor,
+    required VoidCallback? onTap,
+  }) {
     return SizedBox(
       height: 90,
       child: InkWell(
@@ -1093,7 +1099,7 @@ class CardDetailsPage extends StatelessWidget {
 
     try {
       final CardProvider cardProvider =
-      Provider.of<CardProvider>(context, listen: false);
+          Provider.of<CardProvider>(context, listen: false);
       final String uuid = card.uuid ?? '';
       final organizationCard = await cardProvider.getCardByUuid(uuid: uuid);
       Navigator.pop(context);
@@ -1122,12 +1128,11 @@ class CardDetailsPage extends StatelessWidget {
           ),
         );
       } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('No card found for ${card.company}'),
-            backgroundColor: Colors.red,
-          ),
-        );
+        Alerts.showError(
+            context: context,
+            message: "No card found for this organization",
+            icon: Lottie.asset(LottieAnimes.errorLoader,
+                height: 120, width: 120));
       }
     } catch (e) {
       Navigator.pop(context);

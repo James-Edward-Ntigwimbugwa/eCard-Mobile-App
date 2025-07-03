@@ -57,7 +57,8 @@ class _SavedCardsScreenState extends State<SavedCardsScreen>
     debugPrint("Access token available: ${accessToken.isNotEmpty}");
 
     setState(() {
-      _savedCardsFuture = CardProvider.userSavedCards(userId: userId).then((cards) {
+      _savedCardsFuture =
+          CardProvider.userSavedCards(userId: userId).then((cards) {
         if (mounted) {
           setState(() {
             _isEmpty = cards.isEmpty;
@@ -144,19 +145,19 @@ class _SavedCardsScreenState extends State<SavedCardsScreen>
                     } else if (snapshot.hasError) {
                       return Center(
                           child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              const Icon(Icons.error_outline,
-                                  size: 48, color: Colors.red),
-                              const SizedBox(height: 16),
-                              Text('Error: ${snapshot.error}'),
-                              const SizedBox(height: 16),
-                              ElevatedButton(
-                                onPressed: _initializeData,
-                                child: const Text('Try Again'),
-                              ),
-                            ],
-                          ));
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          const Icon(Icons.error_outline,
+                              size: 48, color: Colors.red),
+                          const SizedBox(height: 16),
+                          Text('Error: ${snapshot.error}'),
+                          const SizedBox(height: 16),
+                          ElevatedButton(
+                            onPressed: _initializeData,
+                            child: const Text('Try Again'),
+                          ),
+                        ],
+                      ));
                     } else if (!snapshot.hasData || snapshot.data == null) {
                       return Container();
                     }

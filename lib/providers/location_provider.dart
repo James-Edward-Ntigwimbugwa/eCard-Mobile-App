@@ -37,7 +37,8 @@ class LocationProvider with ChangeNotifier {
     notifyListeners();
 
     // Debug print for development
-    debugPrint('LocationProvider updated: lat=$latitude, lng=$longitude, address=$address');
+    debugPrint(
+        'LocationProvider updated: lat=$latitude, lng=$longitude, address=$address');
   }
 
   // Method to clear location

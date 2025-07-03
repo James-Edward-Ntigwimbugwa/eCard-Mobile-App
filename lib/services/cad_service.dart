@@ -16,7 +16,8 @@ class CardProvider with ChangeNotifier {
 
   String? get errorMessage => _errorMessage;
 
-  Future<Map<String, dynamic>> createCard({required String title,
+  Future<Map<String, dynamic>> createCard({
+    required String title,
     required String cardDescription,
     required String organization,
     required String cardLogo,
@@ -31,9 +32,9 @@ class CardProvider with ChangeNotifier {
     required String textPosition,
     required String logoPosition,
     required String fontStyle,
-    required double? latitude ,
-    required double? longitude ,
-    required String? address ,
+    required double? latitude,
+    required double? longitude,
+    required String? address,
   }) async {
     // Fixed: Use the correct field names expected by the server
     final Object cardRegistrationData = {
@@ -53,15 +54,14 @@ class CardProvider with ChangeNotifier {
       "address": address,
       'fontColor': fontColor,
       'backgroundColor': backgroundColor,
-      'textPosition' : textPosition ,
-      'logoPosition' : logoPosition ,
-      'fontStyle'  : fontStyle
+      'textPosition': textPosition,
+      'logoPosition': logoPosition,
+      'fontStyle': fontStyle
     };
 
     debugPrint(
-        "= \n \n================= Card request data ============= \n \n ${cardRegistrationData
-            .toString()}"
-            "\n \n =============================\n \n");
+        "= \n \n================= Card request data ============= \n \n ${cardRegistrationData.toString()}"
+        "\n \n =============================\n \n");
 
     _isLoading = true;
     notifyListeners();
@@ -112,7 +112,7 @@ class CardProvider with ChangeNotifier {
             return {
               'status': true,
               'message':
-              'Card created, but could not be saved locally: ${e.toString()}',
+                  'Card created, but could not be saved locally: ${e.toString()}',
             };
           }
         } else {
@@ -120,7 +120,7 @@ class CardProvider with ChangeNotifier {
           return {
             'status': true,
             'message':
-            'Card created successfully, but no data returned from server',
+                'Card created successfully, but no data returned from server',
           };
         }
       } else {
@@ -132,7 +132,7 @@ class CardProvider with ChangeNotifier {
               'Card creation failed with status ${response.statusCode}';
         } catch (e) {
           errorMessage =
-          'Card creation failed with status ${response.statusCode}';
+              'Card creation failed with status ${response.statusCode}';
         }
 
         developer.log("Card creation error: $errorMessage");
@@ -184,7 +184,7 @@ class CardProvider with ChangeNotifier {
         return {"status": true, "message": "Success", "cards": cards};
       } else {
         _errorMessage =
-        "Failed to load cards: Server returned ${response.statusCode}";
+            "Failed to load cards: Server returned ${response.statusCode}";
         developer.log(_errorMessage!);
 
         final localCards = await CardPreferences.getCardsByUser(uuid);
@@ -276,7 +276,10 @@ class CardProvider with ChangeNotifier {
       {required String? userId, required String? cardId}) async {
     debugPrint(
         "Save Card organization in card-request-implementation executed ====>");
-    final Object savingBody = {"userId": int.parse(userId!), "cardId": int.parse(cardId!)};
+    final Object savingBody = {
+      "userId": int.parse(userId!),
+      "cardId": int.parse(cardId!)
+    };
 
     debugPrint("==============================================="
         "\n \n saving card for organization \n \n "
@@ -322,12 +325,12 @@ class CardProvider with ChangeNotifier {
     }
   }
 
-  static Future<List<CustomCard>> userSavedCards({required String userId}) async {
+  static Future<List<CustomCard>> userSavedCards(
+      {required String userId}) async {
     try {
       final response = await CardRequests.fetchUserSavedCards(userId: userId);
 
       debugPrint('Response status: ${response.statusCode}');
-      debugPrint('Response body: ${response.body}');
 
       if (response.statusCode == 200) {
         // Parse the response as a List directly since your JSON is an array
@@ -339,7 +342,8 @@ class CardProvider with ChangeNotifier {
         throw Exception('Failed to load saved cards: ${response.statusCode}');
       }
     } catch (e) {
-      debugPrint("An error $e occurred in card_service.dart and was caught in catch block");
+      debugPrint(
+          "An error $e occurred in card_service.dart and was caught in catch block");
       return [];
     }
   }

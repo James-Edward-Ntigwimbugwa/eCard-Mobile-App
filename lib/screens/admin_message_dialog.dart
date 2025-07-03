@@ -24,23 +24,23 @@ class _AdminMessagesDialogState extends State<AdminMessagesDialog> {
       timestamp: DateTime.now().subtract(const Duration(minutes: 30)),
       senderName: "Admin",
       senderAvatar:
-      "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100&h=100&fit=crop&crop=face",
+          "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100&h=100&fit=crop&crop=face",
     ),
     Message(
       text:
-      "Please review the new guidelines that have been shared in the documents section.",
+          "Please review the new guidelines that have been shared in the documents section.",
       timestamp: DateTime.now().subtract(const Duration(minutes: 25)),
       senderName: "Admin",
       senderAvatar:
-      "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100&h=100&fit=crop&crop=face",
+          "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100&h=100&fit=crop&crop=face",
     ),
     Message(
       text:
-      "The meeting scheduled for tomorrow has been moved to 3 PM. Please update your calendars accordingly.",
+          "The meeting scheduled for tomorrow has been moved to 3 PM. Please update your calendars accordingly.",
       timestamp: DateTime.now().subtract(const Duration(minutes: 15)),
       senderName: "Admin",
       senderAvatar:
-      "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100&h=100&fit=crop&crop=face",
+          "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100&h=100&fit=crop&crop=face",
     ),
   ];
 
@@ -60,7 +60,7 @@ class _AdminMessagesDialogState extends State<AdminMessagesDialog> {
             timestamp: DateTime.now(),
             senderName: "Admin",
             senderAvatar:
-            "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100&h=100&fit=crop&crop=face",
+                "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100&h=100&fit=crop&crop=face",
           ),
         );
       });
@@ -109,7 +109,8 @@ class _AdminMessagesDialogState extends State<AdminMessagesDialog> {
         return AnimatedContainer(
           duration: const Duration(milliseconds: 200),
           // Adjust the bottom padding based on keyboard height
-          padding: EdgeInsets.only(bottom: keyboardHeight > 0 ? keyboardHeight * 0.1 : 0),
+          padding: EdgeInsets.only(
+              bottom: keyboardHeight > 0 ? keyboardHeight * 0.1 : 0),
           decoration: BoxDecoration(
             gradient: LinearGradient(
               begin: Alignment.bottomLeft,
@@ -186,7 +187,10 @@ class _AdminMessagesDialogState extends State<AdminMessagesDialog> {
                   left: 16,
                   right: 16,
                   top: 16,
-                  bottom: 16 + (keyboardHeight > 0 ? 0 : MediaQuery.of(context).padding.bottom),
+                  bottom: 16 +
+                      (keyboardHeight > 0
+                          ? 0
+                          : MediaQuery.of(context).padding.bottom),
                 ),
                 child: SafeArea(
                   top: false,

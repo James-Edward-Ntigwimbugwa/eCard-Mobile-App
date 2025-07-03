@@ -216,7 +216,7 @@ class RegisterPageState extends State<RegisterPage> {
     }
   }
 
-  Future<void> _saveAutoLoginCredentials() async{
+  Future<void> _saveAutoLoginCredentials() async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString("autoLoginUsername", _usernameController.text);
     await prefs.setString("autoLoginPassword", _passwordController.text);

@@ -100,17 +100,25 @@ class OtpVerifierState extends State<OtpVerifier> {
           final String? username = prefs.getString("autoLoginUsername");
           final String? password = prefs.getString("autoLoginPassword");
 
-          developer.log("Auto-login credentials check - Username: ${username ?? 'null'}, Password: ${password != null ? '[PRESENT]' : 'null'}", name: 'OtpVerifierScreen');
+          developer.log(
+              "Auto-login credentials check - Username: ${username ?? 'null'}, Password: ${password != null ? '[PRESENT]' : 'null'}",
+              name: 'OtpVerifierScreen');
 
-          if (username != null && password != null && username.isNotEmpty && password.isNotEmpty) {
+          if (username != null &&
+              password != null &&
+              username.isNotEmpty &&
+              password.isNotEmpty) {
             // Proceed with auto-login
-            developer.log("Proceeding with auto-login", name: 'OtpVerifierScreen');
+            developer.log("Proceeding with auto-login",
+                name: 'OtpVerifierScreen');
             _performAutoLogin(username, password);
           } else {
             // Navigate back to login screen if credentials are not available
-            developer.log("Auto-login credentials not available, navigating to login", name: 'OtpVerifierScreen');
+            developer.log(
+                "Auto-login credentials not available, navigating to login",
+                name: 'OtpVerifierScreen');
             final authProvider =
-            Provider.of<AuthProvider>(context, listen: false);
+                Provider.of<AuthProvider>(context, listen: false);
             authProvider.navigateToLoginScreen();
           }
         });
@@ -173,8 +181,7 @@ class OtpVerifierState extends State<OtpVerifier> {
           "Login request timed out. Please check your internet connection.");
       authProvider.navigateToLoginScreen();
     } catch (error) {
-      developer.log(
-          "Error during auto-login: $error",
+      developer.log("Error during auto-login: $error",
           name: 'OtpVerifierScreen',
           error: error,
           stackTrace: StackTrace.current);
@@ -258,14 +265,21 @@ class OtpVerifierState extends State<OtpVerifier> {
                 ),
                 const SizedBox(height: 10),
                 TextButton(
-                    onPressed: _isSubmitting ? null : () {
-                      final auth =
-                      Provider.of<AuthProvider>(context, listen: false);
-                      auth.navigateToLoginScreen();
-                    },
-                    child: Text(Texts.backToRegister, style: TextStyle(
-                      color: _isSubmitting ? Colors.grey : Theme.of(context).primaryColor,
-                    ),)),
+                    onPressed: _isSubmitting
+                        ? null
+                        : () {
+                            final auth = Provider.of<AuthProvider>(context,
+                                listen: false);
+                            auth.navigateToLoginScreen();
+                          },
+                    child: Text(
+                      Texts.backToRegister,
+                      style: TextStyle(
+                        color: _isSubmitting
+                            ? Colors.grey
+                            : Theme.of(context).primaryColor,
+                      ),
+                    )),
                 const SizedBox(height: 10),
               ],
             ),

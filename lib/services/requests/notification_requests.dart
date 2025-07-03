@@ -43,15 +43,13 @@ class NotificationRequests {
     }
 
     final url = Uri.parse('${AppUrl.sendNotification}/$cardId');
-    final response = await post(
-      url,
-      headers: {
-        "Authorization": "Bearer $bearerToken",
-        "Content-Type": "application/json",
-        "Accept": "application/json",
-      },
-      body: message
-    );
+    final response = await post(url,
+        headers: {
+          "Authorization": "Bearer $bearerToken",
+          "Content-Type": "application/json",
+          "Accept": "application/json",
+        },
+        body: message);
 
     return response;
   }
