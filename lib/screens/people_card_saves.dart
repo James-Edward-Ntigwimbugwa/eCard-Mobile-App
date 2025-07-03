@@ -51,12 +51,12 @@ class _PeopleCardSavesState extends State<PeopleCardSaves> {
       });
 
       final savedCards =
-          await CardProvider.getSavedCardsWithAuth(cardId: widget.cardId);
+      await CardProvider.getSavedCardsWithAuth(cardId: widget.cardId);
       if (mounted) {
         setState(() {
           savedPeople = savedCards
               .map((savedCard) =>
-                  model_person_save.PersonSave.fromSavedCardResponse(savedCard))
+              model_person_save.PersonSave.fromSavedCardResponse(savedCard))
               .toList();
           filteredPeople = List.from(savedPeople);
           isLoading = false;
@@ -418,27 +418,27 @@ class PersonCard extends StatelessWidget {
                   ),
                   child: person.imageUrl != null && person.imageUrl!.isNotEmpty
                       ? ClipRRect(
-                          borderRadius: BorderRadius.circular(11),
-                          child: person.imageUrl!.startsWith('http')
-                              ? Image.network(
-                                  person.imageUrl!,
-                                  width: 50,
-                                  height: 50,
-                                  fit: BoxFit.cover,
-                                  errorBuilder: (context, error, stackTrace) {
-                                    return _buildDefaultAvatar(context);
-                                  },
-                                )
-                              : Image.asset(
-                                  person.imageUrl!,
-                                  width: 50,
-                                  height: 50,
-                                  fit: BoxFit.cover,
-                                  errorBuilder: (context, error, stackTrace) {
-                                    return _buildDefaultAvatar(context);
-                                  },
-                                ),
-                        )
+                    borderRadius: BorderRadius.circular(11),
+                    child: person.imageUrl!.startsWith('http')
+                        ? Image.network(
+                      person.imageUrl!,
+                      width: 50,
+                      height: 50,
+                      fit: BoxFit.cover,
+                      errorBuilder: (context, error, stackTrace) {
+                        return _buildDefaultAvatar(context);
+                      },
+                    )
+                        : Image.asset(
+                      person.imageUrl!,
+                      width: 50,
+                      height: 50,
+                      fit: BoxFit.cover,
+                      errorBuilder: (context, error, stackTrace) {
+                        return _buildDefaultAvatar(context);
+                      },
+                    ),
+                  )
                       : _buildDefaultAvatar(context),
                 ),
 
@@ -495,7 +495,7 @@ class PersonCard extends StatelessWidget {
                             style: TextStyle(
                               fontSize: 12,
                               color:
-                                  Theme.of(context).hintColor.withOpacity(0.6),
+                              Theme.of(context).hintColor.withOpacity(0.6),
                             ),
                           ),
                           Row(

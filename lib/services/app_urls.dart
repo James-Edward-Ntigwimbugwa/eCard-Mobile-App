@@ -22,4 +22,5 @@ class AppUrl {
 
   // notification endpoints
   static String getUserNotification = '$baseEndpoint/api/notifications/user';
+  static String sendNotification = '$baseEndpoint/api/notifications/send-notifications';
 }

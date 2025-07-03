@@ -39,6 +39,19 @@ class NotificationService {
     }
   }
 
+  Future<http.Response> sendNotification({
+    required String cardId,
+    required String message,
+  }) async {
+    try {
+      final response = await NotificationRequests.sendNotificationToUsers(
+         cardId: cardId, message: message);
+      return response;
+    } catch (e) {
+      throw e;
+    }
+  }
+
   Future<bool> markAsRead(int notificationId) async {
     final prefs = await SharedPreferences.getInstance();
     final token = prefs.getString("acessToken");
@@ -100,22 +113,22 @@ class NotificationService {
         // Update local state
         _notifications = _notifications
             .map((n) => MessageNotification(
-                  id: n.id,
-                  companyName: n.companyName,
-                  cardHolderName: n.cardHolderName,
-                  companyLogo: n.companyLogo,
-                  timestamp: n.timestamp,
-                  isRead: true,
-                  message: n.message,
-                  type: n.type,
-                  cardTitle: n.cardTitle,
-                  organization: n.organization,
-                  email: n.email,
-                  phoneNumber: n.phoneNumber,
-                  address: n.address,
-                  actorFullName: n.actorFullName,
-                  recipientFullName: n.recipientFullName,
-                ))
+          id: n.id,
+          companyName: n.companyName,
+          cardHolderName: n.cardHolderName,
+          companyLogo: n.companyLogo,
+          timestamp: n.timestamp,
+          isRead: true,
+          message: n.message,
+          type: n.type,
+          cardTitle: n.cardTitle,
+          organization: n.organization,
+          email: n.email,
+          phoneNumber: n.phoneNumber,
+          address: n.address,
+          actorFullName: n.actorFullName,
+          recipientFullName: n.recipientFullName,
+        ))
             .toList();
 
         return true;
@@ -131,4 +144,6 @@ class NotificationService {
     // Clean up any resources if needed
     _notifications.clear();
   }
+
+
 }

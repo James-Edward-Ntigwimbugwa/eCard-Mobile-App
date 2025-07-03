@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:ecard_app/services/app_urls.dart';
 import 'package:http/http.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -27,5 +29,30 @@ class NotificationRequests {
     } catch (e) {
       rethrow;
     }
+  }
+
+  static Future<Response> sendNotificationToUsers({
+    required String cardId,
+    required String message,
+  }) async {
+    final prefs = await SharedPreferences.getInstance();
+    final String bearerToken = prefs.getString("accessToken") ?? '';
+
+    if (bearerToken.isEmpty) {
+      throw Exception("Not Authorized");
+    }
+
+    final url = Uri.parse('${AppUrl.sendNotification}/$cardId');
+    final response = await post(
+      url,
+      headers: {
+        "Authorization": "Bearer $bearerToken",
+        "Content-Type": "application/json",
+        "Accept": "application/json",
+      },
+      body: message
+    );
+
+    return response;
   }
 }
