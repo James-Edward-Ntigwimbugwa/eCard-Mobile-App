@@ -9,6 +9,7 @@ import '../../utils/theme/theme.dart';
 import '../all_cards_screen.dart';
 import '../gallery_picker.dart';
 import '../group_cards_screen.dart';
+import '../saved_cards_screen.dart';
 
 class MainScreenTab extends StatefulWidget {
   const MainScreenTab({super.key});
@@ -27,6 +28,7 @@ class _MainScreenTabState extends State<MainScreenTab>
   final GlobalKey<FormState> _key = GlobalKey();
   final List<Widget> _tabs = [
     const AllCardsScreen(),
+    const SavedCardsScreen(),
     const GroupCardsScreen(),
   ];
 
@@ -214,6 +216,9 @@ class _MainScreenTabState extends State<MainScreenTab>
                 tabs: [
                   Tab(
                     text: 'All Cards',
+                  ),
+                  Tab(
+                      text: "Saved"
                   ),
                   Tab(
                     text: 'Groups',

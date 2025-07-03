@@ -7,7 +7,6 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../modals/message_notification.dart';
 
 class NotificationService {
-  static const String baseUrl = 'http://192.168.1.150:8080/api';
 
   List<MessageNotification> _notifications = [];
   List<MessageNotification> get currentNotifications => _notifications;
@@ -54,14 +53,15 @@ class NotificationService {
 
   Future<bool> markAsRead(int notificationId) async {
     final prefs = await SharedPreferences.getInstance();
-    final token = prefs.getString("acessToken");
+    final bearerToken = prefs.getString("accessToken");
 
     try {
-      final response = await http.patch(
-        Uri.parse('$baseUrl/notifications/$notificationId/read'),
+      final response = await http.put(
+        Uri.parse('${AppUrl.markAsRead}/$notificationId'),
         headers: {
-          'Content-Type': 'application/json',
-          'Authorization': 'Bearer $token',
+          "Authorization": "Bearer $bearerToken",
+          "Content-type": "application/json",
+          "Accept": "application/json",
         },
       );
 
@@ -98,14 +98,15 @@ class NotificationService {
 
   Future<bool> markAllAsRead() async {
     final prefs = await SharedPreferences.getInstance();
-    final token = prefs.getString("acessToken");
+    final bearerToken = prefs.getString("accessToken");
 
     try {
-      final response = await http.patch(
-        Uri.parse('$baseUrl/notifications/user/$_currentUserId/read-all'),
+      final response = await http.put(
+        Uri.parse('${AppUrl.markAsRead}/$_currentUserId'),
         headers: {
-          'Content-Type': 'application/json',
-          'Authorization': 'Bearer $token',
+          "Authorization": "Bearer $bearerToken",
+          "Content-type": "application/json",
+          "Accept": "application/json",
         },
       );
 

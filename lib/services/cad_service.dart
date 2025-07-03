@@ -321,4 +321,26 @@ class CardProvider with ChangeNotifier {
       throw Exception('Failed to fetch saved cards: $e');
     }
   }
+
+  static Future<List<CustomCard>> userSavedCards({required String userId}) async {
+    try {
+      final response = await CardRequests.fetchUserSavedCards(userId: userId);
+
+      debugPrint('Response status: ${response.statusCode}');
+      debugPrint('Response body: ${response.body}');
+
+      if (response.statusCode == 200) {
+        // Parse the response as a List directly since your JSON is an array
+        final List<dynamic> jsonList = json.decode(response.body);
+        return jsonList
+            .map((item) => CustomCard.fromJson(item['card']))
+            .toList();
+      } else {
+        throw Exception('Failed to load saved cards: ${response.statusCode}');
+      }
+    } catch (e) {
+      debugPrint("An error $e occurred in card_service.dart and was caught in catch block");
+      return [];
+    }
+  }
 }

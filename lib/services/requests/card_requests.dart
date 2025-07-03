@@ -158,6 +158,33 @@ class CardRequests {
       rethrow;
     }
   }
+  static Future<Response> fetchUserSavedCards({required String userId}) async{
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final bearerToken = prefs.getString("accessToken");
+
+      if (bearerToken == null || bearerToken.isEmpty) {
+        throw Exception("Authentication required");
+      }
+
+      final url = Uri.parse("${AppUrl.getAllUserSavedCards}/${int.parse(userId)}");
+
+      final response = await get(
+        url,
+        headers: {
+          "Authorization": "Bearer $bearerToken",
+          "Content-type": "application/json",
+          "Accept": "application/json",
+        },
+      );
+
+      return response;
+
+    }catch(e){
+      debugPrint("Fetch card details API call failed in card_request.dart: $e");
+      rethrow;
+    }
+  }
 
   static Future<Response> saveCard({required Object savingBody}) async {
     try {

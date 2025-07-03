@@ -19,8 +19,10 @@ class AppUrl {
   static var saveCard = "$baseEndpoint/api/saved-cards/save-card";
   static var getPeopleWhoSavedCard = '$baseEndpoint/api/saved-cards/card';
   static String createCard = '$baseEndpoint/api/v1/cards/create';
+  static String getAllUserSavedCards = '$baseEndpoint/api/saved-cards/user';
 
   // notification endpoints
   static String getUserNotification = '$baseEndpoint/api/notifications/user';
   static String sendNotification = '$baseEndpoint/api/notifications/send-notifications';
+  static String markAsRead = '$baseEndpoint/api/notifications/mark-read';
 }
