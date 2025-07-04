@@ -104,7 +104,7 @@ class CardRequests {
     }
   }
 
-  static Future<Response> deleteCard(String cardId) async {
+  static Future<Response> deleteCard({required String? cardId}) async {
     try {
       final prefs = await SharedPreferences.getInstance();
       final bearerToken = prefs.getString("accessToken");
@@ -113,7 +113,9 @@ class CardRequests {
         throw Exception("Authentication required");
       }
 
-      final url = Uri.parse("${AppUrl.deleteCard}/$cardId");
+      final url = Uri.parse("${AppUrl.deleteCard}?id=${int.parse(cardId!)}");
+
+      debugPrint("\t\t====================\n\n Final Url $url \n\n\t\t===========================\n\n");
 
       final response = await delete(
         url,
@@ -243,3 +245,4 @@ class CardRequests {
     }
   }
 }
+

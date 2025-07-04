@@ -59,11 +59,7 @@ class CardProvider with ChangeNotifier {
       'fontStyle': fontStyle
     };
 
-    debugPrint(
-        "= \n \n================= Card request data ============= \n \n ${cardRegistrationData.toString()}"
-        "\n \n =============================\n \n");
-
-    _isLoading = true;
+      _isLoading = true;
     notifyListeners();
 
     try {
@@ -333,7 +329,6 @@ class CardProvider with ChangeNotifier {
       debugPrint('Response status: ${response.statusCode}');
 
       if (response.statusCode == 200) {
-        // Parse the response as a List directly since your JSON is an array
         final List<dynamic> jsonList = json.decode(response.body);
         return jsonList
             .map((item) => CustomCard.fromJson(item['card']))
@@ -345,6 +340,23 @@ class CardProvider with ChangeNotifier {
       debugPrint(
           "An error $e occurred in card_service.dart and was caught in catch block");
       return [];
+    }
+  }
+
+  static Future<bool> deleteCard({required String? cardId}) async {
+    try {
+      final response = await CardRequests.deleteCard(cardId: cardId);
+
+      if (response.statusCode == 200) {
+        return true;
+      } else {
+        debugPrint(
+            "Failed to delete card with status code: ${response.statusCode} ,${response.body}");
+        return false;
+      }
+    } catch (e) {
+      debugPrint("Error deleting card: $e");
+      return false;
     }
   }
 }

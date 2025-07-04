@@ -28,25 +28,6 @@ class _LoginPageState extends State<LoginPage> {
   final _formKey = GlobalKey<FormState>();
   String? _password;
 
-  // @override
-  // void initState() {
-  //   super.initState();
-  //   _loadSavedCredentials();
-  // }
-
-  // Future<void> _loadSavedCredentials() async {
-  //   try {
-  //     final username = await UserPreferences.getUsername();
-  //     final password = await UserPreferences.getPassword();
-  //     if (username != null && password != null) {
-  //       _usernameController.text = username;
-  //       _passwordController.text = password;
-  //     }
-  //   } catch (e) {
-  //     developer.log("Error loading saved credentials: $e");
-  //   }
-  // }
-
   @override
   void dispose() {
     _usernameController.dispose();
@@ -341,7 +322,7 @@ class _LoginPageState extends State<LoginPage> {
                               ),
                               auth.isLoading
                                   ? Lottie.asset(
-                                      LottieAnimes.cardLoader,
+                                      LottieAnimes.loading,
                                       width: 50,
                                       height: 50,
                                       fit: BoxFit.contain,

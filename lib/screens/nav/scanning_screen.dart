@@ -1,11 +1,13 @@
 import 'package:ecard_app/components/custom_widgets.dart';
 import 'package:flutter/material.dart';
 
+import '../../utils/resources/strings/strings.dart';
+
 class ScanCard {
   final String name;
   final String cardNumber;
-  final double signalStrength; // Percentage (0-100)
-  final double distance; // Distance in meters
+  final double signalStrength;
+  final double distance;
   final Color statusColor;
 
   ScanCard({
@@ -310,19 +312,23 @@ class _ScanningScreenState extends State<ScanningScreen>
 
   Widget _buildStartScanButton() {
     return SizedBox(
-      width: double.infinity,
-      child: ElevatedButton.icon(
-        onPressed: () {
-          // Start scan logic
-        },
-        icon: const Icon(Icons.wifi_tethering),
-        label: const Text('Start New Scan'),
+      width: MediaQuery.of(context).size.width,
+      child: ElevatedButton(
+        onPressed: () {},
         style: ElevatedButton.styleFrom(
           backgroundColor: Theme.of(context).primaryColor,
-          foregroundColor: Theme.of(context).highlightColor,
-          padding: const EdgeInsets.symmetric(vertical: 12),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(8),
+          shape: const RoundedRectangleBorder(
+            borderRadius: BorderRadius.all(
+              Radius.circular(30),
+            ),
+          ),
+        ),
+        child: Text(
+          Texts.startScanning,
+          style: TextStyle(
+            color: Colors.white,
+            fontSize: 16,
+            fontWeight: FontWeight.bold,
           ),
         ),
       ),

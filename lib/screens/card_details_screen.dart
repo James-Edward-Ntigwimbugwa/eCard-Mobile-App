@@ -1,9 +1,13 @@
 import 'dart:ui';
 import 'package:ecard_app/components/alert_reminder.dart';
+import 'package:ecard_app/components/custom_widgets.dart';
 import 'package:ecard_app/services/cad_service.dart';
 import 'package:ecard_app/utils/resources/animes/lottie_animes.dart';
+import 'package:ecard_app/utils/resources/strings/strings.dart';
 import 'package:flutter/material.dart';
 import 'package:ecard_app/modals/card_modal.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:lottie/lottie.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -11,8 +15,8 @@ import 'package:qr_flutter/qr_flutter.dart';
 
 import '../components/card_display_widget.dart';
 
-class CardDetailsPage extends StatelessWidget {
-  final CustomCard card;
+class CardDetailsPage extends StatefulWidget{
+    final CustomCard card;
   final String? currentUserId;
   final bool isFromShareLink;
 
@@ -24,31 +28,127 @@ class CardDetailsPage extends StatelessWidget {
   });
 
   @override
+  State<StatefulWidget> createState() => _CardDetailsPageState();
+  
+}
+
+class _CardDetailsPageState extends State<CardDetailsPage> {
+  bool _isDeleting = false;
+
+  void showLoader() => Alerts.showLoader(
+      context: context,
+      message: Loaders.loading,
+      icon: Lottie.asset(
+        LottieAnimes.loading,
+        width: 130,
+        height: 130,
+        fit: BoxFit.contain,
+      ));
+
+  // Helper method to show error messages
+  void showErrorMessage(String message) {
+    Alerts.showError(
+      context: context,
+      message: message,
+      icon: Lottie.asset(
+        LottieAnimes.errorLoader,
+        width: 130,
+        height: 130,
+        fit: BoxFit.contain,
+      ),
+    );
+  }
+
+  // Helper method to show network error messages
+  void showNetworkError(String message) {
+    Alerts.showError(
+      context: context,
+      message: message,
+      icon: Lottie.asset(
+        LottieAnimes.errorLoader,
+        width: 130,
+        height: 130,
+        fit: BoxFit.contain,
+      ),
+    );
+  }
+
+  // Helper method to show success message
+  void showSuccessMessage(String message) {
+    Alerts.showSuccess(
+      context: context,
+      message: message,
+      icon: Lottie.asset(
+        LottieAnimes.successLoader,
+        width: 130,
+        height: 130,
+        fit: BoxFit.contain,
+      ),
+    );
+  }
+
+  Future<void> _deleteCard({required String? cardId}) async {
+    if (!mounted) return;
+    try {
+      showLoader();
+      final response = await CardProvider.deleteCard(cardId: cardId)
+          .timeout(const Duration(seconds: 10), onTimeout: () {
+        Navigator.pop(context); 
+        showErrorMessage("Request timed out");
+        throw Exception("Request timed out");
+      });
+      Navigator.pop(context);
+      if (response == true) {
+        showSuccessMessage("Card Deleted");
+        Navigator.pop(context); 
+      } else {
+        showErrorMessage("Failed to delete Card");
+      }
+    } catch (e) {
+      if (Navigator.canPop(context)) {
+        Navigator.pop(context); 
+      }
+      showErrorMessage(e.toString());
+      debugPrint("An error occurred in deleteCard: $e");
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     Color backgroundColor =
-        _parseColor(card.backgroundColor, const Color(0xFF1E88E5)) ??
+        _parseColor(widget.card.backgroundColor, const Color(0xFF1E88E5)) ??
             const Color(0xFF1E88E5);
-    Color? textColor = _parseColor(card.fontColor, null);
+    Color? textColor = _parseColor(widget.card.fontColor, null);
     final bool isDark = _isColorDark(backgroundColor);
     textColor ??= isDark ? Colors.white : Colors.black87;
     final primaryColor = Theme.of(context).primaryColor;
     final screenHeight = MediaQuery.of(context).size.height;
 
     return Scaffold(
+      backgroundColor: Theme.of(context).highlightColor,
       body: NestedScrollView(
         headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
           return <Widget>[
             SliverAppBar(
-              expandedHeight:
-                  screenHeight * 0.4, // Increased height for better display
+              expandedHeight: (screenHeight * 0.4) + 20,
               floating: false,
               pinned: true,
-              backgroundColor: Colors.white,
-              foregroundColor: Colors.black,
+              backgroundColor: Theme.of(context).highlightColor,
+              foregroundColor: Theme.of(context).highlightColor,
               elevation: 0,
-              leading: IconButton(
-                icon: const Icon(Icons.arrow_back),
-                onPressed: () => Navigator.pop(context),
+              leading: Container(
+                margin: const EdgeInsets.all(8.0),
+                decoration: BoxDecoration(
+                  color: Theme.of(context).indicatorColor.withOpacity(0.7),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: IconButton(
+                  icon: Icon(
+                    Icons.arrow_back,
+                    color: Theme.of(context).indicatorColor,
+                  ),
+                  onPressed: () => Navigator.pop(context),
+                ),
               ),
               actions: [
                 IconButton(
@@ -66,19 +166,20 @@ class CardDetailsPage extends StatelessWidget {
               ),
               title: innerBoxIsScrolled
                   ? Text(
-                      card.title ?? 'Card Details',
+                      widget.card.title ?? 'Card Details',
                       style: const TextStyle(color: Colors.black, fontSize: 16),
                     )
                   : null,
               flexibleSpace: FlexibleSpaceBar(
-                background: Container(
-                  color: Colors.white,
-                  child: CardDisplayWidget(
-                    card: card,
-                    onCardTap:
-                        (card) {}, // Prevents navigation since we're already on details page
-                    onShare: (card) => _showShareModal(
-                        context), // Links to existing share functionality
+                background: Padding(
+                  padding: const EdgeInsets.only(top: 80.0),
+                  child: Container(
+                    color: Theme.of(context).highlightColor,
+                    child: CardDisplayWidget(
+                      card: widget.card,
+                      onCardTap: (card) {},
+                      onShare: (card) => _showShareModal(context),
+                    ),
                   ),
                 ),
               ),
@@ -109,8 +210,8 @@ class CardDetailsPage extends StatelessWidget {
                       label: 'Call',
                       color: primaryColor.withOpacity(0.6),
                       iconColor: Colors.white,
-                      onTap: () => card.phoneNumber != null
-                          ? _launchPhone(card.phoneNumber!)
+                      onTap: () => widget.card.phoneNumber != null
+                          ? _launchPhone(widget.card.phoneNumber!)
                           : null,
                     ),
                     _buildActionButton(
@@ -120,7 +221,7 @@ class CardDetailsPage extends StatelessWidget {
                       color: primaryColor.withOpacity(0.6),
                       iconColor: Colors.white,
                       onTap: () =>
-                          card.email != null ? _launchEmail(card.email!) : null,
+                          widget.card.email != null ? _launchEmail(widget.card.email!) : null,
                     ),
                     _buildActionButton(
                       context,
@@ -128,8 +229,8 @@ class CardDetailsPage extends StatelessWidget {
                       label: 'Message',
                       color: primaryColor.withOpacity(0.6),
                       iconColor: Colors.white,
-                      onTap: () => card.phoneNumber != null
-                          ? _launchSms(card.phoneNumber!)
+                      onTap: () => widget.card.phoneNumber != null
+                          ? _launchSms(widget.card.phoneNumber!)
                           : null,
                     ),
                     _buildActionButton(
@@ -157,9 +258,10 @@ class CardDetailsPage extends StatelessWidget {
               ),
               const SizedBox(height: 24),
               // Contact Information Section
-              _buildSectionHeader('Contact Information'),
+              _buildSectionHeader(context, 'Contact Information'),
               const SizedBox(height: 8),
               Card(
+                color: Theme.of(context).secondaryHeaderColor,
                 elevation: 0,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(12),
@@ -168,36 +270,36 @@ class CardDetailsPage extends StatelessWidget {
                   padding: const EdgeInsets.all(16.0),
                   child: Column(
                     children: [
-                      if (card.phoneNumber != null &&
-                          card.phoneNumber!.isNotEmpty)
+                      if (widget.card.phoneNumber != null &&
+                          widget.card.phoneNumber!.isNotEmpty)
                         _buildContactItem(
                           icon: Icons.phone,
                           title: 'Phone',
-                          value: card.phoneNumber!,
-                          onTap: () => _launchPhone(card.phoneNumber!),
+                          value: widget.card.phoneNumber!,
+                          onTap: () => _launchPhone(widget.card.phoneNumber!), context: context,
                         ),
-                      if (card.email != null && card.email!.isNotEmpty)
+                      if (widget.card.email != null &&widget.card.email!.isNotEmpty)
                         _buildContactItem(
                           icon: Icons.email,
                           title: 'Email',
-                          value: card.email!,
-                          onTap: () => _launchEmail(card.email!),
+                          value: widget.card.email!,
+                          onTap: () => _launchEmail(widget.card.email!), context: context,
                         ),
-                      if (card.websiteUrl != null &&
-                          card.websiteUrl!.isNotEmpty)
+                      if (widget.card.websiteUrl != null &&
+                          widget.card.websiteUrl!.isNotEmpty)
                         _buildContactItem(
                           icon: Icons.language,
                           title: 'Website',
-                          value: card.websiteUrl!,
-                          onTap: () => _launchUrl(card.websiteUrl!),
+                          value: widget.card.websiteUrl!,
+                          onTap: () => _launchUrl(widget.card.websiteUrl!), context: context,
                         ),
-                      if (card.address != null && card.address!.isNotEmpty)
+                      if (widget.card.address != null && widget.card.address!.isNotEmpty)
                         _buildContactItem(
                           icon: Icons.location_on,
                           title: 'Address',
-                          value: card.address!,
-                          onTap: () => _launchMaps(card.address!),
-                          isLast: true,
+                          value: widget.card.address!,
+                          onTap: () => _launchMaps(widget.card.address!),
+                          isLast: true, context: context,
                         ),
                     ],
                   ),
@@ -205,13 +307,13 @@ class CardDetailsPage extends StatelessWidget {
               ),
               const SizedBox(height: 24),
               // Social Media Section
-              _buildSectionHeader('Social Media'),
+              _buildSectionHeader(context, 'Social Media'),
               const SizedBox(height: 8),
               Container(
                 width: double.infinity,
                 padding: const EdgeInsets.symmetric(vertical: 16),
                 decoration: BoxDecoration(
-                  color: Colors.white,
+                  color:Theme.of(context).secondaryHeaderColor,
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Row(
@@ -219,27 +321,35 @@ class CardDetailsPage extends StatelessWidget {
                   children: [
                     _buildSocialButton(
                       label: 'LinkedIn',
-                      icon: 'assets/icons/linkedin.png',
+                      icon: Icon(
+                        FontAwesomeIcons.linkedinIn,
+                      ),
                       color: Colors.blue.shade700,
-                      onTap: () => card.linkedIn != null
-                          ? _launchUrl(card.linkedIn!)
+                      onTap: () => widget.card.linkedIn != null
+                          ? _launchUrl(widget.card.linkedIn!)
                           : null,
                     ),
                     _buildSocialButton(
                       label: 'Twitter',
-                      icon: 'assets/icons/twitter.png',
+                      icon: Icon(
+                        FontAwesomeIcons.twitter,
+                      ),
                       color: Colors.blue.shade400,
                       onTap: () {},
                     ),
                     _buildSocialButton(
                       label: 'Instagram',
-                      icon: 'assets/icons/instagram.png',
+                      icon: Icon(
+                        FontAwesomeIcons.instagram,
+                      ),
                       color: Colors.pink,
                       onTap: () {},
                     ),
                     _buildSocialButton(
                       label: 'Facebook',
-                      icon: 'assets/icons/facebook.png',
+                      icon: Icon(
+                        FontAwesomeIcons.facebook,
+                      ),
                       color: Colors.blue.shade900,
                       onTap: () {},
                     ),
@@ -248,13 +358,13 @@ class CardDetailsPage extends StatelessWidget {
               ),
               const SizedBox(height: 24),
               // Card Analytics
-              _buildSectionHeader('Card Analytics', trailing: 'Last 30 days'),
+              _buildSectionHeader(context, 'Card Analytics', trailing: 'Last 30 days'),
               const SizedBox(height: 8),
               Container(
                 width: double.infinity,
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
-                  color: Colors.white,
+                  color: Theme.of(context).secondaryHeaderColor,
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Row(
@@ -268,13 +378,13 @@ class CardDetailsPage extends StatelessWidget {
               ),
               const SizedBox(height: 24),
               // Ratings
-              _buildSectionHeader('Ratings'),
+              _buildSectionHeader(context, 'Ratings'),
               const SizedBox(height: 8),
               Container(
                 width: double.infinity,
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
-                  color: Colors.white,
+                  color: Theme.of(context).secondaryHeaderColor,
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Column(
@@ -289,13 +399,13 @@ class CardDetailsPage extends StatelessWidget {
               ),
               const SizedBox(height: 24),
               // Rate This Card
-              _buildSectionHeader('Rate This Card'),
+              _buildSectionHeader(context, 'Rate This Card'),
               const SizedBox(height: 8),
               Container(
                 width: double.infinity,
                 padding: const EdgeInsets.symmetric(vertical: 16),
                 decoration: BoxDecoration(
-                  color: Colors.white,
+                  color:Theme.of(context).secondaryHeaderColor,
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Row(
@@ -317,6 +427,36 @@ class CardDetailsPage extends StatelessWidget {
                       color: Colors.red,
                     ),
                   ],
+                ),
+              ),
+              const SizedBox(height: 40),
+              const Divider(
+                height: 1,
+              ),
+              // Delete Card Button
+              Container(
+                padding: const EdgeInsets.only(top: 10.0),
+                child: Center(
+                  child: ElevatedButton(
+                    onPressed: ()=>{
+                      _showDeleteDialog(context)
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.redAccent,
+                      foregroundColor: Theme.of(context).indicatorColor,
+                      padding: const EdgeInsets.all(16),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      elevation: 2,
+                      shadowColor: Colors.red.withOpacity(0.3),
+                    ),
+                    child: Icon(
+                      Icons.delete_outline,
+                      size: 24,
+                      color: Theme.of(context).indicatorColor,
+                    ),
+                  ),
                 ),
               ),
               const SizedBox(height: 40),
@@ -455,8 +595,8 @@ class CardDetailsPage extends StatelessWidget {
                                     version: QrVersions.auto,
                                     size: 200,
                                     backgroundColor: Colors.white,
-                                    embeddedImage: card.profilePhoto != null
-                                        ? NetworkImage(card.profilePhoto!)
+                                    embeddedImage: widget.card.profilePhoto != null
+                                        ? NetworkImage(widget.card.profilePhoto!)
                                             as ImageProvider
                                         : null,
                                     embeddedImageStyle: QrEmbeddedImageStyle(
@@ -466,7 +606,7 @@ class CardDetailsPage extends StatelessWidget {
                                 ),
                                 const SizedBox(height: 15),
                                 Text(
-                                  'Scan to view ${card.title ?? "this card"}',
+                                  'Scan to view ${widget.card.title ?? "this card"}',
                                   style: const TextStyle(
                                     fontSize: 16,
                                     fontWeight: FontWeight.w500,
@@ -523,7 +663,7 @@ class CardDetailsPage extends StatelessWidget {
                               children: [
                                 _buildShareOption(
                                   context,
-                                  icon: Icons.message,
+                                  icon: FontAwesomeIcons.message,
                                   color: Colors.green,
                                   label: 'Message',
                                   onTap: () => _shareViaSms(),
@@ -537,21 +677,21 @@ class CardDetailsPage extends StatelessWidget {
                                 ),
                                 _buildShareOption(
                                   context,
-                                  icon: Icons.facebook,
+                                  icon: FontAwesomeIcons.facebook,
                                   color: Colors.blue.shade900,
                                   label: 'Facebook',
                                   onTap: () => _shareViaSocialMedia('facebook'),
                                 ),
                                 _buildShareOption(
                                   context,
-                                  icon: Icons.link,
+                                  icon: FontAwesomeIcons.link,
                                   color: Colors.purple,
                                   label: 'Copy Link',
                                   onTap: () => _copyCardLink(context),
                                 ),
                                 _buildShareOption(
                                   context,
-                                  icon: Icons.share,
+                                  icon: FontAwesomeIcons.share,
                                   color: Colors.orange,
                                   label: 'More',
                                   onTap: () => _shareViaSystem(),
@@ -619,68 +759,68 @@ class CardDetailsPage extends StatelessWidget {
 
   String _generateCardQrData() {
     String qrData = '';
-    if (card.id != null && card.id!.isNotEmpty) {
-      qrData += 'ID:${card.id}\n';
+    if (widget.card.id != null && widget.card.id!.isNotEmpty) {
+      qrData += 'ID:${widget.card.id}\n';
     }
-    if (card.uuid != null && card.uuid!.isNotEmpty) {
-      qrData += 'UUID:${card.uuid}\n';
+    if (widget.card.uuid != null && widget.card.uuid!.isNotEmpty) {
+      qrData += 'UUID:${widget.card.uuid}\n';
     }
-    if (card.company != null && card.company!.isNotEmpty) {
-      qrData += 'ORG:${card.company}\n';
+    if (widget.card.company != null && widget.card.company!.isNotEmpty) {
+      qrData += 'ORG:${widget.card.company}\n';
     }
-    if (card.organization != null && card.organization!.isNotEmpty) {
-      qrData += 'ORGANIZATION:${card.organization}\n';
+    if (widget.card.organization != null && widget.card.organization!.isNotEmpty) {
+      qrData += 'ORGANIZATION:${widget.card.organization}\n';
     }
-    if (card.title != null && card.title!.isNotEmpty) {
-      qrData += 'TITLE:${card.title}\n';
+    if (widget.card.title != null && widget.card.title!.isNotEmpty) {
+      qrData += 'TITLE:${widget.card.title}\n';
     }
-    if (card.department != null && card.department!.isNotEmpty) {
-      qrData += 'DEPT:${card.department}\n';
+    if (widget.card.department != null && widget.card.department!.isNotEmpty) {
+      qrData += 'DEPT:${widget.card.department}\n';
     }
-    if (card.phoneNumber != null && card.phoneNumber!.isNotEmpty) {
-      qrData += 'TEL:${card.phoneNumber}\n';
+    if (widget.card.phoneNumber != null && widget.card.phoneNumber!.isNotEmpty) {
+      qrData += 'TEL:${widget.card.phoneNumber}\n';
     }
-    if (card.email != null && card.email!.isNotEmpty) {
-      qrData += 'EMAIL:${card.email}\n';
+    if (widget.card.email != null && widget.card.email!.isNotEmpty) {
+      qrData += 'EMAIL:${widget.card.email}\n';
     }
-    if (card.websiteUrl != null && card.websiteUrl!.isNotEmpty) {
-      qrData += 'URL:${card.websiteUrl}\n';
+    if (widget.card.websiteUrl != null && widget.card.websiteUrl!.isNotEmpty) {
+      qrData += 'URL:${widget.card.websiteUrl}\n';
     }
-    if (card.address != null && card.address!.isNotEmpty) {
-      qrData += 'ADR:${card.address}\n';
+    if (widget.card.address != null && widget.card.address!.isNotEmpty) {
+      qrData += 'ADR:${widget.card.address}\n';
     }
-    if (card.linkedIn != null && card.linkedIn!.isNotEmpty) {
-      qrData += 'LINKEDIN:${card.linkedIn}\n';
+    if (widget.card.linkedIn != null && widget.card.linkedIn!.isNotEmpty) {
+      qrData += 'LINKEDIN:${widget.card.linkedIn}\n';
     }
-    if (card.cardDescription != null && card.cardDescription!.isNotEmpty) {
-      qrData += 'DESC:${card.cardDescription}\n';
+    if (widget.card.cardDescription != null && widget.card.cardDescription!.isNotEmpty) {
+      qrData += 'DESC:${widget.card.cardDescription}\n';
     }
-    if (card.profilePhoto != null && card.profilePhoto!.isNotEmpty) {
-      qrData += 'PHOTO:${card.profilePhoto}\n';
+    if (widget.card.profilePhoto != null && widget.card.profilePhoto!.isNotEmpty) {
+      qrData += 'PHOTO:${widget.card.profilePhoto}\n';
     }
-    if (card.backgroundColor != null && card.backgroundColor!.isNotEmpty) {
-      qrData += 'BGCOLOR:${card.backgroundColor}\n';
+    if (widget.card.backgroundColor != null && widget.card.backgroundColor!.isNotEmpty) {
+      qrData += 'BGCOLOR:${widget.card.backgroundColor}\n';
     }
-    if (card.fontColor != null && card.fontColor!.isNotEmpty) {
-      qrData += 'FONTCOLOR:${card.fontColor}\n';
+    if (widget.card.fontColor != null && widget.card.fontColor!.isNotEmpty) {
+      qrData += 'FONTCOLOR:${widget.card.fontColor}\n';
     }
-    qrData += 'ACTIVE:${card.active}\n';
-    qrData += 'PUBLISHED:${card.publishCard}\n';
+    qrData += 'ACTIVE:${widget.card.active}\n';
+    qrData += 'PUBLISHED:${widget.card.publishCard}\n';
     return qrData.isEmpty ? 'No card data available' : qrData;
   }
 
   void _shareViaSms() {
-    if (card.phoneNumber != null) {
-      final message = 'Check out ${card.title}\'s business card!';
+    if (widget.card.phoneNumber != null) {
+      final message = 'Check out ${widget.card.title}\'s business card!';
       final Uri uri = Uri.parse('sms:?body=$message');
       launchUrl(uri);
     }
   }
 
   void _shareViaEmail() {
-    if (card.email != null) {
-      final subject = 'Business Card: ${card.title ?? "Contact"}';
-      final body = 'Please find attached the business card for ${card.title}.';
+    if (widget.card.email != null) {
+      final subject = 'Business Card: ${widget.card.title ?? "Contact"}';
+      final body = 'Please find attached the business card for ${widget.card.title}.';
       final Uri uri = Uri.parse('mailto:?subject=$subject&body=$body');
       launchUrl(uri);
     }
@@ -700,134 +840,16 @@ class CardDetailsPage extends StatelessWidget {
     // Implementation would use platform share dialog
   }
 
-  Widget _buildBusinessCard(BuildContext context, double screenHeight) {
-    Color backgroundColor =
-        _parseColor(card.backgroundColor, const Color(0xFF1E88E5)) ??
-            const Color(0xFF1E88E5);
-    Color? textColor = _parseColor(card.fontColor, null);
-    final bool isDark = _isColorDark(backgroundColor);
-    textColor ??= isDark ? Colors.white : Colors.black87;
-
-    return Container(
-      height: screenHeight * 0.25,
-      decoration: BoxDecoration(
-        color: backgroundColor,
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.2),
-            blurRadius: 15,
-            offset: const Offset(0, 5),
-          ),
-        ],
-      ),
-      padding: const EdgeInsets.all(20.0),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          CircleAvatar(
-            radius: 36,
-            backgroundColor: textColor.withOpacity(0.1),
-            backgroundImage: card.profilePhoto != null
-                ? NetworkImage(card.profilePhoto!)
-                : null,
-            child: card.profilePhoto == null
-                ? Icon(Icons.business,
-                    color: textColor.withOpacity(0.7), size: 36)
-                : null,
-          ),
-          const SizedBox(width: 20),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text(
-                  card.company ?? 'Organization',
-                  style: TextStyle(
-                    fontSize: 22,
-                    fontWeight: FontWeight.bold,
-                    color: textColor,
-                  ),
-                ),
-                const SizedBox(height: 6),
-                Text(
-                  card.title ?? 'Position',
-                  style: TextStyle(
-                    fontSize: 18,
-                    color: textColor.withOpacity(0.8),
-                  ),
-                ),
-                const SizedBox(height: 16),
-                Row(
-                  children: [
-                    Icon(Icons.phone, color: textColor, size: 18),
-                    const SizedBox(width: 8),
-                    Expanded(
-                      child: Text(
-                        card.phoneNumber ?? 'Phone number',
-                        style: TextStyle(
-                          fontSize: 16,
-                          color: textColor,
-                        ),
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 8),
-                Row(
-                  children: [
-                    Icon(Icons.email, color: textColor, size: 18),
-                    const SizedBox(width: 8),
-                    Expanded(
-                      child: Text(
-                        card.email ?? 'Email address',
-                        style: TextStyle(
-                          fontSize: 16,
-                          color: textColor,
-                        ),
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ),
-                  ],
-                ),
-                if (card.websiteUrl != null && card.websiteUrl!.isNotEmpty)
-                  const SizedBox(height: 8),
-                if (card.websiteUrl != null && card.websiteUrl!.isNotEmpty)
-                  Row(
-                    children: [
-                      Icon(Icons.language, color: textColor, size: 18),
-                      const SizedBox(width: 8),
-                      Expanded(
-                        child: Text(
-                          card.websiteUrl ?? 'Website',
-                          style: TextStyle(
-                            fontSize: 16,
-                            color: textColor,
-                          ),
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      ),
-                    ],
-                  ),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildSectionHeader(String title, {String? trailing}) {
+  Widget _buildSectionHeader(BuildContext context, String title, {String? trailing}) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         Text(
           title,
-          style: const TextStyle(
+            style: TextStyle(
             fontSize: 16,
             fontWeight: FontWeight.bold,
+            color: Theme.of(context).indicatorColor,
           ),
         ),
         if (trailing != null)
@@ -835,7 +857,7 @@ class CardDetailsPage extends StatelessWidget {
             trailing,
             style: TextStyle(
               fontSize: 12,
-              color: Colors.grey[600],
+              color: Theme.of(context).indicatorColor.withOpacity(0.7),
             ),
           ),
       ],
@@ -873,7 +895,8 @@ class CardDetailsPage extends StatelessWidget {
               padding: const EdgeInsets.symmetric(horizontal: 4),
               child: Text(
                 label,
-                style: const TextStyle(
+                style:  TextStyle(
+                  color: Theme.of(context).indicatorColor,
                   fontSize: 10,
                   fontWeight: FontWeight.w500,
                 ),
@@ -889,6 +912,7 @@ class CardDetailsPage extends StatelessWidget {
   }
 
   Widget _buildContactItem({
+    required BuildContext context,
     required IconData icon,
     required String title,
     required String value,
@@ -913,12 +937,13 @@ class CardDetailsPage extends StatelessWidget {
                         title,
                         style: TextStyle(
                           fontSize: 12,
-                          color: Colors.grey[600],
+                          color: Theme.of(context).indicatorColor,
                         ),
                       ),
                       Text(
                         value,
-                        style: const TextStyle(
+                        style: TextStyle(
+                          color: Theme.of(context).indicatorColor.withOpacity(0.8),
                           fontSize: 16,
                         ),
                       ),
@@ -936,7 +961,7 @@ class CardDetailsPage extends StatelessWidget {
 
   Widget _buildSocialButton({
     required String label,
-    required String icon,
+    required Icon icon,
     required Color color,
     required VoidCallback? onTap,
   }) {
@@ -1003,7 +1028,12 @@ class CardDetailsPage extends StatelessWidget {
       padding: const EdgeInsets.symmetric(vertical: 6.0),
       child: Row(
         children: [
-          SizedBox(width: 80, child: Text(label)),
+          SizedBox(width: 80, child: Text(label , 
+            style: TextStyle(
+              fontSize: 14,
+              color: Theme.of(context).indicatorColor,
+            ),
+          )),
           Expanded(
             child: ClipRRect(
               borderRadius: BorderRadius.circular(4.0),
@@ -1100,18 +1130,18 @@ class CardDetailsPage extends StatelessWidget {
     try {
       final CardProvider cardProvider =
           Provider.of<CardProvider>(context, listen: false);
-      final String uuid = card.uuid ?? '';
+      final String uuid = widget.card.uuid ?? '';
       final organizationCard = await cardProvider.getCardByUuid(uuid: uuid);
       Navigator.pop(context);
 
       if (organizationCard != null) {
-        final bool isOwner = card.userUuid == organizationCard.userUuid;
+        final bool isOwner = widget.card.userUuid == organizationCard.userUuid;
         Navigator.push(
           context,
           MaterialPageRoute(
             builder: (context) => CardDetailsPage(
               card: organizationCard,
-              currentUserId: card.userUuid,
+              currentUserId: widget.card.userUuid,
               isFromShareLink: true,
             ),
           ),
@@ -1143,5 +1173,86 @@ class CardDetailsPage extends StatelessWidget {
         ),
       );
     }
+  }
+
+  void _showDeleteDialog(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (BuildContext context) {
+        return Container(
+          decoration: BoxDecoration(
+            color: Theme.of(context).highlightColor,
+            borderRadius: const BorderRadius.only(
+              topLeft: Radius.circular(20),
+              topRight: Radius.circular(20),
+            ),
+            boxShadow: [
+              BoxShadow(
+                color: Theme.of(context).primaryColor.withOpacity(0.3),
+                spreadRadius: 5,
+                blurRadius: 7,
+                offset: const Offset(0, -3),
+              ),
+            ],
+          ),
+          padding: const EdgeInsets.all(20),
+          height: 220,
+          width: double.infinity,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              HeaderBoldWidget(
+                  text: "Are you Sure?",
+                  color: Theme.of(context).primaryColor,
+                  size: '20.0'),
+              const SizedBox(height: 12),
+              Text(
+                "Upon deleting your card, you will lose all your card data and it cannot be recovered.",
+                textAlign: TextAlign.center,
+                style: GoogleFonts.aBeeZee(
+                    textStyle: TextStyle(
+                        color: Theme.of(context).indicatorColor,
+                        fontSize: 18.0,
+                        fontWeight: FontWeight.w500)),
+              ),
+              const SizedBox(height: 24),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Expanded(
+                    child: TextButton(
+                        onPressed: () {
+                          Navigator.pop(context);
+                        },
+                        child: HeaderBoldWidget(
+                            text: "Cancel",
+                            color: Theme.of(context).primaryColor,
+                            size: '18.0')),
+                  ),
+                  SizedBox(
+                    height: 24,
+                    child: VerticalDivider(
+                        width: 20, color: Theme.of(context).indicatorColor),
+                  ),
+                  Expanded(
+                    child: TextButton(
+                        onPressed: () {
+                          _deleteCard(cardId: widget.card.id);
+                          Navigator.pop(context);
+                        },
+                        child: HeaderBoldWidget(
+                            text: "Delete",
+                            color: Theme.of(context).primaryColor,
+                            size: '18.0')),
+                  ),
+                ],
+              )
+            ],
+          ),
+        );
+      },
+    );
   }
 }

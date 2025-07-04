@@ -25,6 +25,7 @@ class Loaders {
 
 class Texts {
   static String backToRegister = "Back To Login";
+  static String startScanning = "Start a new Scan";
   static String activateAccountWithOtp =
       'Already have an OTP ?. Verify Account ';
   static String changeLogo = "Change Company logo";
