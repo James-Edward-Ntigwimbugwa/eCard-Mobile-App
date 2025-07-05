@@ -5,6 +5,7 @@ import 'package:ecard_app/services/cad_service.dart';
 import 'package:ecard_app/providers/screen_index_provider.dart';
 import 'package:ecard_app/providers/user_provider.dart';
 import 'package:ecard_app/router/page_router.dart';
+import 'package:ecard_app/services/device_proximity_service.dart';
 import 'package:ecard_app/utils/theme/theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -23,7 +24,6 @@ Future<void> main() async {
   final SharedPreferences prefs = await SharedPreferences.getInstance();
   final bool isDarkMode = prefs.getBool("themeMode") ?? false;
   runApp(DevicePreview(builder: (context) => EcardApp(isDarkMode: isDarkMode)));
-  // runApp(EcardApp(isDarkMode: isDarkMode));
 }
 
 class EcardApp extends StatelessWidget {
@@ -53,6 +53,7 @@ class EcardApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => TabIndexProvider()),
         ChangeNotifierProvider(create: (_) => CardProvider()),
         ChangeNotifierProvider(create: (_) => LocationProvider()),
+        ChangeNotifierProvider(create: (_) => DeviceProximityService()),
       ],
       child: Consumer<ThemeNotifier>(
         builder: (context, themeNotifier, _) {

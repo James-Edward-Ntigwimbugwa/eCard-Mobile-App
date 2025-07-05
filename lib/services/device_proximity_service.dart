@@ -5,7 +5,6 @@ import 'package:ecard_app/services/requests/device_proximity_requests.dart';
 import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 
-
 class DeviceProximityService with ChangeNotifier {
   bool _isLoading = false;
   String? _errorMessage;
@@ -42,15 +41,21 @@ class DeviceProximityService with ChangeNotifier {
   }
 
   Future<NearbyCardsSpatialData?> getNearbyDevices({
-    required Object jsonPayload,
+    required String? userUuid,
+    required double latitude,
+    required double longitude,
   }) async {
     _setLoading(true);
     _clearMessages();
 
     try {
-      // Simulate network delay
       await Future.delayed(const Duration(seconds: 2));
 
+      Object jsonPayload = {
+        'userUuid' : userUuid, 
+        'latitude' : latitude,
+        'longitude' : longitude
+      };
       // Make the API request
       final http.Response response =
           await DeviceProximtyRequests.getNearbyProximalDevices(
@@ -219,9 +224,17 @@ class DeviceProximityService with ChangeNotifier {
   }
 
   // Helper method to refresh data
-  Future<NearbyCardsSpatialData?> refreshNearbyDevices(
-      {required Object jsonPayload}) async {
+  Future<NearbyCardsSpatialData?> refreshNearbyDevices({
+    required String userUuid,
+    required double latitude,
+    required double longitude,
+  }) async {
     clearData();
-    return await getNearbyDevices(jsonPayload: jsonPayload);
+    return await getNearbyDevices(
+      userUuid: userUuid,
+      latitude: latitude,
+      longitude: longitude,
+    );
   }
 }
+
