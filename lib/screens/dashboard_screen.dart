@@ -8,11 +8,11 @@ import 'package:provider/provider.dart';
 import '../models/user_model.dart';
 import '../router/router_path.dart';
 import 'package:camera/camera.dart';
-import 'nav/main_screen_tab.dart';
-import 'nav/messages_screen.dart';
-import 'nav/qr_code_scanner.dart';
-import 'nav/scan_cards_near_you.dart';
-import 'nav/settings_screen.dart';
+import 'navigations/main_screen_tab.dart';
+import 'navigations/messages_screen.dart';
+import 'navigations/qr_code_scanner.dart';
+import 'navigations/scan_cards_near_you.dart';
+import 'navigations/settings_screen.dart';
 
 class DashboardPage extends StatefulWidget {
   final User user;

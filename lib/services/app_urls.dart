@@ -26,4 +26,9 @@ class AppUrl {
   static String sendNotification =
       '$baseEndpoint/api/notifications/send-notifications';
   static String markAsRead = '$baseEndpoint/api/notifications/mark-read';
+
+
+  // deviceProximity requests
+  static const String getNearbyProximalDevices =
+      '$baseEndpoint/api/v1/device-proximity/seach-with-jsonal-body';
 }
