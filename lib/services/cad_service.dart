@@ -59,7 +59,7 @@ class CardProvider with ChangeNotifier {
       'fontStyle': fontStyle
     };
 
-      _isLoading = true;
+    _isLoading = true;
     notifyListeners();
 
     try {

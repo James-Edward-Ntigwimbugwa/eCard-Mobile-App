@@ -19,8 +19,10 @@ class NearbyCardsSpatialData {
       code: json['code'] ?? 200,
       data: json['data'],
       dataList: (json['dataList'] as List<dynamic>?)
-          ?.map((item) => BusinessCard.fromJson(item as Map<String, dynamic>))
-          .toList() ?? [],
+              ?.map(
+                  (item) => BusinessCard.fromJson(item as Map<String, dynamic>))
+              .toList() ??
+          [],
       message: json['message'] ?? '',
     );
   }
@@ -142,7 +144,7 @@ class BusinessCard {
   String get formattedLocation => '$latitude, $longitude';
 
   // Helper method to get distance info
-  String get distanceInfo => 
+  String get distanceInfo =>
       'Walking: $formattedWalkingDistance ($formattedWalkingTime) | '
       'Driving: $formattedDrivingDistance ($formattedDrivingTime)';
 

@@ -15,8 +15,8 @@ import 'package:qr_flutter/qr_flutter.dart';
 
 import '../components/card_display_widget.dart';
 
-class CardDetailsPage extends StatefulWidget{
-    final CustomCard card;
+class CardDetailsPage extends StatefulWidget {
+  final CustomCard card;
   final String? currentUserId;
   final bool isFromShareLink;
 
@@ -29,7 +29,6 @@ class CardDetailsPage extends StatefulWidget{
 
   @override
   State<StatefulWidget> createState() => _CardDetailsPageState();
-  
 }
 
 class _CardDetailsPageState extends State<CardDetailsPage> {
@@ -93,20 +92,20 @@ class _CardDetailsPageState extends State<CardDetailsPage> {
       showLoader();
       final response = await CardProvider.deleteCard(cardId: cardId)
           .timeout(const Duration(seconds: 10), onTimeout: () {
-        Navigator.pop(context); 
+        Navigator.pop(context);
         showErrorMessage("Request timed out");
         throw Exception("Request timed out");
       });
       Navigator.pop(context);
       if (response == true) {
         showSuccessMessage("Card Deleted");
-        Navigator.pop(context); 
+        Navigator.pop(context);
       } else {
         showErrorMessage("Failed to delete Card");
       }
     } catch (e) {
       if (Navigator.canPop(context)) {
-        Navigator.pop(context); 
+        Navigator.pop(context);
       }
       showErrorMessage(e.toString());
       debugPrint("An error occurred in deleteCard: $e");
@@ -220,8 +219,9 @@ class _CardDetailsPageState extends State<CardDetailsPage> {
                       label: 'Email',
                       color: primaryColor.withOpacity(0.6),
                       iconColor: Colors.white,
-                      onTap: () =>
-                          widget.card.email != null ? _launchEmail(widget.card.email!) : null,
+                      onTap: () => widget.card.email != null
+                          ? _launchEmail(widget.card.email!)
+                          : null,
                     ),
                     _buildActionButton(
                       context,
@@ -276,14 +276,17 @@ class _CardDetailsPageState extends State<CardDetailsPage> {
                           icon: Icons.phone,
                           title: 'Phone',
                           value: widget.card.phoneNumber!,
-                          onTap: () => _launchPhone(widget.card.phoneNumber!), context: context,
+                          onTap: () => _launchPhone(widget.card.phoneNumber!),
+                          context: context,
                         ),
-                      if (widget.card.email != null &&widget.card.email!.isNotEmpty)
+                      if (widget.card.email != null &&
+                          widget.card.email!.isNotEmpty)
                         _buildContactItem(
                           icon: Icons.email,
                           title: 'Email',
                           value: widget.card.email!,
-                          onTap: () => _launchEmail(widget.card.email!), context: context,
+                          onTap: () => _launchEmail(widget.card.email!),
+                          context: context,
                         ),
                       if (widget.card.websiteUrl != null &&
                           widget.card.websiteUrl!.isNotEmpty)
@@ -291,15 +294,18 @@ class _CardDetailsPageState extends State<CardDetailsPage> {
                           icon: Icons.language,
                           title: 'Website',
                           value: widget.card.websiteUrl!,
-                          onTap: () => _launchUrl(widget.card.websiteUrl!), context: context,
+                          onTap: () => _launchUrl(widget.card.websiteUrl!),
+                          context: context,
                         ),
-                      if (widget.card.address != null && widget.card.address!.isNotEmpty)
+                      if (widget.card.address != null &&
+                          widget.card.address!.isNotEmpty)
                         _buildContactItem(
                           icon: Icons.location_on,
                           title: 'Address',
                           value: widget.card.address!,
                           onTap: () => _launchMaps(widget.card.address!),
-                          isLast: true, context: context,
+                          isLast: true,
+                          context: context,
                         ),
                     ],
                   ),
@@ -313,7 +319,7 @@ class _CardDetailsPageState extends State<CardDetailsPage> {
                 width: double.infinity,
                 padding: const EdgeInsets.symmetric(vertical: 16),
                 decoration: BoxDecoration(
-                  color:Theme.of(context).secondaryHeaderColor,
+                  color: Theme.of(context).secondaryHeaderColor,
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Row(
@@ -358,7 +364,8 @@ class _CardDetailsPageState extends State<CardDetailsPage> {
               ),
               const SizedBox(height: 24),
               // Card Analytics
-              _buildSectionHeader(context, 'Card Analytics', trailing: 'Last 30 days'),
+              _buildSectionHeader(context, 'Card Analytics',
+                  trailing: 'Last 30 days'),
               const SizedBox(height: 8),
               Container(
                 width: double.infinity,
@@ -405,7 +412,7 @@ class _CardDetailsPageState extends State<CardDetailsPage> {
                 width: double.infinity,
                 padding: const EdgeInsets.symmetric(vertical: 16),
                 decoration: BoxDecoration(
-                  color:Theme.of(context).secondaryHeaderColor,
+                  color: Theme.of(context).secondaryHeaderColor,
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Row(
@@ -438,9 +445,7 @@ class _CardDetailsPageState extends State<CardDetailsPage> {
                 padding: const EdgeInsets.only(top: 10.0),
                 child: Center(
                   child: ElevatedButton(
-                    onPressed: ()=>{
-                      _showDeleteDialog(context)
-                    },
+                    onPressed: () => {_showDeleteDialog(context)},
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.redAccent,
                       foregroundColor: Theme.of(context).indicatorColor,
@@ -595,10 +600,12 @@ class _CardDetailsPageState extends State<CardDetailsPage> {
                                     version: QrVersions.auto,
                                     size: 200,
                                     backgroundColor: Colors.white,
-                                    embeddedImage: widget.card.profilePhoto != null
-                                        ? NetworkImage(widget.card.profilePhoto!)
-                                            as ImageProvider
-                                        : null,
+                                    embeddedImage:
+                                        widget.card.profilePhoto != null
+                                            ? NetworkImage(
+                                                    widget.card.profilePhoto!)
+                                                as ImageProvider
+                                            : null,
                                     embeddedImageStyle: QrEmbeddedImageStyle(
                                       size: const Size(40, 40),
                                     ),
@@ -768,7 +775,8 @@ class _CardDetailsPageState extends State<CardDetailsPage> {
     if (widget.card.company != null && widget.card.company!.isNotEmpty) {
       qrData += 'ORG:${widget.card.company}\n';
     }
-    if (widget.card.organization != null && widget.card.organization!.isNotEmpty) {
+    if (widget.card.organization != null &&
+        widget.card.organization!.isNotEmpty) {
       qrData += 'ORGANIZATION:${widget.card.organization}\n';
     }
     if (widget.card.title != null && widget.card.title!.isNotEmpty) {
@@ -777,7 +785,8 @@ class _CardDetailsPageState extends State<CardDetailsPage> {
     if (widget.card.department != null && widget.card.department!.isNotEmpty) {
       qrData += 'DEPT:${widget.card.department}\n';
     }
-    if (widget.card.phoneNumber != null && widget.card.phoneNumber!.isNotEmpty) {
+    if (widget.card.phoneNumber != null &&
+        widget.card.phoneNumber!.isNotEmpty) {
       qrData += 'TEL:${widget.card.phoneNumber}\n';
     }
     if (widget.card.email != null && widget.card.email!.isNotEmpty) {
@@ -792,13 +801,16 @@ class _CardDetailsPageState extends State<CardDetailsPage> {
     if (widget.card.linkedIn != null && widget.card.linkedIn!.isNotEmpty) {
       qrData += 'LINKEDIN:${widget.card.linkedIn}\n';
     }
-    if (widget.card.cardDescription != null && widget.card.cardDescription!.isNotEmpty) {
+    if (widget.card.cardDescription != null &&
+        widget.card.cardDescription!.isNotEmpty) {
       qrData += 'DESC:${widget.card.cardDescription}\n';
     }
-    if (widget.card.profilePhoto != null && widget.card.profilePhoto!.isNotEmpty) {
+    if (widget.card.profilePhoto != null &&
+        widget.card.profilePhoto!.isNotEmpty) {
       qrData += 'PHOTO:${widget.card.profilePhoto}\n';
     }
-    if (widget.card.backgroundColor != null && widget.card.backgroundColor!.isNotEmpty) {
+    if (widget.card.backgroundColor != null &&
+        widget.card.backgroundColor!.isNotEmpty) {
       qrData += 'BGCOLOR:${widget.card.backgroundColor}\n';
     }
     if (widget.card.fontColor != null && widget.card.fontColor!.isNotEmpty) {
@@ -820,7 +832,8 @@ class _CardDetailsPageState extends State<CardDetailsPage> {
   void _shareViaEmail() {
     if (widget.card.email != null) {
       final subject = 'Business Card: ${widget.card.title ?? "Contact"}';
-      final body = 'Please find attached the business card for ${widget.card.title}.';
+      final body =
+          'Please find attached the business card for ${widget.card.title}.';
       final Uri uri = Uri.parse('mailto:?subject=$subject&body=$body');
       launchUrl(uri);
     }
@@ -840,13 +853,14 @@ class _CardDetailsPageState extends State<CardDetailsPage> {
     // Implementation would use platform share dialog
   }
 
-  Widget _buildSectionHeader(BuildContext context, String title, {String? trailing}) {
+  Widget _buildSectionHeader(BuildContext context, String title,
+      {String? trailing}) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         Text(
           title,
-            style: TextStyle(
+          style: TextStyle(
             fontSize: 16,
             fontWeight: FontWeight.bold,
             color: Theme.of(context).indicatorColor,
@@ -895,7 +909,7 @@ class _CardDetailsPageState extends State<CardDetailsPage> {
               padding: const EdgeInsets.symmetric(horizontal: 4),
               child: Text(
                 label,
-                style:  TextStyle(
+                style: TextStyle(
                   color: Theme.of(context).indicatorColor,
                   fontSize: 10,
                   fontWeight: FontWeight.w500,
@@ -943,7 +957,8 @@ class _CardDetailsPageState extends State<CardDetailsPage> {
                       Text(
                         value,
                         style: TextStyle(
-                          color: Theme.of(context).indicatorColor.withOpacity(0.8),
+                          color:
+                              Theme.of(context).indicatorColor.withOpacity(0.8),
                           fontSize: 16,
                         ),
                       ),
@@ -1028,12 +1043,15 @@ class _CardDetailsPageState extends State<CardDetailsPage> {
       padding: const EdgeInsets.symmetric(vertical: 6.0),
       child: Row(
         children: [
-          SizedBox(width: 80, child: Text(label , 
-            style: TextStyle(
-              fontSize: 14,
-              color: Theme.of(context).indicatorColor,
-            ),
-          )),
+          SizedBox(
+              width: 80,
+              child: Text(
+                label,
+                style: TextStyle(
+                  fontSize: 14,
+                  color: Theme.of(context).indicatorColor,
+                ),
+              )),
           Expanded(
             child: ClipRRect(
               borderRadius: BorderRadius.circular(4.0),

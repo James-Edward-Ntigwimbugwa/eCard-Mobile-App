@@ -30,7 +30,7 @@ class _ScanningScreenState extends State<ScanningScreen>
     with TickerProviderStateMixin {
   late AnimationController _pulseController;
   late AnimationController _scanController;
-  
+
   // Mock data commented out for later use
   /*
   List<ScanCard> nearbyCards = [
@@ -65,7 +65,7 @@ class _ScanningScreenState extends State<ScanningScreen>
       vsync: this,
       duration: const Duration(seconds: 2),
     )..repeat();
-    
+
     _scanController = AnimationController(
       vsync: this,
       duration: const Duration(seconds: 3),

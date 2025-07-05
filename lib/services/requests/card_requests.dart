@@ -115,7 +115,8 @@ class CardRequests {
 
       final url = Uri.parse("${AppUrl.deleteCard}?id=${int.parse(cardId!)}");
 
-      debugPrint("\t\t====================\n\n Final Url $url \n\n\t\t===========================\n\n");
+      debugPrint(
+          "\t\t====================\n\n Final Url $url \n\n\t\t===========================\n\n");
 
       final response = await delete(
         url,
@@ -245,4 +246,3 @@ class CardRequests {
     }
   }
 }
-
