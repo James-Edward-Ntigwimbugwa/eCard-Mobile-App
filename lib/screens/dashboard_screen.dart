@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:circle_nav_bar/circle_nav_bar.dart';
 import 'package:ecard_app/providers/screen_index_provider.dart';
+import 'package:ecard_app/screens/navigations/scan_cards_near_you.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -11,7 +12,6 @@ import 'package:camera/camera.dart';
 import 'navigations/main_screen_tab.dart';
 import 'navigations/messages_screen.dart';
 import 'navigations/qr_code_scanner.dart';
-import 'navigations/scan_cards_near_you.dart';
 import 'navigations/settings_screen.dart';
 
 class DashboardPage extends StatefulWidget {

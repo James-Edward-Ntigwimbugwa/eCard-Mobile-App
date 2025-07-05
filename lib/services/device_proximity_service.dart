@@ -49,7 +49,7 @@ class DeviceProximityService with ChangeNotifier {
     _clearMessages();
 
     try {
-      await Future.delayed(const Duration(seconds: 2));
+      await Future.delayed(const Duration(seconds: 4));
 
       Object jsonPayload = {
         'userUuid' : userUuid, 
@@ -59,7 +59,7 @@ class DeviceProximityService with ChangeNotifier {
       // Make the API request
       final http.Response response =
           await DeviceProximtyRequests.getNearbyProximalDevices(
-        jsonBody: jsonPayload.toString(),
+        jsonBody: jsonPayload,
       );
 
       _statusCode = response.statusCode;

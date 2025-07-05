@@ -29,5 +29,5 @@ class AppUrl {
 
   // deviceProximity requests
   static const String getNearbyProximalDevices =
-      '$baseEndpoint/api/v1/device-proximity/seach-with-jsonal-body';
+      '$baseEndpoint/api/v1/device-proximity/search-with-json-body';
 }
