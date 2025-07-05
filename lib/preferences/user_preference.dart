@@ -1,5 +1,5 @@
 // Fixed UserPreferences class
-import 'package:ecard_app/modals/user_modal.dart';
+import 'package:ecard_app/models/user_model.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:developer' as developer;
 

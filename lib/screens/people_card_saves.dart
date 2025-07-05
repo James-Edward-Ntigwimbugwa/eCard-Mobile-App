@@ -3,7 +3,7 @@ import 'package:ecard_app/utils/resources/animes/lottie_animes.dart';
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
 import '../components/alert_reminder.dart';
-import '../modals/person_who_saved_card.dart' as model_person_save;
+import '../models/person_who_saved_card_model.dart' as model_person_save;
 import 'admin_message_dialog.dart';
 
 class PeopleCardSaves extends StatefulWidget {

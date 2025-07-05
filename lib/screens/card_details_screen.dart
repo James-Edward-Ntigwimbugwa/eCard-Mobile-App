@@ -5,7 +5,7 @@ import 'package:ecard_app/services/cad_service.dart';
 import 'package:ecard_app/utils/resources/animes/lottie_animes.dart';
 import 'package:ecard_app/utils/resources/strings/strings.dart';
 import 'package:flutter/material.dart';
-import 'package:ecard_app/modals/card_modal.dart';
+import 'package:ecard_app/models/card_model.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:lottie/lottie.dart';

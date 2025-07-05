@@ -2,7 +2,7 @@ import 'package:ecard_app/components/custom_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import '../../modals/message_notification.dart';
+import '../../models/message_notification_model.dart';
 import '../../services/notiication_service.dart';
 import '../../utils/resources/animes/lottie_animes.dart';
 import '../../utils/theme/theme.dart';

@@ -1,4 +1,4 @@
-import 'package:ecard_app/modals/user_modal.dart';
+import 'package:ecard_app/models/user_model.dart';
 import 'package:flutter/cupertino.dart';
 
 class UserProvider with ChangeNotifier {

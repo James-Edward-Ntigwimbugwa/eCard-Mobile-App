@@ -1,6 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
-import 'package:ecard_app/modals/user_modal.dart';
+import 'package:ecard_app/models/user_model.dart';
 import 'package:ecard_app/services/auth_requests.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart';

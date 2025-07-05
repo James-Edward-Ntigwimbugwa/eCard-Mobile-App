@@ -3,7 +3,7 @@ import 'package:ecard_app/providers/screen_index_provider.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../../modals/photo_item.dart';
+import '../../models/photo_item_model.dart';
 import '../../utils/resources/images/images.dart';
 import '../../utils/theme/theme.dart';
 import '../all_cards_screen.dart';

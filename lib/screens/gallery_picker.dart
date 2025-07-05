@@ -4,7 +4,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:photo_manager/photo_manager.dart';
 
-import '../modals/photo_item.dart';
+import '../models/photo_item_model.dart';
 import '../utils/theme/theme.dart';
 
 class GalleryPicker extends StatefulWidget {

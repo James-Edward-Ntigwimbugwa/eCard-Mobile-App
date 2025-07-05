@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:ecard_app/modals/card_modal.dart';
-import 'package:ecard_app/modals/user_modal.dart';
+import 'package:ecard_app/models/card_model.dart';
+import 'package:ecard_app/models/user_model.dart';
 import '../screens/card_details_screen.dart';
 import '../preferences/user_preference.dart';
 

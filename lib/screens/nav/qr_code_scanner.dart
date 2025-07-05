@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:ecard_app/components/custom_widgets.dart';
 import 'package:qr_code_scanner/qr_code_scanner.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'package:ecard_app/modals/card_modal.dart';
+import 'package:ecard_app/models/card_model.dart';
 
 import '../../components/found_card.dart';
 

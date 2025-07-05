@@ -1,5 +1,5 @@
 import 'dart:developer' as developer;
-import 'package:ecard_app/modals/card_modal.dart';
+import 'package:ecard_app/models/card_model.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
 

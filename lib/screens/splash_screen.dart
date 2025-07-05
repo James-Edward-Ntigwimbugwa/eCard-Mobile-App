@@ -2,7 +2,7 @@ import 'dart:developer' as developer;
 
 import 'package:animated_splash_screen/animated_splash_screen.dart';
 import 'package:ecard_app/components/custom_widgets.dart';
-import 'package:ecard_app/modals/user_modal.dart';
+import 'package:ecard_app/models/user_model.dart';
 import 'package:ecard_app/preferences/user_preference.dart';
 import 'package:ecard_app/screens/dashboard_screen.dart';
 import 'package:ecard_app/utils/resources/animes/lottie_animes.dart';

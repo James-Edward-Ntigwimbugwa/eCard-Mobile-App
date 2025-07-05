@@ -1,12 +1,12 @@
 import 'dart:convert';
 import 'dart:developer' as developer;
-import 'package:ecard_app/modals/card_modal.dart';
+import 'package:ecard_app/models/card_model.dart';
 import 'package:ecard_app/preferences/card_preference.dart';
 import 'package:ecard_app/services/requests/card_requests.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart';
 
-import '../modals/saved_card_response.dart';
+import '../models/saved_card_response_model.dart';
 
 class CardProvider with ChangeNotifier {
   bool _isLoading = false;

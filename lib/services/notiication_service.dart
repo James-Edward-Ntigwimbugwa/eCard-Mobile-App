@@ -4,7 +4,7 @@ import 'package:ecard_app/services/requests/notification_requests.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
-import '../modals/message_notification.dart';
+import '../models/message_notification_model.dart';
 
 class NotificationService {
   List<MessageNotification> _notifications = [];

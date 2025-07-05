@@ -6,7 +6,7 @@ import 'package:lottie/lottie.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../components/card_display_widget.dart';
-import '../modals/card_modal.dart';
+import '../models/card_model.dart';
 
 class AllCardsScreen extends StatefulWidget {
   const AllCardsScreen({super.key});

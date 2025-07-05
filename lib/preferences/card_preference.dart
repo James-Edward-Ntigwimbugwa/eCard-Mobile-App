@@ -1,4 +1,4 @@
-import 'package:ecard_app/modals/card_modal.dart';
+import 'package:ecard_app/models/card_model.dart';
 import 'dart:developer' as developer;
 import '../database/database_helper.dart';
 

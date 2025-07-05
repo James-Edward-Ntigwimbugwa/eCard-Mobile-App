@@ -1,4 +1,4 @@
-import 'package:ecard_app/modals/saved_card_response.dart';
+import 'package:ecard_app/models/saved_card_response_model.dart';
 
 class PersonSave {
   final String name;

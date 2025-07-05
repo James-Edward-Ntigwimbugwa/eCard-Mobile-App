@@ -1,4 +1,3 @@
-// Fixed User model with proper toString and non-null field handling
 class User {
   final String? id;
   final String? uuid;

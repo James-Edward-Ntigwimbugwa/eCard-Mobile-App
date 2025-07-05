@@ -29,6 +29,10 @@ class ScanningScreen extends StatefulWidget {
 class _ScanningScreenState extends State<ScanningScreen>
     with TickerProviderStateMixin {
   late AnimationController _pulseController;
+  late AnimationController _scanController;
+  
+  // Mock data commented out for later use
+  /*
   List<ScanCard> nearbyCards = [
     ScanCard(
       name: 'Michael Anderson',
@@ -52,6 +56,7 @@ class _ScanningScreenState extends State<ScanningScreen>
       statusColor: Colors.amber,
     ),
   ];
+  */
 
   @override
   void initState() {
@@ -60,11 +65,17 @@ class _ScanningScreenState extends State<ScanningScreen>
       vsync: this,
       duration: const Duration(seconds: 2),
     )..repeat();
+    
+    _scanController = AnimationController(
+      vsync: this,
+      duration: const Duration(seconds: 3),
+    )..repeat();
   }
 
   @override
   void dispose() {
     _pulseController.dispose();
+    _scanController.dispose();
     super.dispose();
   }
 
@@ -79,11 +90,8 @@ class _ScanningScreenState extends State<ScanningScreen>
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               _buildHeader(),
-              _buildScannerAnimation(),
-              const SizedBox(height: 20),
-              _buildNearbyCardsHeader(),
-              const SizedBox(height: 12),
-              _buildNearbyCardsList(),
+              const Spacer(),
+              _buildCenterScanningIcon(),
               const Spacer(),
               _buildStartScanButton(),
               const SizedBox(height: 16),
@@ -119,6 +127,137 @@ class _ScanningScreenState extends State<ScanningScreen>
     );
   }
 
+  Widget _buildCenterScanningIcon() {
+    return Container(
+      height: 300,
+      alignment: Alignment.center,
+      child: AnimatedBuilder(
+        animation: Listenable.merge([_pulseController, _scanController]),
+        builder: (context, child) {
+          return Stack(
+            alignment: Alignment.center,
+            children: [
+              // Outer pulsing circle
+              Opacity(
+                opacity: (1 - _pulseController.value) * 0.3,
+                child: Container(
+                  width: 200 + (_pulseController.value * 50),
+                  height: 200 + (_pulseController.value * 50),
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    border: Border.all(
+                      color: Theme.of(context).primaryColor.withOpacity(0.4),
+                      width: 1.5,
+                    ),
+                  ),
+                ),
+              ),
+
+              // Middle pulsing circle
+              Opacity(
+                opacity: (1 - (_pulseController.value * 0.8)) * 0.5,
+                child: Container(
+                  width: 150 + (_pulseController.value * 35),
+                  height: 150 + (_pulseController.value * 35),
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    border: Border.all(
+                      color: Theme.of(context).primaryColor.withOpacity(0.6),
+                      width: 1.5,
+                    ),
+                  ),
+                ),
+              ),
+
+              // Inner pulsing circle
+              Opacity(
+                opacity: (1 - (_pulseController.value * 0.6)) * 0.7,
+                child: Container(
+                  width: 100 + (_pulseController.value * 25),
+                  height: 100 + (_pulseController.value * 25),
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    border: Border.all(
+                      color: Theme.of(context).primaryColor.withOpacity(0.8),
+                      width: 2,
+                    ),
+                  ),
+                ),
+              ),
+
+              // Scanning line
+              Transform.rotate(
+                angle: _scanController.value * 6.28, // 2 * pi for full rotation
+                child: Container(
+                  width: 120,
+                  height: 2,
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      colors: [
+                        Colors.transparent,
+                        Theme.of(context).primaryColor.withOpacity(0.8),
+                        Theme.of(context).primaryColor,
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+
+              // Center icon container
+              Container(
+                width: 70,
+                height: 70,
+                decoration: BoxDecoration(
+                  color: Theme.of(context).primaryColor,
+                  shape: BoxShape.circle,
+                  boxShadow: [
+                    BoxShadow(
+                      color: Theme.of(context).primaryColor.withOpacity(0.3),
+                      blurRadius: 10,
+                      spreadRadius: 2,
+                    ),
+                  ],
+                ),
+                child: const Icon(
+                  Icons.radar,
+                  color: Colors.white,
+                  size: 35,
+                ),
+              ),
+            ],
+          );
+        },
+      ),
+    );
+  }
+
+  Widget _buildStartScanButton() {
+    return SizedBox(
+      width: MediaQuery.of(context).size.width,
+      child: ElevatedButton(
+        onPressed: () {},
+        style: ElevatedButton.styleFrom(
+          backgroundColor: Theme.of(context).primaryColor,
+          shape: const RoundedRectangleBorder(
+            borderRadius: BorderRadius.all(
+              Radius.circular(30),
+            ),
+          ),
+        ),
+        child: Text(
+          Texts.startScanning,
+          style: TextStyle(
+            color: Colors.white,
+            fontSize: 16,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+      ),
+    );
+  }
+
+  // Commented out methods for later use when mock data is needed
+  /*
   Widget _buildScannerAnimation() {
     return Container(
       height: 180,
@@ -309,29 +448,5 @@ class _ScanningScreenState extends State<ScanningScreen>
       ),
     );
   }
-
-  Widget _buildStartScanButton() {
-    return SizedBox(
-      width: MediaQuery.of(context).size.width,
-      child: ElevatedButton(
-        onPressed: () {},
-        style: ElevatedButton.styleFrom(
-          backgroundColor: Theme.of(context).primaryColor,
-          shape: const RoundedRectangleBorder(
-            borderRadius: BorderRadius.all(
-              Radius.circular(30),
-            ),
-          ),
-        ),
-        child: Text(
-          Texts.startScanning,
-          style: TextStyle(
-            color: Colors.white,
-            fontSize: 16,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-      ),
-    );
-  }
+  */
 }
