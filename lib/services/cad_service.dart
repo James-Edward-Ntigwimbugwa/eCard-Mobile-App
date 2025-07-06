@@ -36,7 +36,6 @@ class CardProvider with ChangeNotifier {
     required double? longitude,
     required String? address,
   }) async {
-    // Fixed: Use the correct field names expected by the server
     final Object cardRegistrationData = {
       'title': title,
       'cardDescription': cardDescription,

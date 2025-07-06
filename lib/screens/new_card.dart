@@ -38,9 +38,6 @@ class CreateNewCardState extends State<CreateNewCard> {
   final TextEditingController _twitterController = TextEditingController();
   final TextEditingController _instagramController = TextEditingController();
 
-  double? _selectedLatitude;
-  double? _selectedLongitude;
-  String? _selectedLocationAddress;
 
   // Selected style properties with default values
   Color _selectedColor = const Color(0xFF9C27B0); // purple
@@ -355,9 +352,7 @@ class CreateNewCardState extends State<CreateNewCard> {
 
       final LocationProvider locationProvider =
           Provider.of<LocationProvider>(context, listen: false);
-      _selectedLatitude = locationProvider.latitude;
-      _selectedLongitude = locationProvider.longitude;
-      _selectedLocationAddress = locationProvider.address;
+    
 
       final CardProvider provider =
           Provider.of<CardProvider>(context, listen: false);
@@ -372,9 +367,9 @@ class CreateNewCardState extends State<CreateNewCard> {
           "organization: ${_organizationNameController.text}, "
           "cardLogo: $_organizationLogoPath, "
           "phoneNumber: ${_phoneNumberController.text}, "
-          "latitude: $_selectedLatitude, "
-          "longitude: $_selectedLongitude, "
-          "address: $_selectedLocationAddress, "
+          "latitude: ${locationProvider.latitude}, "
+          "longitude: ${locationProvider.longitude}, "
+          "address: ${locationProvider.address}, "
           "website: ${_websiteController.text}, "
           "linkedin: ${_linkedinController.text}, "
           "email: ${_emailAddressController.text}, "
@@ -395,9 +390,9 @@ class CreateNewCardState extends State<CreateNewCard> {
             textPosition: _textPosition.label.toLowerCase(),
             logoPosition: _logoPosition.label.toLowerCase(),
             fontStyle: _selectedFontStyle,
-            latitude: _selectedLatitude,
-            longitude: _selectedLongitude,
-            address: _selectedLocationAddress,
+            latitude: double.parse(locationProvider.latitude.toString()),
+            longitude: double.parse(locationProvider.longitude.toString()),
+            address: locationProvider.address ?? "",
           )
           .timeout(const Duration(seconds: 60));
 

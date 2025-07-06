@@ -23,7 +23,9 @@ Future<void> main() async {
 
   final SharedPreferences prefs = await SharedPreferences.getInstance();
   final bool isDarkMode = prefs.getBool("themeMode") ?? false;
-  runApp(DevicePreview(builder: (context) => EcardApp(isDarkMode: isDarkMode)));
+  // runApp(DevicePreview(builder: (context) => EcardApp(isDarkMode: isDarkMode)));
+    runApp(EcardApp(isDarkMode: isDarkMode));
+
 }
 
 class EcardApp extends StatelessWidget {

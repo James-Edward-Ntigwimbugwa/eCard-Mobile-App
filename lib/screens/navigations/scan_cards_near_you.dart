@@ -1,7 +1,7 @@
 import 'package:ecard_app/components/custom_widgets.dart';
 import 'package:ecard_app/models/nearby_cards_spatial_data_model.dart';
 import 'package:ecard_app/providers/location_provider.dart';
-import 'package:ecard_app/screens/navigations/nearby_scanned_card_details_screen.dart';
+import 'package:ecard_app/screens/nearby_scanned_card_details_screen.dart';
 import 'package:ecard_app/services/device_proximity_service.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
