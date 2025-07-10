@@ -34,6 +34,8 @@ class _FoundCardState extends State<FoundCard> {
   void _saveCardLogic(
       BuildContext context, String? userId, String? cardId) async {
     debugPrint("method savecardLogic in nearbyscreen executed ====>");
+
+    // Show loader immediately when button is pressed
     if (mounted) {
       Alerts.showLoader(
         context: context,
@@ -56,75 +58,89 @@ class _FoundCardState extends State<FoundCard> {
         throw TimeoutException("The operation timed out");
       });
 
+      // Dismiss loader first
+      if (mounted && Navigator.canPop(context)) {
+        Navigator.pop(context); // Dismiss the loader
+      }
+
       if (success) {
         Alerts.showSuccess(
           context: context,
           message: "Card Saved Successfully",
-          icon: Text(LottieAnimes.successLoader),
+          icon: Lottie.asset(
+            LottieAnimes.successLoader,
+            width: 50,
+            height: 50,
+            fit: BoxFit.fill,
+          ),
         );
 
-        Timer(const Duration(seconds: 2), () {
-          if (Navigator.canPop(context)) {
-            Navigator.pop(context); // Close success dialog
+        // Wait for success dialog to auto-close, then close the main dialog
+        Timer(const Duration(seconds: 3), () {
+          if (mounted && Navigator.canPop(context)) {
+            Navigator.pop(context); // Close the main FoundCard dialog
           }
-          Navigator.pop(context);
         });
       } else {
         Alerts.showError(
           context: context,
           message: "Failed to save card. Please try again",
-          icon: Text(LottieAnimes.errorLoader),
+          icon: Lottie.asset(
+            LottieAnimes.errorLoader,
+            width: 50,
+            height: 50,
+            fit: BoxFit.fill,
+          ),
         );
-
-        Timer(const Duration(seconds: 2), () {
-          if (Navigator.canPop(context)) {
-            Navigator.pop(context); // Close error dialog
-          }
-          Navigator.pop(context);
-        });
       }
     } on TimeoutException {
+      // Dismiss loader first
+      if (mounted && Navigator.canPop(context)) {
+        Navigator.pop(context); // Dismiss the loader
+      }
+
       Alerts.showError(
         context: context,
         message: "Operation timed out. Please try again later.",
-        icon: Text(LottieAnimes.errorLoader),
+        icon: Lottie.asset(
+          LottieAnimes.errorLoader,
+          width: 50,
+          height: 50,
+          fit: BoxFit.fill,
+        ),
       );
-      Timer(const Duration(seconds: 2), () {
-        if (Navigator.canPop(context)) {
-          Navigator.pop(context); // Close error dialog
-        }
-        Navigator.pop(context);
-      });
     } on SocketException {
+      // Dismiss loader first
+      if (mounted && Navigator.canPop(context)) {
+        Navigator.pop(context); // Dismiss the loader
+      }
+
       Alerts.showError(
         context: context,
         message: "Network error. Please check your connection.",
-        icon: Text(LottieAnimes.errorLoader),
+        icon: Lottie.asset(
+          LottieAnimes.errorLoader,
+          width: 50,
+          height: 50,
+          fit: BoxFit.fill,
+        ),
       );
-      Timer(const Duration(seconds: 2), () {
-        if (Navigator.canPop(context)) {
-          Navigator.pop(context); // Close error dialog
-        }
-        Navigator.pop(context);
-      });
     } catch (e) {
+      // Dismiss loader first
+      if (mounted && Navigator.canPop(context)) {
+        Navigator.pop(context); // Dismiss the loader
+      }
+
       Alerts.showError(
         context: context,
         message: "An unexpected error occurred: ${e.toString()}",
-        icon: Text(LottieAnimes.errorLoader),
+        icon: Lottie.asset(
+          LottieAnimes.errorLoader,
+          width: 50,
+          height: 50,
+          fit: BoxFit.fill,
+        ),
       );
-      Timer(const Duration(seconds: 2), () {
-        if (Navigator.canPop(context)) {
-          Navigator.pop(context); // Close error dialog
-        }
-        Navigator.pop(context);
-      });
-    } finally {
-      if (mounted) {}
-      if (Navigator.canPop(context)) {
-        // Ensure loader is popped only if it's the current route
-        Navigator.pop(context); // Dismiss the loader
-      }
     }
   }
 

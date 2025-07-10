@@ -38,7 +38,6 @@ class CreateNewCardState extends State<CreateNewCard> {
   final TextEditingController _twitterController = TextEditingController();
   final TextEditingController _instagramController = TextEditingController();
 
-
   // Selected style properties with default values
   Color _selectedColor = const Color(0xFF9C27B0); // purple
   Color _textColor = Colors.white;
@@ -352,7 +351,6 @@ class CreateNewCardState extends State<CreateNewCard> {
 
       final LocationProvider locationProvider =
           Provider.of<LocationProvider>(context, listen: false);
-    
 
       final CardProvider provider =
           Provider.of<CardProvider>(context, listen: false);

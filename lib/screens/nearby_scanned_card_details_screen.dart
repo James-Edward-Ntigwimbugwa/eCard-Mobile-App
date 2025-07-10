@@ -64,7 +64,7 @@ class _CardDetailPageState extends State<NearbyScannedCardDetailsScreen>
   }
 
   // Updated distance color method with expanded range (0m - 50000m)
-    Color _getDistanceColor(double distance) {
+  Color _getDistanceColor(double distance) {
     if (distance <= 50) {
       return Colors.green; // Very close - green
     } else if (distance <= 500) {
@@ -222,7 +222,8 @@ class _CardDetailPageState extends State<NearbyScannedCardDetailsScreen>
             gradient: LinearGradient(
               colors: [
                 Theme.of(context).primaryColor,
-                Theme.of(context).primaryColorLight ?? Theme.of(context).primaryColor,
+                Theme.of(context).primaryColorLight ??
+                    Theme.of(context).primaryColor,
               ],
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
@@ -283,7 +284,8 @@ class _CardDetailPageState extends State<NearbyScannedCardDetailsScreen>
           gradient: LinearGradient(
             colors: [
               Theme.of(context).primaryColor,
-              Theme.of(context).primaryColorLight ?? Theme.of(context).primaryColor,
+              Theme.of(context).primaryColorLight ??
+                  Theme.of(context).primaryColor,
             ],
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
@@ -369,7 +371,8 @@ class _CardDetailPageState extends State<NearbyScannedCardDetailsScreen>
                           vertical: 6,
                         ),
                         decoration: BoxDecoration(
-                          color: _getDistanceColor(widget.card.distance).withOpacity(0.8),
+                          color: _getDistanceColor(widget.card.distance)
+                              .withOpacity(0.8),
                           borderRadius: BorderRadius.circular(20),
                         ),
                         child: Row(
@@ -382,7 +385,7 @@ class _CardDetailPageState extends State<NearbyScannedCardDetailsScreen>
                             ),
                             const SizedBox(width: 4),
                             Text(
-                              widget.card.distance >= 1000 
+                              widget.card.distance >= 1000
                                   ? '${(widget.card.distance / 1000).toStringAsFixed(1)}km away'
                                   : '${widget.card.distance.toStringAsFixed(0)}m away',
                               style: const TextStyle(
@@ -481,7 +484,8 @@ class _CardDetailPageState extends State<NearbyScannedCardDetailsScreen>
             label: 'Phone',
             value: widget.card.phoneNumber,
             onTap: _launchPhone,
-            onLongPress: () => _copyToClipboard(widget.card.phoneNumber, 'Phone'),
+            onLongPress: () =>
+                _copyToClipboard(widget.card.phoneNumber, 'Phone'),
           ),
           if (widget.card.organization != null) ...[
             const SizedBox(height: 16),
@@ -490,7 +494,8 @@ class _CardDetailPageState extends State<NearbyScannedCardDetailsScreen>
               label: 'Website',
               value: widget.card.organization!,
               onTap: () => _launchUrl(widget.card.organization!),
-              onLongPress: () => _copyToClipboard(widget.card.organization!, 'Website'),
+              onLongPress: () =>
+                  _copyToClipboard(widget.card.organization!, 'Website'),
             ),
           ],
         ],
@@ -665,7 +670,7 @@ class _CardDetailPageState extends State<NearbyScannedCardDetailsScreen>
     double distance = widget.card.distance;
     Color distanceColor = _getDistanceColor(distance);
     String distanceCategory = _getDistanceCategory(distance);
-    
+
     // Calculate progress based on distance ranges with fixed maximum
     double progress = (distance / 50000).clamp(0.0, 1.0);
 
@@ -684,7 +689,7 @@ class _CardDetailPageState extends State<NearbyScannedCardDetailsScreen>
               ),
             ),
             Text(
-              distance >= 1000 
+              distance >= 1000
                   ? '${(distance / 1000).toStringAsFixed(1)}km'
                   : '${distance.toStringAsFixed(0)}m',
               style: TextStyle(
@@ -974,7 +979,7 @@ Email: ${widget.card.email}
 Phone: ${widget.card.phoneNumber}
 Distance: ${widget.card.distance >= 1000 ? '${(widget.card.distance / 1000).toStringAsFixed(1)}km' : '${widget.card.distance.toStringAsFixed(0)}m'} away
     ''';
-    
+
     // Use share package or platform-specific sharing
     _copyToClipboard(shareText, 'Card details');
   }

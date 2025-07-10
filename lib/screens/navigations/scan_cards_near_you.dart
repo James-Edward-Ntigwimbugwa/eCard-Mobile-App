@@ -13,14 +13,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../utils/resources/strings/strings.dart';
 
-
-enum ScanningState {
-  idle,
-  fetchingLocation,
-  searchingCards,
-  completed,
-  error
-}
+enum ScanningState { idle, fetchingLocation, searchingCards, completed, error }
 
 class ScanningScreen extends StatefulWidget {
   const ScanningScreen({super.key});
@@ -34,7 +27,7 @@ class _ScanningScreenState extends State<ScanningScreen>
   late AnimationController _pulseController;
   late AnimationController _scanController;
   late AnimationController _distanceController;
-  
+
   ScanningState _currentState = ScanningState.idle;
   String _statusText = '';
   List<BusinessCard> _foundCards = [];
@@ -64,17 +57,17 @@ class _ScanningScreenState extends State<ScanningScreen>
         _currentState = ScanningState.fetchingLocation;
         _statusText = 'Fetching your location...';
       });
-      
+
       // Start animations
       _pulseController.repeat();
       _scanController.repeat();
 
       var status = await Permission.location.status;
-      
+
       if (!status.isGranted) {
         status = await Permission.location.request();
       }
-      
+
       if (status.isGranted) {
         await _fetchLocationAndStartScanning();
       } else {
@@ -115,57 +108,60 @@ class _ScanningScreenState extends State<ScanningScreen>
         if (placemarks.isNotEmpty) {
           Placemark place = placemarks.first;
           List<String> addressParts = [];
-          
+
           if (place.subLocality != null && place.subLocality!.isNotEmpty) {
             addressParts.add(place.subLocality!);
           }
           if (place.locality != null && place.locality!.isNotEmpty) {
             addressParts.add(place.locality!);
           }
-          if (place.administrativeArea != null && place.administrativeArea!.isNotEmpty) {
+          if (place.administrativeArea != null &&
+              place.administrativeArea!.isNotEmpty) {
             addressParts.add(place.administrativeArea!);
           }
           if (place.country != null && place.country!.isNotEmpty) {
             addressParts.add(place.country!);
           }
-          
+
           address = addressParts.join(', ');
         }
       } catch (e) {
         address = "Address not available";
       }
 
-      final locationProvider = Provider.of<LocationProvider>(context, listen: false);
+      final locationProvider =
+          Provider.of<LocationProvider>(context, listen: false);
       locationProvider.updateLocation(
         latitude: position.latitude,
         longitude: position.longitude,
         address: address,
       );
 
-      final deviceProximityService = Provider.of<DeviceProximityService>(context, listen: false);
-      
+      final deviceProximityService =
+          Provider.of<DeviceProximityService>(context, listen: false);
+
       final prefs = await SharedPreferences.getInstance();
       final String? userUuid = prefs.getString('userUuid');
-      
+
       await deviceProximityService.getNearbyDevices(
         userUuid: userUuid,
         latitude: position.latitude,
         longitude: position.longitude,
       );
-      
+
       if (deviceProximityService.hasSuccess) {
         // Simulate getting data from the service
         List<BusinessCard> cards = deviceProximityService.nearbyDevices ?? [];
-        
+
         setState(() {
           _currentState = ScanningState.completed;
           _statusText = 'Found ${cards.length} cards nearby';
           _foundCards = cards;
         });
-        
+
         _stopAnimations();
         _distanceController.forward();
-        
+
         print("Scanning completed: ${deviceProximityService.successMessage}");
       } else if (deviceProximityService.hasError) {
         setState(() {
@@ -175,7 +171,6 @@ class _ScanningScreenState extends State<ScanningScreen>
         _stopAnimations();
         print("Scanning failed: ${deviceProximityService.errorMessage}");
       }
-      
     } catch (e) {
       setState(() {
         _currentState = ScanningState.error;
@@ -227,7 +222,7 @@ class _ScanningScreenState extends State<ScanningScreen>
     );
   }
 
-    Color _getDistanceColor(double distance) {
+  Color _getDistanceColor(double distance) {
     if (distance <= 50) {
       return Colors.green; // Very close - green
     } else if (distance <= 500) {
@@ -450,7 +445,8 @@ class _ScanningScreenState extends State<ScanningScreen>
                 ),
                 // Distance badge
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                   decoration: BoxDecoration(
                     color: _getDistanceColor(card.distance).withOpacity(0.1),
                     borderRadius: BorderRadius.circular(12),
@@ -519,7 +515,7 @@ class _ScanningScreenState extends State<ScanningScreen>
     );
   }
 
-    String _getDistanceRangeText(double distance) {
+  String _getDistanceRangeText(double distance) {
     if (distance <= 50) {
       return 'Very Close';
     } else if (distance <= 500) {
@@ -541,17 +537,25 @@ class _ScanningScreenState extends State<ScanningScreen>
 
   List<Color> _getGradientColors(double distance) {
     Color mainColor = _getDistanceColor(distance);
-    
+
     if (distance <= 50) {
       return [Colors.green.shade300, Colors.green, Colors.green.shade700];
     } else if (distance <= 500) {
-      return [Colors.lightGreen.shade300, Colors.lightGreen, Colors.lightGreen.shade700];
+      return [
+        Colors.lightGreen.shade300,
+        Colors.lightGreen,
+        Colors.lightGreen.shade700
+      ];
     } else if (distance <= 1000) {
       return [Colors.yellow.shade300, Colors.yellow, Colors.yellow.shade700];
     } else if (distance <= 2500) {
       return [Colors.orange.shade300, Colors.orange, Colors.orange.shade700];
     } else if (distance <= 5000) {
-      return [Colors.deepOrange.shade300, Colors.deepOrange, Colors.deepOrange.shade700];
+      return [
+        Colors.deepOrange.shade300,
+        Colors.deepOrange,
+        Colors.deepOrange.shade700
+      ];
     } else if (distance <= 10000) {
       return [Colors.red.shade300, Colors.red, Colors.red.shade700];
     } else if (distance <= 25000) {
@@ -561,10 +565,9 @@ class _ScanningScreenState extends State<ScanningScreen>
     }
   }
 
-
-    Widget _buildDistanceBar(double distance) {
+  Widget _buildDistanceBar(double distance) {
     Color barColor = _getDistanceColor(distance);
-    
+
     // Create gradient colors based on distance ranges
     List<Color> gradientColors = _getGradientColors(distance);
 
@@ -580,7 +583,10 @@ class _ScanningScreenState extends State<ScanningScreen>
             animation: _distanceController,
             builder: (context, child) {
               return Container(
-                width: MediaQuery.of(context).size.width * 0.8 * _distanceController.value, // Fixed width (80% of screen width)
+                width: MediaQuery.of(context).size.width *
+                    0.8 *
+                    _distanceController
+                        .value, // Fixed width (80% of screen width)
                 height: 8,
                 decoration: BoxDecoration(
                   gradient: LinearGradient(
@@ -818,7 +824,8 @@ class _ScanningScreenState extends State<ScanningScreen>
     return SizedBox(
       width: MediaQuery.of(context).size.width,
       child: ElevatedButton(
-        onPressed: _currentState == ScanningState.idle || _currentState == ScanningState.error
+        onPressed: _currentState == ScanningState.idle ||
+                _currentState == ScanningState.error
             ? _handleLocationPermissionAndScanning
             : null,
         style: ElevatedButton.styleFrom(
@@ -828,7 +835,8 @@ class _ScanningScreenState extends State<ScanningScreen>
           ),
         ),
         child: Text(
-          _currentState == ScanningState.idle || _currentState == ScanningState.error
+          _currentState == ScanningState.idle ||
+                  _currentState == ScanningState.error
               ? Texts.startScanning
               : _statusText,
           style: TextStyle(

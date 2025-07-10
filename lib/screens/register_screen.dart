@@ -2,10 +2,12 @@ import 'dart:async';
 import 'dart:developer' as developer;
 
 import 'package:ecard_app/providers/auth_provider.dart';
+import 'package:ecard_app/utils/resources/animes/lottie_animes.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
+import 'package:lottie/lottie.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../components/custom_widgets.dart';
@@ -110,111 +112,125 @@ class RegisterPageState extends State<RegisterPage> {
   }
 
   Future<void> _handleRegister() async {
-    if (_isSubmitting) return;
+  if (_isSubmitting) return;
 
+  setState(() {
+    _isSubmitting = true;
+  });
+
+  // Validate form
+  if (!_formKey.currentState!.validate()) {
     setState(() {
-      _isSubmitting = true;
+      _isSubmitting = false; // Set to false if validation fails
     });
+    return;
+  }
 
-    // Validate form
-    if (!_formKey.currentState!.validate()) {
-      setState(() {
-        _isSubmitting = false; // Set to false if validation fails
-      });
-      return;
+  // Save form data to provider
+  final auth = Provider.of<AuthProvider>(context, listen: false);
+  auth.updateFormField('firstName', _firstNameController.text.trim());
+  auth.updateFormField('secondName', _secondNameController.text.trim());
+  auth.updateFormField('lastName', _lastNameController.text.trim());
+  auth.updateFormField('email', _emailController.text.trim());
+  auth.updateFormField('phoneNumber', _phoneNumberController.text.trim());
+  auth.updateFormField('companyTitle', _companyTitleController.text.trim());
+  auth.updateFormField('jobTitle', _jobTitleController.text.trim());
+  auth.updateFormField('username', _usernameController.text.trim());
+  auth.updateFormField('password', _passwordController.text.trim());
+
+  try {
+    // Show loading indicator with Lottie animation
+    Alerts.showLoader(
+      context: context,
+      message: "Creating account...",
+      icon: Lottie.asset(
+        LottieAnimes.loading,
+        width: 50,
+        height: 50,
+        fit: BoxFit.fill,
+      ),
+    );
+
+    // Call register method
+    bool success = await auth.register(
+      _firstNameController.text.trim(),
+      _secondNameController.text.trim(),
+      _usernameController.text.trim(),
+      _lastNameController.text.trim(),
+      _emailController.text.trim(),
+      "USER",
+      _passwordController.text.trim(),
+      _phoneNumberController.text.trim(),
+      "", // Bio not included
+      _companyTitleController.text.trim(),
+      _jobTitleController.text.trim(),
+    );
+
+    // Hide loading indicator
+    if (mounted && Navigator.canPop(context)) {
+      Navigator.pop(context);
     }
 
-    // Save form data to provider
-    final auth = Provider.of<AuthProvider>(context, listen: false);
-    auth.updateFormField('firstName', _firstNameController.text.trim());
-    auth.updateFormField('secondName', _secondNameController.text.trim());
-    auth.updateFormField('lastName', _lastNameController.text.trim());
-    auth.updateFormField('email', _emailController.text.trim());
-    auth.updateFormField('phoneNumber', _phoneNumberController.text.trim());
-    auth.updateFormField('companyTitle', _companyTitleController.text.trim());
-    auth.updateFormField('jobTitle', _jobTitleController.text.trim());
-    auth.updateFormField('username', _usernameController.text.trim());
-    auth.updateFormField('password', _passwordController.text.trim());
-
-    try {
-      // Show loading indicator
-      Alerts.showLoader(
+    if (success) {
+      // Show success dialog
+      Alerts.showSuccess(
         context: context,
-        message: "Creating account...",
-        icon: LoadingAnimationWidget.stretchedDots(
-          color: Theme.of(context).primaryColor,
-          size: 20,
+        message: "Account created successfully!",
+        icon: Lottie.asset(
+          LottieAnimes.successLoader,
+          width: 50,
+          height: 50,
+          fit: BoxFit.fill,
         ),
       );
 
-      // Call register method
-      bool success = await auth.register(
-        _firstNameController.text.trim(),
-        _secondNameController.text.trim(),
-        _usernameController.text.trim(),
-        _lastNameController.text.trim(),
-        _emailController.text.trim(),
-        "USER",
-        _passwordController.text.trim(),
-        _phoneNumberController.text.trim(),
-        "", // Bio not included
-        _companyTitleController.text.trim(),
-        _jobTitleController.text.trim(),
-      );
-
-      // Hide loading indicator
-      if (mounted) {
-        Navigator.pop(context);
-      }
-
-      if (success) {
-        // Navigate to OTP verification screen
-        _saveAutoLoginCredentials();
+      // Navigate to OTP verification screen after success dialog
+      _saveAutoLoginCredentials();
+      Timer(const Duration(seconds: 3), () {
         if (mounted) {
           Navigator.pushReplacementNamed(context, '/verify_with_otp');
         }
-      } else {
-        // Show error message
-        if (mounted) {
-          Alerts.showError(
-            context: context,
-            message:
-                auth.errorMessage ?? 'Registration failed. Please try again.',
-            icon: Image.asset(
-              Images.errorImage,
-              height: 30,
-              width: 30,
-            ),
-          );
-        }
-      }
-    } catch (error) {
-      // Hide loading indicator
-      if (mounted) {
-        Navigator.pop(context);
-      }
+      });
+    } else {
+      // Show error message with Lottie animation
+      Alerts.showError(
+        context: context,
+        message: auth.errorMessage ?? 'Registration failed. Please try again.',
+        icon: Lottie.asset(
+          LottieAnimes.errorLoader,
+          width: 50,
+          height: 50,
+          fit: BoxFit.fill,
+        ),
+      );
+    }
+  } catch (error) {
+    // Hide loading indicator
+    if (mounted && Navigator.canPop(context)) {
+      Navigator.pop(context);
+    }
 
-      developer.log('Registration error: $error');
+    developer.log('Registration error: $error');
 
-      if (mounted) {
-        Alerts.showError(
-          context: context,
-          message: 'An unexpected error occurred. Please try again.',
-          icon: Image.asset(
-            Images.errorImage,
-            height: 30,
-            width: 30,
-          ),
-        );
-      }
-    } finally {
-      if (mounted) {
-        setState(() {
-          _isSubmitting = false;
-        });
-      }
+    // Show error dialog with Lottie animation
+    Alerts.showError(
+      context: context,
+      message: 'An unexpected error occurred. Please try again.',
+      icon: Lottie.asset(
+        LottieAnimes.errorLoader,
+        width: 50,
+        height: 50,
+        fit: BoxFit.fill,
+      ),
+    );
+  } finally {
+    if (mounted) {
+      setState(() {
+        _isSubmitting = false;
+      });
     }
   }
+}
 
   Future<void> _saveAutoLoginCredentials() async {
     final prefs = await SharedPreferences.getInstance();

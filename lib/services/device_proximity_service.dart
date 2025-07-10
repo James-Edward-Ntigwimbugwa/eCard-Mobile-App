@@ -52,9 +52,9 @@ class DeviceProximityService with ChangeNotifier {
       await Future.delayed(const Duration(seconds: 4));
 
       Object jsonPayload = {
-        'userUuid' : userUuid, 
-        'latitude' : latitude,
-        'longitude' : longitude
+        'userUuid': userUuid,
+        'latitude': latitude,
+        'longitude': longitude
       };
       // Make the API request
       final http.Response response =
@@ -237,4 +237,3 @@ class DeviceProximityService with ChangeNotifier {
     );
   }
 }
-
