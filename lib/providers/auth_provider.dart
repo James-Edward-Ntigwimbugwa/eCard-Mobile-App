@@ -9,7 +9,6 @@ import 'package:jwt_decode/jwt_decode.dart';
 import 'dart:developer' as developer;
 import '../preferences/user_preference.dart';
 
-// Define authentication screens
 enum AuthScreen { loginScreen, registerScreen, forgotPassword, verifyWithOtp }
 
 enum Status {
@@ -95,8 +94,8 @@ class AuthProvider with ChangeNotifier {
     formData[_currentScreen]![field] = value;
   }
 
-  // Updated login method with improved error handling
-  Future<bool> signIn(String username, String password) async {
+  Future<Map<String, dynamic>> signIn(
+      {required String username, required String password}) async {
     _isLoading = true;
     _loggedInStatus = Status.Authenticating;
     _errorMessage = null;
@@ -105,52 +104,34 @@ class AuthProvider with ChangeNotifier {
     try {
       final response = await _apiService.login(username, password);
 
-      if (response.statusCode == 200) {
-        final responseData = jsonDecode(response.body);
+      // Parse the response body first to check for error field
+      final data = jsonDecode(response.body);
 
-        // Check if response follows the new format with data property
-        if (responseData.containsKey('data')) {
-          final data = responseData['data'];
+      if (response.statusCode == 200 && data['error'] != true) {
+        _accessToken = data['accessToken'];
 
-          // Extract token and refreshToken from the new structure
-          _accessToken = data['token'];
-          String refreshToken = data['refreshToken'];
-          try {
-            User authUser =
-                User.fromJson(data); // Use the fromJson factory method
-
-            bool saveResult = await UserPreferences.saveUser(authUser);
-            if (saveResult) {
-              developer
-                  .log("User data saved successfully to preferences======>");
-            } else {
-              developer.log("Failed to save user data to preferences=======>");
-            }
-          } catch (e) {
-            developer.log("Error saving user data: $e");
-          }
-
-          _isAuthenticated = true;
-          _loggedInStatus = Status.LoggedIn;
-          _isLoading = false;
-          notifyListeners();
-          return true;
-        } else {
-          // Handle legacy response format if needed
-          _errorMessage = "Unexpected response format";
-          _loggedInStatus = Status.NotLoggedIn;
-          _isLoading = false;
-          notifyListeners();
-          return false;
+        if (data.containsKey('data') &&
+            data['data'] != null &&
+            data.containsKey('user')) {
+          User authUser = User.fromJson(data['user']);
+          await UserPreferences.saveUser(authUser);
         }
+
+        _isAuthenticated = true;
+        _loggedInStatus = Status.LoggedIn;
+        _isLoading = false;
+        notifyListeners();
+        return {
+          'success': true,
+          'message': data['message'] ?? 'Login successful'
+        };
       } else {
-        // Handle error response
+        // Handle non-200 status codes or error responses
         String errorMessage;
         try {
-          final errorData = jsonDecode(response.body);
+          final errorData = data ?? jsonDecode(response.body);
           errorMessage = errorData['message'] ??
               errorData['detail'] ??
-              errorData['error'] ??
               'Login failed: ${response.statusCode}';
         } catch (e) {
           errorMessage =
@@ -161,27 +142,36 @@ class AuthProvider with ChangeNotifier {
         _loggedInStatus = Status.NotLoggedIn;
         _isLoading = false;
         notifyListeners();
-        return false;
+        return {'success': false, 'message': errorMessage};
       }
     } catch (e) {
       developer.log("Login error: $e");
 
-      // Provide user-friendly error messages
+      String errorMessage;
       if (e.toString().contains("SocketException") ||
-          e.toString().contains("Connection")) {
-        _errorMessage =
-            "Network connection error. Please check your internet and try again.";
-      } else if (e.toString().contains("timeout")) {
-        _errorMessage = "Request timed out. Please try again later.";
+          e.toString().contains("Connection") ||
+          e.toString().contains("NetworkException")) {
+        errorMessage =
+            'Connection error. Please check your internet connection.';
+      } else if (e.toString().contains("timeout") ||
+          e.toString().contains("TimeoutException")) {
+        errorMessage = 'Request timed out. Please try again later.';
+      } else if (e.toString().contains("FormatException") ||
+          e.toString().contains("format")) {
+        errorMessage = 'Server returned an invalid response. Please try again.';
       } else {
-        _errorMessage =
-            "Connection error. Please check your internet connection.";
+        errorMessage = 'An unexpected error occurred. Please try again.';
       }
 
+      _errorMessage = errorMessage;
       _loggedInStatus = Status.NotLoggedIn;
       _isLoading = false;
       notifyListeners();
-      return false;
+      return {'success': false, 'message': errorMessage};
+    } finally {
+      // Ensure that the loading state is reset
+      _isLoading = false;
+      notifyListeners();
     }
   }
 

@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'package:ecard_app/components/custom_widgets.dart';
 import 'package:ecard_app/providers/auth_provider.dart';
-import 'package:ecard_app/screens/register_screen.dart';
 import 'package:ecard_app/components/alert_reminder.dart';
 import 'package:ecard_app/utils/resources/animes/lottie_animes.dart';
 import 'package:flutter/material.dart';
@@ -148,12 +147,11 @@ class OtpVerifierState extends State<OtpVerifier> {
 
     try {
       final response = await authProvider
-          .signIn(username, password)
+          .signIn(username: username, password: password)
           .timeout(const Duration(seconds: 60));
 
       if (response == true) {
         var userProvider = Provider.of<UserProvider>(context, listen: false);
-        // Optionally set user if needed, e.g. userProvider.setUser(authProvider.user);
         if (Navigator.canPop(context)) {
           Navigator.pop(context); // Close loader
         }

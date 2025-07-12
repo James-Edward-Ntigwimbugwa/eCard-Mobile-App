@@ -112,9 +112,9 @@ class _LoginPageState extends State<LoginPage> {
       auth.updateFormField('username', _usernameController.text.trim());
       auth.updateFormField('password', _passwordController.text.trim());
 
-      bool success = await auth.signIn(
-        _usernameController.text.trim(),
-        _passwordController.text.trim(),
+      Map<String, dynamic> mappedResponse = await auth.signIn(
+        username: _usernameController.text.trim(),
+        password: _passwordController.text.trim(),
       );
 
       // Always close the loader dialog
@@ -122,30 +122,26 @@ class _LoginPageState extends State<LoginPage> {
         Navigator.pop(context);
       }
 
-      if (success) {
-        // Show success message with Lottie animation for 2 seconds
+      if (mappedResponse['success'] == true) {
         showSuccessMessage('Login successful!');
 
         Timer(const Duration(seconds: 2), () {
           if (Navigator.canPop(context)) {
-            Navigator.pop(context); // Close success dialog
+            Navigator.pop(context);
           }
           Navigator.pushReplacementNamed(context, '/dashboard');
         });
       } else {
-        // Display the specific error message from the auth provider
         showErrorMessage(auth.errorMessage ?? 'Login failed');
-        setState(() => _formIsSubmitted = false); // Reset form submission state
+        setState(() => _formIsSubmitted = false);
       }
     } catch (e, stack) {
-      // Close the loader dialog
       if (Navigator.canPop(context)) {
         Navigator.pop(context);
       }
 
       developer.log("Login screen error: $e", stackTrace: stack);
 
-      // Provide a user-friendly error message
       String errorMessage = "An error occurred while logging in";
 
       // Add more context if available, but keep it user-friendly
@@ -160,7 +156,7 @@ class _LoginPageState extends State<LoginPage> {
       }
 
       showNetworkError(errorMessage);
-      setState(() => _formIsSubmitted = false); // Reset form submission state
+      setState(() => _formIsSubmitted = false);
     }
   }
 

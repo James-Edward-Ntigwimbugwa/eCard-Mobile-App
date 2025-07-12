@@ -112,90 +112,111 @@ class RegisterPageState extends State<RegisterPage> {
   }
 
   Future<void> _handleRegister() async {
-  if (_isSubmitting) return;
+    if (_isSubmitting) return;
 
-  setState(() {
-    _isSubmitting = true;
-  });
-
-  // Validate form
-  if (!_formKey.currentState!.validate()) {
     setState(() {
-      _isSubmitting = false; // Set to false if validation fails
+      _isSubmitting = true;
     });
-    return;
-  }
 
-  // Save form data to provider
-  final auth = Provider.of<AuthProvider>(context, listen: false);
-  auth.updateFormField('firstName', _firstNameController.text.trim());
-  auth.updateFormField('secondName', _secondNameController.text.trim());
-  auth.updateFormField('lastName', _lastNameController.text.trim());
-  auth.updateFormField('email', _emailController.text.trim());
-  auth.updateFormField('phoneNumber', _phoneNumberController.text.trim());
-  auth.updateFormField('companyTitle', _companyTitleController.text.trim());
-  auth.updateFormField('jobTitle', _jobTitleController.text.trim());
-  auth.updateFormField('username', _usernameController.text.trim());
-  auth.updateFormField('password', _passwordController.text.trim());
-
-  try {
-    // Show loading indicator with Lottie animation
-    Alerts.showLoader(
-      context: context,
-      message: "Creating account...",
-      icon: Lottie.asset(
-        LottieAnimes.loading,
-        width: 50,
-        height: 50,
-        fit: BoxFit.fill,
-      ),
-    );
-
-    // Call register method
-    bool success = await auth.register(
-      _firstNameController.text.trim(),
-      _secondNameController.text.trim(),
-      _usernameController.text.trim(),
-      _lastNameController.text.trim(),
-      _emailController.text.trim(),
-      "USER",
-      _passwordController.text.trim(),
-      _phoneNumberController.text.trim(),
-      "", // Bio not included
-      _companyTitleController.text.trim(),
-      _jobTitleController.text.trim(),
-    );
-
-    // Hide loading indicator
-    if (mounted && Navigator.canPop(context)) {
-      Navigator.pop(context);
+    // Validate form
+    if (!_formKey.currentState!.validate()) {
+      setState(() {
+        _isSubmitting = false; // Set to false if validation fails
+      });
+      return;
     }
 
-    if (success) {
-      // Show success dialog
-      Alerts.showSuccess(
+    // Save form data to provider
+    final auth = Provider.of<AuthProvider>(context, listen: false);
+    auth.updateFormField('firstName', _firstNameController.text.trim());
+    auth.updateFormField('secondName', _secondNameController.text.trim());
+    auth.updateFormField('lastName', _lastNameController.text.trim());
+    auth.updateFormField('email', _emailController.text.trim());
+    auth.updateFormField('phoneNumber', _phoneNumberController.text.trim());
+    auth.updateFormField('companyTitle', _companyTitleController.text.trim());
+    auth.updateFormField('jobTitle', _jobTitleController.text.trim());
+    auth.updateFormField('username', _usernameController.text.trim());
+    auth.updateFormField('password', _passwordController.text.trim());
+
+    try {
+      // Show loading indicator with Lottie animation
+      Alerts.showLoader(
         context: context,
-        message: "Account created successfully!",
+        message: "Creating account...",
         icon: Lottie.asset(
-          LottieAnimes.successLoader,
+          LottieAnimes.loading,
           width: 50,
           height: 50,
           fit: BoxFit.fill,
         ),
       );
 
-      // Navigate to OTP verification screen after success dialog
-      _saveAutoLoginCredentials();
-      Timer(const Duration(seconds: 3), () {
-        if (mounted) {
-          Navigator.pushReplacementNamed(context, '/verify_with_otp');
-        }
-      });
-    } else {
-      // Show error message with Lottie animation
+      // Call register method
+      bool success = await auth.register(
+        _firstNameController.text.trim(),
+        _secondNameController.text.trim(),
+        _usernameController.text.trim(),
+        _lastNameController.text.trim(),
+        _emailController.text.trim(),
+        "USER",
+        _passwordController.text.trim(),
+        _phoneNumberController.text.trim(),
+        "", // Bio not included
+        _companyTitleController.text.trim(),
+        _jobTitleController.text.trim(),
+      );
+
+      // Hide loading indicator
+      if (mounted && Navigator.canPop(context)) {
+        Navigator.pop(context);
+      }
+
+      if (success) {
+        // Show success dialog
+        Alerts.showSuccess(
+          context: context,
+          message: "Account created successfully!",
+          icon: Lottie.asset(
+            LottieAnimes.successLoader,
+            width: 50,
+            height: 50,
+            fit: BoxFit.fill,
+          ),
+        );
+
+        // Navigate to OTP verification screen after success dialog
+        _saveAutoLoginCredentials();
+        Timer(const Duration(seconds: 3), () {
+          if (mounted) {
+            Navigator.pushReplacementNamed(context, '/verify_with_otp');
+          }
+        });
+      } else {
+        // Show error message with Lottie animation
+        Alerts.showError(
+          context: context,
+          message:
+              auth.errorMessage ?? 'Registration failed. Please try again.',
+          icon: Lottie.asset(
+            LottieAnimes.errorLoader,
+            width: 50,
+            height: 50,
+            fit: BoxFit.fill,
+          ),
+        );
+      }
+    } catch (error) {
+      // Hide loading indicator
+      if (mounted && Navigator.canPop(context)) {
+        Navigator.pop(context);
+      }
+
+      developer.log('Registration error: $error');
+
+      // Show error dialog with Lottie animation
       Alerts.showError(
         context: context,
-        message: auth.errorMessage ?? 'Registration failed. Please try again.',
+        message: 'An unexpected error occurred. Please try again.',
         icon: Lottie.asset(
           LottieAnimes.errorLoader,
           width: 50,
@@ -203,34 +224,14 @@ class RegisterPageState extends State<RegisterPage> {
           fit: BoxFit.fill,
         ),
       );
-    }
-  } catch (error) {
-    // Hide loading indicator
-    if (mounted && Navigator.canPop(context)) {
-      Navigator.pop(context);
-    }
-
-    developer.log('Registration error: $error');
-
-    // Show error dialog with Lottie animation
-    Alerts.showError(
-      context: context,
-      message: 'An unexpected error occurred. Please try again.',
-      icon: Lottie.asset(
-        LottieAnimes.errorLoader,
-        width: 50,
-        height: 50,
-        fit: BoxFit.fill,
-      ),
-    );
-  } finally {
-    if (mounted) {
-      setState(() {
-        _isSubmitting = false;
-      });
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isSubmitting = false;
+        });
+      }
     }
   }
-}
 
   Future<void> _saveAutoLoginCredentials() async {
     final prefs = await SharedPreferences.getInstance();

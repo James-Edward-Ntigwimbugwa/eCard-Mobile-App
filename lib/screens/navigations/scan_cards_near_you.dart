@@ -58,7 +58,6 @@ class _ScanningScreenState extends State<ScanningScreen>
         _statusText = 'Fetching your location...';
       });
 
-      // Start animations
       _pulseController.repeat();
       _scanController.repeat();
 
@@ -150,7 +149,6 @@ class _ScanningScreenState extends State<ScanningScreen>
       );
 
       if (deviceProximityService.hasSuccess) {
-        // Simulate getting data from the service
         List<BusinessCard> cards = deviceProximityService.nearbyDevices ?? [];
 
         setState(() {
@@ -162,14 +160,17 @@ class _ScanningScreenState extends State<ScanningScreen>
         _stopAnimations();
         _distanceController.forward();
 
-        print("Scanning completed: ${deviceProximityService.successMessage}");
+        debugPrint(
+            "Scanning completed: ${deviceProximityService.successMessage}");
       } else if (deviceProximityService.hasError) {
         setState(() {
           _currentState = ScanningState.error;
           _statusText = 'Error: ${deviceProximityService.errorMessage}';
         });
         _stopAnimations();
-        print("Scanning failed: ${deviceProximityService.errorMessage}");
+        debugPrint(
+            "Scanning completed: ${deviceProximityService.successMessage}");
+        ("Scanning failed: ${deviceProximityService.errorMessage}");
       }
     } catch (e) {
       setState(() {
@@ -177,7 +178,7 @@ class _ScanningScreenState extends State<ScanningScreen>
         _statusText = 'Error fetching location: $e';
       });
       _stopAnimations();
-      print("Error fetching location: $e");
+      debugPrint("Error fetching location: $e");
     }
   }
 
